@@ -4,8 +4,8 @@
 	import "@fontsource/noto-sans/400.css"
 </script>
 
-<div class="flex h-screen">
-	<div class="flex-grow max-w-xl m-auto p-4">
+<div class="h-screen sm:flex">
+	<div class="max-w-xl m-auto p-4 sm:flex-grow">
 		<slot />
 	</div>
 </div>
