@@ -1,0 +1,1 @@
+<div class="w-full h-0.5 bg-gray-900 my-4"/>

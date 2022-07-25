@@ -2,10 +2,14 @@ const config = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
 	theme: {
-		extend: {}
+		extend: {
+            fontFamily: {
+                univers: ['Noto-Sans'],
+            },
+        }
 	},
 
-	plugins: []
+	plugins: [require('@tailwindcss/typography'),]
 };
 
 module.exports = config;
