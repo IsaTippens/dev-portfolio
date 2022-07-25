@@ -54,13 +54,22 @@
 	</div>
 	<br />
 	<div>
-		<p class="text-2xl font-semibold">Contact</p>
+		<p class="text-2xl font-semibold">Socials</p>
 		<ul class="list-disc">
 			<li>
 				<LinkText url="mailto:isatippens2@gmail.com">Email</LinkText>
 			</li>
 			<li>
 				<LinkText url="https://www.github.com/IsaTippens">Github</LinkText>
+			</li>
+            <li>
+				<LinkText url="https://twitter.com/issssaaaaaaaaah">Twitter</LinkText>
+			</li>
+            <li>
+				<LinkText url="https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/">Instagram</LinkText>
+			</li>
+            <li>
+				<LinkText url="https://www.youtube.com/channel/UCK0lLyNnd1R_Se-PEzESlcQ">Youtube</LinkText>
 			</li>
 		</ul>
 	</div>
