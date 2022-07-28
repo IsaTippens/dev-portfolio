@@ -42,7 +42,7 @@
 	<br />
 	<div>
 		<a href="/blog" class="text-2xl font-semibold">Blog</a>
-		<ul class="list-disc">
+		<ul class="list-disc pl-4">
 			{#each posts.slice(0, 5) as post}
 				<li>
 					<LinkText url={'blog/' + post.path}>
@@ -55,7 +55,7 @@
 	<br />
 	<div>
 		<p class="text-2xl font-semibold">Socials</p>
-		<ul class="list-disc">
+		<ul class="list-disc pl-4">
 			<li>
 				<LinkText url="mailto:isatippens2@gmail.com">Email</LinkText>
 			</li>

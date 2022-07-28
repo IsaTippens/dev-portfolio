@@ -23,6 +23,7 @@
 	<title>{title}</title>
 </svelte:head>
 
+<div class="">
 <div>
 	<p class="text-3xl font-semibold">{title}</p>
 	<p>{new Date(date).toDateString()}</p>
@@ -34,7 +35,7 @@
 	<a href="/">Back to home</a>
 	<a href="/blog">Back to blog</a>
 </div>
-
+</div>
 <style>
 	img {
 		border-radius: 25%;

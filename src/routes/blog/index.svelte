@@ -17,7 +17,6 @@
 </script>
 
 <div>
-	<p class="text-3xl semibold">Blog</p>
 	<p class="text-3xl semibold">Stuff I Wrote</p>
 </div>
 <br/>
