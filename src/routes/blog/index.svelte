@@ -3,11 +3,6 @@
 	export const load = async ({ fetch }) => {
 		const posts = await fetch(`/api/posts.json`);
 		let allPosts = await posts.json();
-		if (!dev) {
-			allPosts = allPosts.filter(post => {
-				return post.meta.published
-			});
-		}
 	
 		return {
 			props: {
