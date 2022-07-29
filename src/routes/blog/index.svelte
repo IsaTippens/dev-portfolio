@@ -1,8 +1,14 @@
 <script context="module">
+	import { dev } from '$app/env';
 	export const load = async ({ fetch }) => {
 		const posts = await fetch(`/api/posts.json`);
-		const allPosts = await posts.json();
-
+		let allPosts = await posts.json();
+		if (!dev) {
+			allPosts = allPosts.filter(post => {
+				return post.meta.published
+			});
+		}
+	
 		return {
 			props: {
 				posts: allPosts

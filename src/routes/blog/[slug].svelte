@@ -29,7 +29,7 @@
 	<p>{new Date(date).toDateString()}</p>
 </div>
 <Divider />
-<div class="prose">{@html html}</div>
+<div class="all-prose">{@html html}</div>
 <Divider />
 <div class="grid grid-cols-1 text-xl">
 	<a href="/">Back to home</a>

@@ -1,8 +1,36 @@
 /* Write your global styles here, in PostCSS syntax */
 @tailwind base;
 @tailwind components;
-.all-prose {
-    @apply prose prose-lg lg:prose-xl;
-  }
-  
 @tailwind utilities;
+
+.prose img {
+  @apply rounded-md mx-auto;
+}
+
+.prose video {
+  @apply rounded-md mx-auto;
+}
+
+.prose pre {
+  @apply shadow-md dark:shadow-slate-900;
+}
+
+hr {
+  @apply !border-slate-300 dark:!border-slate-700;
+}
+
+button {
+  @apply rounded-md;
+}
+
+a {
+  @apply rounded-sm;
+}
+
+svg {
+  @apply outline-none focus:outline-none;
+}
+
+.all-prose {
+  @apply prose prose-lg lg:prose-xl;
+}

@@ -1,9 +1,9 @@
-<script lang="ts" context="module">
+<script context="module">
 	import LinkText from '$lib/components/LinkText.svelte';
 	import { getYearsSince } from '$lib/getYear';
-	export const load = async ({ fetch }) => {
-		const age: Number = getYearsSince(new Date('2001-06-01'));
-		const devYear: Number = getYearsSince(new Date('2013-08-01'));
+	export const load = async ({fetch}) => {
+		const age = getYearsSince(new Date('2001-06-01'));
+		const devYear = getYearsSince(new Date('2013-08-01'));
 
 		const res = await fetch(`/api/posts.json`);
 		const posts = await res.json();
