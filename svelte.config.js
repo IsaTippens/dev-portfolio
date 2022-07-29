@@ -9,6 +9,10 @@ const config = {
 		adapter: adapter()
 	},
 	extensions: ['.svelte', ...mdsvexConfig.extensions],
+	prerender: {
+		default: true,
+		entries: ['*']
+	},
 	preprocess: [
 		preprocess({
 			postcss: true
