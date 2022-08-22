@@ -22,27 +22,14 @@
 	export let devYear: Number;
 	export let posts;
 </script>
-<style lang="postcss">
-	.highlight-text {
-		@apply text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-500;
-	}
-	.highlight-faint {
-		@apply bg-cyan-100;
-	}
-	.highlight-link {
-		@apply font-semibold hover:underline text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-500 decoration-sky-500;
-	}
-	.list-bullets{
-		@apply marker:text-cyan-600 list-disc pl-4;
-	}
-</style>
+
 <div>
 	<p class="text-3xl font-semibold">I'm <span class="highlight-text">Isa</span></p>
 	<p class="text-3xl font-semibold">This is <span class="highlight-text">what I do</span></p>
 	<br />
 	<p>{age} y/o <span class="highlight-text">programmer</span> of {devYear} years</p>
 	<p>
-		Current Final Year CS student from the <a
+		Final Year CS student from the <a
 			href="https://uwc.ac.za"
 			class="highlight-link">University of the Western Cape</a
 		>

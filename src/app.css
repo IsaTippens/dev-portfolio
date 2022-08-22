@@ -3,6 +3,22 @@
 @tailwind components;
 @tailwind utilities;
 
+.highlight-text {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-500;
+}
+
+.highlight-faint {
+  @apply bg-cyan-100;
+}
+
+.highlight-link {
+  @apply font-semibold hover:underline text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-500 decoration-sky-500;
+}
+
+.list-bullets {
+  @apply marker:text-cyan-600 list-disc pl-4;
+}
+
 .prose img {
   @apply rounded-md mx-auto;
 }
@@ -12,11 +28,16 @@
 }
 
 .prose pre {
-  @apply shadow-md dark:shadow-slate-900;
+  @apply shadow-md;
 }
 
+.prose a {
+  @apply highlight-link;
+}
+
+
 hr {
-  @apply !border-slate-300 dark:!border-slate-700;
+  @apply  !border-slate-300 dark:!border-slate-700;
 }
 
 button {
@@ -34,3 +55,4 @@ svg {
 .all-prose {
   @apply prose prose-lg lg:prose-xl;
 }
+
