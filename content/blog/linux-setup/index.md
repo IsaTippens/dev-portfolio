@@ -4,6 +4,7 @@ description: My tutorial for setuping linux sometime again in the future
 date: 2022-08-06
 published: false
 ---
+A collection of notes for when I forget how to use linux
 
 ## Ubuntu specific
 
