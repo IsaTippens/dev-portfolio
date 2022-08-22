@@ -18,7 +18,7 @@
 </script>
 
 <div>
-	<p class="text-3xl semibold">Stuff I Wrote</p>
+	<p class="text-3xl semibold">Stuff I <span class="highlight-text">Wrote</span></p>
 </div>
 <br/>
 <ul>
