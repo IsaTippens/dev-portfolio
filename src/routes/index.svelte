@@ -22,16 +22,29 @@
 	export let devYear: Number;
 	export let posts;
 </script>
-
+<style lang="postcss">
+	.highlight-text {
+		@apply text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-500;
+	}
+	.highlight-faint {
+		@apply bg-cyan-100;
+	}
+	.highlight-link {
+		@apply font-semibold hover:underline text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-500 decoration-sky-500;
+	}
+	.list-bullets{
+		@apply marker:text-cyan-600 list-disc pl-4;
+	}
+</style>
 <div>
-	<p class="text-3xl font-semibold">I'm Isa</p>
-	<p class="text-3xl font-semibold">This is what I do</p>
+	<p class="text-3xl font-semibold">I'm <span class="highlight-text">Isa</span></p>
+	<p class="text-3xl font-semibold">This is <span class="highlight-text">what I do</span></p>
 	<br />
-	<p>{age} y/o programmer of {devYear} years</p>
+	<p>{age} y/o <span class="highlight-text">programmer</span> of {devYear} years</p>
 	<p>
 		Current Final Year CS student from the <a
 			href="https://uwc.ac.za"
-			class="font-semibold hover:underline">University of the Western Cape</a
+			class="highlight-link">University of the Western Cape</a
 		>
 	</p>
     <br/>
@@ -41,8 +54,8 @@
 	</p>
 	<br />
 	<div>
-		<a href="/blog" class="text-2xl font-semibold">Blog</a>
-		<ul class="list-disc pl-4">
+		<a href="/blog" class="text-2xl font-semibold highlight-text">Blog</a>
+		<ul class="list-bullets">
 			{#each posts.slice(0, 5) as post}
 				<li>
 					<LinkText url={'blog/' + post.path}>
@@ -54,8 +67,8 @@
 	</div>
 	<br />
 	<div>
-		<p class="text-2xl font-semibold">Socials</p>
-		<ul class="list-disc pl-4">
+		<span class="text-2xl font-semibold highlight-text">Socials</span>
+		<ul class="list-bullets">
 			<li>
 				<LinkText url="mailto:isatippens2@gmail.com">Email</LinkText>
 			</li>
