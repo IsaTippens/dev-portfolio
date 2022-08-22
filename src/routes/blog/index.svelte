@@ -23,7 +23,8 @@
 <br/>
 <ul>
 	{#each posts as post}
-		<li class="shadow-md p-4">
+		<li class="card">
+			<div class="card-inner">
 			<a href={'blog/' + post.path}>
 				<div class="flex flex-col sm:flex-row">
 					<div class="flex-auto text-lg">
@@ -37,6 +38,7 @@
 					{post.meta.description}
 				</div>
 			</a>
+		</div>
 		</li>
 	{/each}
 </ul>

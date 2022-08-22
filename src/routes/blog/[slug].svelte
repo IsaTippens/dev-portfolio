@@ -25,7 +25,7 @@
 
 <div class="">
 <div>
-	<p class="text-3xl font-semibold">{title}</p>
+	<p class="text-3xl font-semibold highlight-text">{title}</p>
 	<p>{new Date(date).toDateString()}</p>
 </div>
 <Divider />
