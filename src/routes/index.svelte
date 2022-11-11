@@ -69,7 +69,7 @@
 				<LinkText url="https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/">Instagram</LinkText>
 			</li>
             <li>
-				<LinkText url="https://www.youtube.com/channel/UCK0lLyNnd1R_Se-PEzESlcQ">Youtube</LinkText>
+				<LinkText url="https://www.youtube.com/@issaaahhhh">Youtube</LinkText>
 			</li>
 		</ul>
 	</div>
