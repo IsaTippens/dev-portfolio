@@ -21,6 +21,8 @@ Rust's no nulls concept is interesting, essentially making sure that errors and 
 Zig has made me realised there is indeed _compile-time computations_. Something I haven't realised in the many years of coding (Too much python and handling things at runtime).  
 By the end of 2023, I want to atleast build something with both of these languages, anything that is blazingly fast ⚡ and I can show off 😄.
 
+!["Rust users trying to rewrite every existing C project in their useless programming language"](/content/blog/learn-2023/programming-rust.gif)
+
 ## Game Dev
 
 I still have ideas I want to try. Many times this year I have hopped between Monogame to Godot to SDL to SDL with Rust to Raylib to Raylib with Rust and only to end up with Monogame since I'm most comfortable using C#. This year I hope to stick with a platform that I can try ideas out easily.
