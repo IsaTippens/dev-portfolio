@@ -29,7 +29,7 @@
 	<br />
 	<p>{age} y/o <span class="highlight-text">programmer</span> of {devYear} years</p>
 	<p>
-		Final Year CS student from the <a
+		Computer Science graduate from the <a
 			href="https://uwc.ac.za"
 			class="highlight-link">University of the Western Cape</a
 		>
