@@ -8,6 +8,7 @@ published: true
 A lot of things happened this year. 
 In tech specifically: AI/ML brought us generative art and smarter chat bots, 
 Twitter is still the same even after being bought out and the global chip shortage took a turn for the better. 
+
 For me, I have finally completed an entire CS degree. This is a big achievement which I have waited a looong time for.
 
 To end off 2022, let's do some last minute planning for 2023.
