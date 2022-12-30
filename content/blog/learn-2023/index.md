@@ -25,7 +25,7 @@ Zig has made me realised there is indeed _compile-time computations_. Something 
 
 By the end of 2023, I want to atleast build something with both of these languages, anything that is blazingly fast ⚡ and I can show off 😄.
 
-!["Rust users trying to rewrite every existing C project in their useless programming language"](/content/blog/learn-2023/programming-rust.gif)
+![Rust users trying to rewrite every existing C project in their useless programming language](/content/blog/learn-2023/programming-rust.gif)
 
 ## Game Dev
 
