@@ -5,7 +5,6 @@ import { fail } from "@sveltejs/kit";
 export function GET({ params }) {
     const { slug } = params;
     const post = posts.find(post => post.slug === slug);
-    console.log({post})
 
     if (!post) {
         return fail(404)
