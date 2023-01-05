@@ -1,5 +1,5 @@
-import { dev } from '$app/env';
-
+import { dev } from '$app/environment';
+import { json } from '@sveltejs/kit';
 export const GET = async () => {
     const allPostFiles = import.meta.glob('/content/blog/**/*.md')
     const iterablePostFiles = Object.entries(allPostFiles)
@@ -28,7 +28,5 @@ export const GET = async () => {
       return new Date(b.meta.date) - new Date(a.meta.date)
     })
   
-    return {
-      body: sortedPosts
-    }
+    return json(sortedPosts)
   }

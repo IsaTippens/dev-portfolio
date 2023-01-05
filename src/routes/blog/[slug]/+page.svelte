@@ -1,22 +1,13 @@
 <script context="module">
 	// export const prerender = true
 	import Divider from '$lib/components/Divider.svelte';
-	export async function load({ fetch, params }) {
-		const { slug } = params;
-		const res = await fetch(`./${slug}.json`);
-		if (res.ok) {
-			const { post } = await res.json();
-			return {
-				props: { post }
-			};
-		}
-	}
+	
 </script>
 
 <script>
-	export let post;
+	export let data;
 
-	let { html, date, title } = post;
+	let { html, date, title } = data.post;
 </script>
 
 <svelte:head>

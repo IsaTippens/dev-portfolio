@@ -6,6 +6,6 @@
     <p class="text-3xl semibold">Stuff I Made</p>
 </div>
 <Divider/>
-<div>¯\_(ツ)_/¯</div>
+<p>¯\_(ツ)_/¯</p>
 <Divider/>
 <div><a href="/" class="text-xl semibold">Back to home</a></div>
