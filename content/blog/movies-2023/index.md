@@ -1,7 +1,7 @@
 ---
 title: Things I Watched In 2023
 description: 🍿
-date: 2022-12-30
+date: 2023-01-24
 published: true
 ---
 
