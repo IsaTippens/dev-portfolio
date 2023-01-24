@@ -1,5 +1,5 @@
 ---
-title: Things I Watched In 2023
+title: List Of Stuff I Watched
 description: 🍿
 date: 2023-01-24
 published: true
