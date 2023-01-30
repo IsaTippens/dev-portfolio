@@ -27,7 +27,7 @@
 }
 
 .blog-header {
-  @apply bg-white border-b w-full py-4 dark:bg-black shadow-md;
+  @apply bg-white border-b w-full py-4 dark:bg-black;
 }
 
 body {
