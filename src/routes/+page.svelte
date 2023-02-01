@@ -10,6 +10,13 @@
 	export let data;
 </script>
 
+<svelte:head>
+	<title>Isa Tippens</title>
+	// Less cringey description please copilot
+	<meta name="description" content="I code things" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</svelte:head>
+
 <div>
 	<p class="text-3xl font-semibold">I'm <span class="highlight-text">Isa</span></p>
 	<p class="text-3xl font-semibold">This is <span class="highlight-text">what I do</span></p>

@@ -4,6 +4,12 @@
 	let posts = data.posts;
 </script>
 
+<svelte:head>
+	<title>Isa Tippens - Blog</title>
+	<meta name="description" content="Interesting Readables" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</svelte:head>
+
 <div>
 	<p class="text-3xl semibold">Stuff I <span class="highlight-text">Wrote</span></p>
 </div>

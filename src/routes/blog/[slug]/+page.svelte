@@ -6,11 +6,13 @@
 <script>
 	export let data;
 
-	let { html, date, title } = data.post;
+	let { html, date, title, description } = data.post;
 </script>
 
 <svelte:head>
-	<title>{title}</title>
+	<title>Isa Tippens - Blog - {title}</title>
+	<meta name="description" content={description} />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </svelte:head>
 
 <div class="sticky top-0 z-10 blog-header">
