@@ -12,7 +12,6 @@
 
 <svelte:head>
 	<title>Isa Tippens</title>
-	// Less cringey description please copilot
 	<meta name="description" content="I code things" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </svelte:head>
