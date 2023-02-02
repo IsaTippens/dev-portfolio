@@ -19,12 +19,9 @@
   @apply marker:text-cyan-600 list-disc pl-4;
 }
 
-.crumb-end {
-  @apply dark:text-white;
-}
 
 .card {
-  @apply mt-2 rounded shadow-md p-[3px] dark:bg-gradient-to-r from-cyan-600 to-blue-500;
+  @apply mt-2 rounded p-[3px] dark:bg-gradient-to-r from-cyan-600 to-blue-500;
 }
 .card-inner{
   @apply p-4 dark:bg-black rounded-sm;
@@ -38,16 +35,8 @@ body {
   @apply dark:bg-black;
 }
 
-p {
-  @apply dark:text-white;
-}
-
-a {
-  @apply dark:text-white;
-}
-
-li {
-  @apply dark:text-white;
+p, a, li, span {
+  @apply text-zinc-700 dark:text-white;
 }
 
 .all-prose {
