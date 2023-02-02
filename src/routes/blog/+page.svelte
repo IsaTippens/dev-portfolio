@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>Isa Tippens - Blog</title>
+	<title>Blog</title>
 	<meta name="description" content="Interesting Readables" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </svelte:head>

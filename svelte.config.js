@@ -6,7 +6,8 @@ import mdsvexConfig from './mdsvex.config.js'
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		inlineStyleThreshold: Infinity
 	},
 	extensions: ['.svelte', ...mdsvexConfig.extensions],
 	prerender: {
