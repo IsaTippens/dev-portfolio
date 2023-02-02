@@ -1,5 +1,3 @@
-export const csr = false;
-
 import * as amp from '@sveltejs/amp';
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
@@ -11,3 +9,6 @@ export async function handle({ event, resolve }) {
         }
     });
 }
+
+export const csr = false;
+export const prerender = true;
