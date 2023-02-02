@@ -11,8 +11,6 @@
 		"check:watch": "svelte-check --tsconfig ./jsconfig.json --watch",
 		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
 		"format": "prettier --write --plugin-search-dir=. .",
-		"postbuild": "yarn generate:sitemap",
-		"generate:sitemap": "svelte-sitemap --domain https://isatippens.com; cp build/sitemap.xml static/sitemap.xml"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
