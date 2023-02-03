@@ -21,7 +21,7 @@
 		<span class="crumb-end truncate whitespace-nowrap">{title}</span>
 	</span>
 </div>
-<div class="sticky top-0 z-10 blog-header">
+<div class="sticky top-0 z-10 w-full blog-header">
 	<p
 		class="text-3xl font-semibold highlight-text truncate whitespace-nowrap hover:whitespace-normal"
 	>
@@ -29,7 +29,7 @@
 	</p>
 	<p>{new Date(date).toDateString()}</p>
 </div>
-<main>
+<main class="blog-body">
 	<div class="all-prose">{@html html}</div>
 </main>
 <footer class="border-t grid grid-cols-1 text-xl" />
