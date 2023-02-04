@@ -8,6 +8,7 @@
 	<title>Blog</title>
 	<meta name="description" content="Interesting Readables" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="canonical" href="https://isatippens.com/blog" />
 </svelte:head>
 <div>
 	<span class="font-semibold highlight-text"

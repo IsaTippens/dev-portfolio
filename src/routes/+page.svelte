@@ -14,6 +14,7 @@
 	<title>Isa Tippens</title>
 	<meta name="description" content="I code things" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="canonical" href="https://isatippens.com" />
 </svelte:head>
 
 <div>
