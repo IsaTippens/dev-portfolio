@@ -21,7 +21,7 @@
 
 
 .card {
-  @apply mt-2 rounded p-[3px] border-b;
+  @apply mt-2 p-[3px] border-b;
 }
 .card-inner{
   @apply p-4 dark:bg-black rounded-sm;
