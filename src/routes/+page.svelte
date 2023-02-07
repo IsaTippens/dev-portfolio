@@ -23,7 +23,7 @@
 	<br />
 	<p>{data.age} y/o <span class="highlight-text">programmer</span> of {data.devYear} years</p>
 	<p>
-		Computer Science graduate from the <a
+		Computer Science Honours student from the <a
 			href="https://uwc.ac.za"
 			class="highlight-link">University of the Western Cape</a
 		>
