@@ -17,7 +17,7 @@ Movies and series I watched and really liked in 2023
 ## February
 ### Detatchment (2011)
 ### Napoleon Dynamite (2004)
-![Sick moves](/content/blog/movies###2023/napoleon/dance###slide.gif)
+![Sick moves](/content/blog/movies-2023/napoleon/dance-slide.gif)
 ### Shaun of the Dead (2004)
 ### A Quiet Place Part 2 (2022)
 ### Blade Runner 2049 (2017)
