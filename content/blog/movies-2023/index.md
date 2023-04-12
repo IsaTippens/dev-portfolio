@@ -27,3 +27,4 @@ Movies and series I watched and really liked in 2023
 ### Dredd (2012)
 ### Django Unchained (2017)
 ### Invincible (2021)
+### Everything Everywhere All at Once (2022)
