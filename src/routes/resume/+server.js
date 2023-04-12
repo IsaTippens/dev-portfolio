@@ -12,5 +12,7 @@ export const GET = async () => {
     let dataB = Buffer.from(buffer)
 
     let resp =new Response(dataB, { headers: { 'Content-Type': 'application/pdf' } })
+    resp.headers.set('Content-Disposition', 'attachment; filename="Isa Tippens CV.pdf"')
+    
     return resp;
 }
