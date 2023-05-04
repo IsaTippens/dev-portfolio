@@ -32,6 +32,7 @@ Movies and series I watched and really liked in 2023
 ## April
 ### Thursday (1998)
 ### The Pianist (2002)
+### BEEF (2023)
 ### The Super Mario Bros. Movie (2023)
 ### To Every You I Loved Before (2022)
 
