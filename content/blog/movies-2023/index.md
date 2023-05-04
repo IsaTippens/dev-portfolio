@@ -28,3 +28,13 @@ Movies and series I watched and really liked in 2023
 ### Django Unchained (2017)
 ### Invincible (2021)
 ### Everything Everywhere All at Once (2022)
+
+## April
+### Thursday (1998)
+### The Pianist (2002)
+### The Super Mario Bros. Movie (2023)
+### To Every You I Loved Before (2022)
+
+## May
+### To Me, The One Who Loved You (2022)
+
