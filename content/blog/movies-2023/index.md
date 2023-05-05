@@ -22,6 +22,7 @@ Movies and series I watched and really liked in 2023
 ### A Quiet Place Part 2 (2022)
 ### Blade Runner 2049 (2017)
 ### Signs (2002)
+### Bullet Train (2022)
 
 ## March
 ### Dredd (2012)
