@@ -43,6 +43,7 @@ Movies and series I watched and really liked in 2023
 ### The Wandering Earth (2019)
 ### Inception (2010)
 ### Dune (2021)
+### Ant-Man and the Wasp: Quantumania (2023)
 
 ## In Limbo
 Dungeons & Dragons: Honour Among Thieves, The Bubble, Top Gun Maverick
