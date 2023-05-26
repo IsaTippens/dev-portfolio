@@ -5,19 +5,14 @@ date: 2023-01-24
 published: false
 ---
 
-<script >
-    import data from './content/blog/movies-2023/movies.json';
-    console.log(data);
-</script>
-
 Movies and series I watched and really liked in 2023
 
-{#each data as month}
-    <h2>{month.month}</h2>
-    {#each month.movies as movie}
-        <h3>{movie.name} ({movie.year})</h3>
-    {/each}
-{/each}
+## January
+### Avatar: The Way of Water (2022)
+### RRR (2022)
+### The Last Of Us (2023)
+### The Menu (2022)
+### Passengers (2016)
 
 ## February
 ### Detatchment (2011)
@@ -45,4 +40,10 @@ Movies and series I watched and really liked in 2023
 ## May
 ### To Me, The One Who Loved You (2022)
 ### Jump In (2007)
+### The Wandering Earth (2019)
+### Inception (2010)
+### Dune (2021)
+### Ant-Man and the Wasp: Quantumania (2023)
 
+## In Limbo
+Dungeons & Dragons: Honour Among Thieves, The Bubble, Top Gun Maverick
