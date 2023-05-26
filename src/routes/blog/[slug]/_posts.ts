@@ -8,7 +8,7 @@ export type Post = {
   publishedOn: string;
   updatedOn: string;
 };
-const modules = import.meta.glob("/content/blog/**/*.md", {eager: true});
+const modules = import.meta.glob("/content/blog/**/*.{md,svx}", {eager: true});
 
 export const posts: Post[] = Object.entries(modules).map(([filepath, module]) => {
   const slug = basename(dirname(filepath));
