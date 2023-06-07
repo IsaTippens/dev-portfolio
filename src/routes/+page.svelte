@@ -1,9 +1,7 @@
 <script context="module">
 	import LinkText from '$lib/components/LinkText.svelte';
-	
-	export const load = async () => {
-		
-	};
+
+	export const load = async () => {};
 </script>
 
 <script>
@@ -23,17 +21,19 @@
 	<br />
 	<p>{data.age} y/o <span class="highlight-text">programmer</span> of {data.devYear} years</p>
 	<p>
-		<a href="https://sites.google.com/myuwc.ac.za/quantum-money/home" class="highlight-link">Computer Science Honours</a> student from the <a
-			href="https://uwc.ac.za"
-			class="highlight-link">University of the Western Cape</a
+		<a href="https://sites.google.com/myuwc.ac.za/quantum-money/home" class="highlight-link"
+			>Computer Science Honours</a
 		>
+		student from the
+		<a href="https://uwc.ac.za" class="highlight-link">University of the Western Cape</a>
 	</p>
-    <br/>
+	<br />
 	<p>
 		Made apps with React Native and Flutter, games with C and C#. A little web3 too. Currently
 		learning Zig and Rust and many other cool tech.
 	</p>
 	<br />
+
 	<div>
 		<a href="/blog" class="text-2xl font-semibold highlight-text">Blog</a>
 		<ul class="list-bullets">
@@ -56,13 +56,15 @@
 			<li>
 				<LinkText url="https://www.github.com/IsaTippens">Github</LinkText>
 			</li>
-            <li>
+			<li>
 				<LinkText url="https://twitter.com/issssaaaaaaaaah">Twitter</LinkText>
 			</li>
-            <li>
-				<LinkText url="https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/">Instagram</LinkText>
+			<li>
+				<LinkText url="https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/"
+					>Instagram</LinkText
+				>
 			</li>
-            <li>
+			<li>
 				<LinkText url="https://www.youtube.com/@issaaahhhh">Youtube</LinkText>
 			</li>
 		</ul>

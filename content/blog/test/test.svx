@@ -5,6 +5,10 @@ date: 2022-07-29
 published: false
 ---
 
+<script>
+    import Spotify from '$lib/components/embeds/Spotify.svelte';
+</script>
+
 # This is a heading
 
 This is a paragraph of text.
@@ -37,3 +41,6 @@ Nextline with a empty line above
         }
     }
 ```
+### Embeds
+
+<Spotify spotifyLink="track/2pscAWkm3jAxcrpBwOtQmS" height="80" width="100%" disable_observer=true/>
