@@ -7,4 +7,4 @@ published: true
 
 This is the 4th redesign of my site. Now using [sveltekit](https://kit.svelte.dev/) and hosted on [vercel](https://vercel.com/) 🚀
 
-![Pikachu gives a thumbs up](/content/blog/yo/pikachu-oh-yeah.gif)
+![Pikachu gives a thumbs up](/images/pikachu-oh-yeah.gif)

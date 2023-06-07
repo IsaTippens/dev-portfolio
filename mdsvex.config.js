@@ -22,6 +22,7 @@ function marshalImages() {
       }
       return url
     }
+    /*
 
     visit(tree, ["image", "definition"], (node) => {
       node.url = convertUrl(node.url);
@@ -41,7 +42,9 @@ function marshalImages() {
         }
       }
     });
+    */
   }
+  
 }
 
 function relativeImages() {
