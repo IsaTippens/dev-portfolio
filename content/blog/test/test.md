@@ -26,7 +26,7 @@ Nextline but its still on the same line.
 
 Nextline with a empty line above
 
-![iron man](/content/blog/yo/iron-man-snap.gif)
+![iron man](/images/iron-man-snap.gif)
 
 ```cs
     public class Program
