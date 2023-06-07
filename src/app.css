@@ -47,8 +47,8 @@ p, a, li, span {
   @apply prose;
 }
 
-.prose h1, .prose h2, .prose h3 {
-  @apply dark:text-white;
+.prose h1, .prose h2, .prose h3 .prose p {
+  @apply mt-0 mb-0 dark:text-white ;
 }
 
 .prose img {
@@ -64,6 +64,48 @@ p, a, li, span {
 }
 
 .prose a {
+  @apply highlight-link;
+}
+
+.blog-content {
+  @apply text-zinc-700 dark:text-white;
+}
+.blog-content h1 {
+  @apply text-3xl font-semibold mb-4;
+
+}
+
+.blog-content h2 {
+  @apply text-2xl font-semibold mb-4;
+}
+
+.blog-content h3 {
+  @apply text-xl font-semibold;
+}
+
+.blog-content h1 h2 h3 p {
+  @apply dark:text-white ;
+}
+
+.blog-content p {
+  @apply mb-4;
+}
+
+
+
+.blog-content img {
+  @apply rounded-md mx-auto;
+}
+
+.blog-content video {
+  @apply rounded-md mx-4;
+}
+
+.blog-content pre {
+  @apply mx-4 dark:text-black ;
+}
+
+.blog-content a {
   @apply highlight-link;
 }
 
