@@ -7,6 +7,7 @@ published: false
 
 <script>
     import MovieCard from '$lib/components/MovieCard.svelte';
+    import Spotify from '$lib/components/embeds/Spotify.svelte';
 </script>
 
 Movies and series I watched and really liked in 2023
@@ -52,6 +53,7 @@ Movies and series I watched and really liked in 2023
 
 ## June
 ### Spider-Man: Across the Spider-Verse (2023)
+<Spotify spotifyLink="track/5pv6Z4veEqPwAwU8IKhasj" height="80" width="100%"/>
 
 ## In Limbo
 Dungeons & Dragons: Honour Among Thieves, The Bubble, Top Gun Maverick
