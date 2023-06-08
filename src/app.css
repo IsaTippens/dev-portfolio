@@ -47,8 +47,16 @@ p, a, li, span {
   @apply prose;
 }
 
-.prose h1, .prose h2, .prose h3 .prose p {
-  @apply mt-0 mb-0 dark:text-white ;
+.prose h1, .prose h2, .prose h3, .prose p {
+  @apply m-0 dark:text-white ;
+}
+
+.prose h1 , .prose h2 {
+  @apply my-2
+}
+
+.prose p {
+  @apply text-justify
 }
 
 .prose img {
@@ -56,11 +64,11 @@ p, a, li, span {
 }
 
 .prose video {
-  @apply rounded-md mx-4;
+  @apply rounded-md mx-auto;
 }
 
 .prose pre {
-  @apply mx-4 dark:text-black ;
+  @apply mx-auto dark:text-black ;
 }
 
 .prose a {
