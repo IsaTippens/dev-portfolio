@@ -18,9 +18,9 @@ Movies and series I watched and really liked in 2023
 
 ### RRR (2022)
 
-<Spotify spotifyLink="track/4BHYJiAqyqGtN267ypm1ke" height="80" width="100%"/>
+<Spotify spotifyLink="track/4BHYJiAqyqGtN267ypm1ke" width="100%"/>
 
-<Spotify spotifyLink="track/5tCsbcxZI4SuGsxS4R8t1o" height="80" width="100%"/>
+<Spotify spotifyLink="track/5tCsbcxZI4SuGsxS4R8t1o" width="100%"/>
 
 ### The Last Of Us (2023)
 
@@ -42,7 +42,7 @@ Movies and series I watched and really liked in 2023
 
 ### Blade Runner 2049 (2017)
 
-<Spotify spotifyLink="track/6bHjk4FudnJpUEz1PGs1YS" height="80" width="100%"/>
+<Spotify spotifyLink="track/6bHjk4FudnJpUEz1PGs1YS" width="100%"/>
 
 ### Signs (2002)
 
@@ -58,7 +58,7 @@ Movies and series I watched and really liked in 2023
 
 ### Everything Everywhere All at Once (2022)
 
-<Spotify spotifyLink="track/20UK2eUwlRzNuW60gzITuj" height="80" width="100%"/>
+<Spotify spotifyLink="track/20UK2eUwlRzNuW60gzITuj" width="100%"/>
 
 ## April
 
@@ -70,7 +70,7 @@ Movies and series I watched and really liked in 2023
 
 ### The Super Mario Bros. Movie (2023)
 
-<Spotify spotifyLink="track/4w9soAM7IrmYDhSXLp14p6" height="80" width="100%"/>
+<Spotify spotifyLink="track/4w9soAM7IrmYDhSXLp14p6" width="100%"/>
 
 ### To Every You I Loved Before (2022)
 
@@ -84,11 +84,11 @@ Movies and series I watched and really liked in 2023
 
 ### Inception (2010)
 
-<Spotify spotifyLink="track/77QDBf1zTvyegtTpAO5EpH" height="80" width="100%"/>
+<Spotify spotifyLink="track/77QDBf1zTvyegtTpAO5EpH" width="100%"/>
 
 ### Dune (2021)
 
-<Spotify spotifyLink="track/5glKprpzpGW5Pf4wB9gNPq" height="80" width="100%"/>
+<Spotify spotifyLink="track/5glKprpzpGW5Pf4wB9gNPq" width="100%"/>
 
 ### Ant-Man and the Wasp: Quantumania (2023)
 
@@ -96,7 +96,7 @@ Movies and series I watched and really liked in 2023
 
 ### Spider-Man: Across the Spider-Verse (2023)
 
-<Spotify spotifyLink="track/5pv6Z4veEqPwAwU8IKhasj" height="80" width="100%"/>
+<Spotify spotifyLink="track/5pv6Z4veEqPwAwU8IKhasj" width="100%"/>
 
 ## In Limbo
 Dungeons & Dragons: Honour Among Thieves, The Bubble, Top Gun Maverick
