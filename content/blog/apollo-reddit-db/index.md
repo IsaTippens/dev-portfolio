@@ -1,6 +1,6 @@
 ---
 title: Quick Apollo Backend Breakdown
-description: the plan
+description: Quick breakdown of the Apollo app's backend code
 date: 2023-06-14
 published: true
 ---
