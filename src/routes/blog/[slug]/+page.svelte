@@ -13,6 +13,11 @@
 	<title>{title}</title>
 	<meta name="description" content={description} />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	/* twitter embeds */
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@issssaaaaaaaaah" />
+	<meta name="twitter:creator" content="@issssaaaaaaaaah" />
+
 </svelte:head>
 <div>
 	<span class="font-semibold highlight-text">
@@ -30,7 +35,7 @@
 	<p>{new Date(date).toDateString()}</p>
 </div>
 <main class="blog-body">
-	<div class="all-prose">{@html html}</div>
+	<div class="all-prose blog">{@html html}</div>
 </main>
 <footer class="border-t grid grid-cols-1 text-xl" />
 
