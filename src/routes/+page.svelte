@@ -48,7 +48,7 @@
 	</div>
 	<br />
 	<div>
-		<span class="text-2xl font-semibold highlight-text">Socials</span>
+		<a href="/social" class="text-2xl font-semibold highlight-text">Socials</a>
 		<ul class="list-bullets">
 			<li>
 				<LinkText url="mailto:isatippens2@gmail.com">Email</LinkText>
