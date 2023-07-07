@@ -8,7 +8,7 @@ const config = {
 				lato: ['Lato'],
             },
 			colors: {
-				'dark': '#121212',
+				'dark': '#000000',
 				'dark-text': '#e0e0e0',
 				'dark-divider': '#424242',
 				'light': '#fafafa',
