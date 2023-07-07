@@ -16,7 +16,7 @@
     icon - content - pic
 -->
 
-<div class="flex flex-row border p-2">
+<div class="flex flex-row border border-white border-4 border-opacity-5 p-2 ">
 	<div class=""><svelte:component this={icon} /></div>
 	<div class="">
 		<div class="grow">
