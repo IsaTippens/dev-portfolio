@@ -4,6 +4,7 @@
 	import InstagramBlock from '$lib/components/social/InstagramBlock.svelte';
 	import TwitterBlock from '$lib/components/social/TwitterBlock.svelte';
 	import GithubBlock from '$lib/components/social/GithubBlock.svelte';
+	import YoutubeBlock from '$lib/components/social/YoutubeBlock.svelte';
 </script>
 
 <svelte:head>
@@ -27,5 +28,6 @@
 		<InstagramBlock user={'issssaaaaaaaaaaaaaahhhhhhhhhhh'} />
 		<TwitterBlock user={'issssaaaaaaaaah'} />
 		<GithubBlock user={'IsaTippens'} />
+		<YoutubeBlock channel={'issaaahhhh'} />
 	</div>	
 </main>

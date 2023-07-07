@@ -3,6 +3,6 @@
     export let email;
 </script>
 
-<div class="bg-[#c71610]">
-    <SocialBlock text="Email" user={email} url={`mailto:${email}`}/>
+<div class="bg-[#3e65cf]">
+    <SocialBlock text="Email" user={email} url={`mailto:${email}`} icon="gmail-white"/>
 </div>

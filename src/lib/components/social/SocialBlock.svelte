@@ -16,13 +16,12 @@
     icon - content - pic
 -->
 
-<div class="flex flex-row p-2 ">
-	<div class=""><svelte:component this={icon} /></div>
-	<div class="">
-		<div class="grow">
+<div class="flex flex-row p-2 space-x-2">
+	{#if icon}
+		<div class="flex flex-col justify-center"><img class="h-6 w-6 inline" src={`/images/logo/${icon}.png`}></div>
+	{/if}
+	<div class="flex-1 grow overflow-auto">
             <p class="truncate text-white drop-shadow-md">{text}</p>
             <p class="truncate text-white drop-shadow-md">{user}</p>
-        </div>
 	</div>
-	<div class=""><svelte:component this={pic} /></div>
 </div>
