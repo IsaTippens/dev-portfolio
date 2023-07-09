@@ -4,5 +4,5 @@
 </script>
 
 <div class="bg-[#c4302b]">
-    <SocialBlock text="YouTube" user={channel} icon="youtube-white"/>
+    <SocialBlock text="YouTube" user={channel} icon="youtube-white" url={"https://www.youtube.com/@" + channel}/>
 </div>
