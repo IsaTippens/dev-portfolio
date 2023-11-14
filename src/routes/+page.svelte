@@ -16,8 +16,10 @@
 </svelte:head>
 
 <div>
-	<p class="text-3xl font-semibold">I'm <span class="highlight-text">Isa</span></p>
-	<p class="text-3xl font-semibold">This is <span class="highlight-text">what I do</span></p>
+	<div class="py-8 px-4 bg-gradient-to-r from-cyan-600 to-blue-500 rounded-lg sm:min-w-screen">
+		<p class="text-3xl font-semibold text-white">I'm Isa</p>
+		<p class="text-3xl font-semibold text-white">This is what I do</p>
+	</div>
 	<br />
 	<p>{data.age} y/o <span class="highlight-text">programmer</span> of {data.devYear} years</p>
 	<p>
