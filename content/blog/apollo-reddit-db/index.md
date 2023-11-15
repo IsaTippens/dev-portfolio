@@ -67,4 +67,4 @@ This entire repository looks really clean. It's really easy to understand whats 
 
 ## Acknowledgements
 
-[Christian Selig](https://twitter.com/ChristianSelig), the creator of Apollo app
+[Christian Selig](https://twitter.com/ChristianSelig) - the creator of Apollo app
