@@ -16,7 +16,7 @@
 </svelte:head>
 
 <div>
-	<div class="py-8 px-4 bg-gradient-to-r from-cyan-600 to-blue-500 rounded-lg sm:min-w-screen">
+	<div class="py-8 px-4 gradient-card-bg rounded-lg sm:min-w-screen">
 		<p class="text-3xl font-semibold text-white">I'm Isa</p>
 		<p class="text-3xl font-semibold text-white">This is what I do</p>
 	</div>
@@ -37,7 +37,10 @@
 	<br />
 
 	<div>
-		<a href="/blog" class="text-2xl font-semibold highlight-text">Blog</a>
+		<div class="py-8 px-4 gradient-card-bg rounded-lg sm:min-w-screen">
+			<a href="/blog" class="text-3xl font-semibold text-white">Blog</a>
+		</div>
+		<br />
 		<ul class="list-bullets">
 			{#each data.posts.slice(0, 5) as post}
 				<li>
@@ -50,7 +53,10 @@
 	</div>
 	<br />
 	<div>
-		<a href="/" class="text-2xl font-semibold highlight-text">Socials</a>
+		<div class="py-8 px-4 gradient-card-bg rounded-lg sm:min-w-screen">
+			<span class="text-3xl font-semibold text-white">Socials</span>
+		</div>
+		<br />
 		<ul class="list-bullets">
 			<li>
 				<LinkText url="mailto:isatippens2@gmail.com">Email</LinkText>

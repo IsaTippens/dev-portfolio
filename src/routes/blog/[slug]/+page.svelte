@@ -16,22 +16,23 @@
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:site" content="@issssaaaaaaaaah" />
 	<meta name="twitter:creator" content="@issssaaaaaaaaah" />
-
 </svelte:head>
-<div>
-	<span class="font-semibold highlight-text">
-		<a href="/" class="highlight-text">Home</a> /
-		<a href="/blog" class="highlight-text">Blog</a> /
-		<span class="crumb-end truncate whitespace-nowrap">{title}</span>
-	</span>
-</div>
-<div class="sticky top-0 z-10 w-full blog-header">
-	<p
-		class="text-3xl font-semibold highlight-text truncate whitespace-nowrap hover:whitespace-normal"
-	>
-		{title}
-	</p>
-	<p>{new Date(date).toDateString()}</p>
+<div class="py-8 px-4 gradient-card-bg rounded-lg text-white">
+	<div>
+		<span class="font-semibold text-white">
+			<a href="/" class="text-white">Home</a> /
+			<a href="/blog" class="text-white">Blog</a> /
+			<span class="crumb-end truncate whitespace-nowrap text-white">{title}</span>
+		</span>
+	</div>
+	<div>
+		<p
+			class="text-3xl font-semibold truncate whitespace-nowrap hover:whitespace-normal text-white"
+		>
+			{title}
+		</p>
+		<p class="text-white">{new Date(date).toDateString()}</p>
+	</div>
 </div>
 <main class="blog-body">
 	<div class="all-prose blog">{@html html}</div>
