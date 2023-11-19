@@ -1,1 +1,1 @@
-<div class="w-full h-0.5 bg-light-divider my-4 dark:bg-dark-divider"/>
+<div class="w-full h-0.5 global-gradient"/>
