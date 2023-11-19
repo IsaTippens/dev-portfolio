@@ -21,9 +21,8 @@
 	</div>
 </div>
 <main>
-	<ul>
-		{#each posts as post}
-			<li class="card">
+		{#each posts as post, i}
+			<div class="card">
 				<div class="card-inner">
 					<a href={'blog/' + post.path}>
 						<div class="flex flex-col sm:flex-row">
@@ -39,7 +38,9 @@
 						</div>
 					</a>
 				</div>
-			</li>
+			</div>
+			{#if i < posts.length - 1}
+				<Divider />
+			{/if}
 		{/each}
-	</ul>
 </main>

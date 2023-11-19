@@ -37,7 +37,9 @@
 <main class="blog-body">
 	<div class="all-prose blog">{@html html}</div>
 </main>
-<footer class="border-t grid grid-cols-1 text-xl" />
+<footer>
+	<Divider />
+</footer>
 
 <style>
 	img {
