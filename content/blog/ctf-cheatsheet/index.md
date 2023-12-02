@@ -3,7 +3,9 @@ title: CTF Cheatsheet
 published: false
 ---
 
-## NMAP
+## Networking
+
+### NMAP
 
 We'd typically use this to scan for open ports
 
@@ -12,7 +14,20 @@ We'd typically use this to scan for open ports
 nmap -vz -p0-65535 127.0.0.1
 ```
 
-## BINWALK
+### WIRESHARK
+
+typically listen on ports can capture data. Allow follow network packets using the gui
+
+```bash
+sudo tshark -i <network interface> -f "port <port number>" -w <output capture>
+
+# on ethernet and on http port
+sudo tshark -i eth0 -f "port 80" -w <output capture>
+```
+
+## Binary 
+
+### BINWALK
 
 Will identify other binaries within an image
 
@@ -26,7 +41,7 @@ binwalk -B <file>
 binwalk -e <file>
 ```
 
-## DD
+### DD
 
 Can extract data out of a binary. Use in conjunction with BINWALK to find the starting offset
 and length to extract.
