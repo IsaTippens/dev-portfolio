@@ -87,3 +87,21 @@ dd skip=<offset> count=<length> if=<input file> of=<output file> bs=<block size>
 Block size is the size of byte sections to copy, count is the number of blocks to copy.
 
 file_size = bs * count
+
+## Hashing
+
+### HASHCAT #️⃣😺
+
+adwanced paffword recovowy toowl.
+
+Can read from a text file of words and run a hashing algorithm until a generated hash matches the given hash. 
+
+We need to identify the hashing algorithm used and through intution (or if given) specify the length of the password. Can either brute force all possible combinations in conjuction with a given file.
+
+learn [hashcat.net](https://hashcat.net/hashcat/) and [hash examples](https://hashcat.net/wiki/doku.php?id=example_hashes)
+
+We also want to use gpu where possible
+
+```bash
+hashcat -D 1 -a <attack> -m <mode/hash type> <hash> <wordlist file/charset pattern>
+```
