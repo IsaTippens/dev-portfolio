@@ -5,6 +5,40 @@ published: false
 
 ## Networking
 
+### CURL
+
+CLI for making network requests. Typically downloading files, but we can do better.
+
+```bash
+# GET
+curl https://google.com
+
+# GET With HEADERS
+curl https://google.com -H "key: value" -H "key: value"
+
+# GET JSON
+curl https://isatippens.com/api/posts -H "Accept: application/json"
+
+# HEAD
+curl -I https://google.com
+
+# If destination is a redirect
+curl -L https://google.com
+```
+
+POST requests allows us to send data. We can exploit this if necessary
+
+```bash
+# POST
+curl -X POST https://google.com
+
+# POST JSON Data
+curl -X POST https://google.com -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json"
+
+# POST file (can be json or any other data)
+curl -X POST http://localhost:3000/data -d "@file.extension"
+```
+
 ### NMAP
 
 We'd typically use this to scan for open ports
