@@ -88,6 +88,33 @@ Block size is the size of byte sections to copy, count is the number of blocks t
 
 file_size = bs * count
 
+### XOR
+
+Not a tool, but theory
+
+Exclusive OR - Given two booleans A and B
+
+| A | B | C|
+| --- | --- | --- |
+| 0 | 0 | 0 |
+| 1 | 0 | 1 |
+| 0 | 1 | 1 |
+| 1 | 1 | 0 |
+
+In Python
+
+```python
+bool_c = bool_a ^ bool_b
+```
+
+In Binary
+
+| A | B | C |
+| --- | --- | --- |
+| 10110 | 01100 | 11010 |
+
+Or just use [this](https://xor.pw/#)
+
 ## Hashing
 
 ### HASHCAT #️⃣😺
