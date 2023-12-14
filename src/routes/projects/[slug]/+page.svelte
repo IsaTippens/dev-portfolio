@@ -6,7 +6,8 @@
 <script>
 	export let data;
 
-	let { html, date, title, description, path } = data.post;
+	let { date, title, description } = data.meta;
+	let Content = data.Content;
 </script>
 
 <svelte:head>
@@ -35,7 +36,7 @@
 	</div>
 </div>
 <main class="blog-body">
-	<div class="all-prose blog">{@html html}</div>
+	<div class="all-prose blog"><svelte:component this={Content} /></div>
 </main>
 <footer class="border-t grid grid-cols-1 text-xl" />
 
