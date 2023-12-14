@@ -2,7 +2,7 @@
 title: Uh
 description: A collection of things I did this year
 date: 2023-12-14
-published: true
+published: false
 ---
 
 <script>
