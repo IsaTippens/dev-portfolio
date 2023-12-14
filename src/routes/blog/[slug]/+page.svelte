@@ -1,5 +1,4 @@
 <script context="module">
-	// export const prerender = true
 	import Divider from '$lib/components/Divider.svelte';
 </script>
 

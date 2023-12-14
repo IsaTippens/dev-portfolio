@@ -4,7 +4,6 @@ const config = {
 	theme: {
 		extend: {
             fontFamily: {
-                univers: ['Noto-Sans'],
 				lato: ['Lato'],
             },
 			colors: {
