@@ -25,7 +25,7 @@ At times, Rust can be a blessing and a curse, but most of the time it's googling
 
 ## That Bar Thing
 
-I had an idea. I wanted to build a discord bot that could see who's available based on loadshedding schedules. Simple coding solution, but difficult implemention considering all the different  and reliability of getting the data. Then I had a better idea:
+I had an idea. I wanted to build a discord bot that could see who's available based on loadshedding schedules. Simple coding solution, but difficult implemention considering all the different city schedules and reliability of getting the data. Then I had a better idea:
 
 <Tweet tweetLink="issssaaaaaaaaah/status/1542202821415763968" />
 
