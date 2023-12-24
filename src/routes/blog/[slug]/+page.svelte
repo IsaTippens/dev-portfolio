@@ -5,7 +5,7 @@
 <script>
 	export let data;
 
-	let { date, title, description } = data.meta;
+	let { date, title, description, slug } = data.meta;
 	let Content = data.Content;
 </script>
 
@@ -22,7 +22,7 @@
 		<span class="font-semibold text-white">
 			<a href="/" class="text-white">Home</a> /
 			<a href="/blog" class="text-white">Blog</a> /
-			<span class="crumb-end truncate whitespace-nowrap text-white">{title}</span>
+			<span class="crumb-end truncate whitespace-nowrap text-white">{slug}</span>
 		</span>
 	</div>
 	<div>
