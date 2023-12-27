@@ -7,6 +7,7 @@ published: true
 
 <script>
     import { Tweet } from 'sveltekit-embed'
+    import HighlightedLink from '$lib/components/HighlightedLink.svelte';
 </script>
 
 A lot of things happened this year. 
@@ -47,6 +48,6 @@ Check the [project website here](https://sites.google.com/myuwc.ac.za/quantum-mo
 
 ## Other Things I Did
 
-- Competed against other universities in a [Cybersecurity Competition](https://www.csc.ac.za/?p=855)
-- A list of [almost everything I've watched this year](https://www.isatippens.com/blog/movies-2023)
+- Competed against other universities in a <HighlightedLink url='https://www.csc.ac.za/?p=855'>Cybersecurity Competition</HighlightedLink>
+- A list of <HighlightedLink url='https://www.isatippens.com/blog/movies-2023' open_tab={false}>almost everything I've watched this year</HighlightedLink>
 
