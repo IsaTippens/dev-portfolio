@@ -59,7 +59,7 @@
 		<br />
 		<ul class="list-bullets">
 			<li>
-				<LinkText url="mailto:isatippens2@gmail.com">Email</LinkText>
+				<LinkText url="mailto:isatippens2@gmail.com" open_tab={false}>Email</LinkText>
 			</li>
 			<li>
 				<LinkText url="https://www.github.com/IsaTippens">Github</LinkText>
