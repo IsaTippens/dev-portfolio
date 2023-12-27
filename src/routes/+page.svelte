@@ -44,7 +44,7 @@
 		<ul class="list-bullets">
 			{#each data.posts.slice(0, 5) as post}
 				<li>
-					<LinkText url={'blog/' + post.path}>
+					<LinkText url={'blog/' + post.path} open_tab={false}>
 						{post.meta.title}
 					</LinkText>
 				</li>
