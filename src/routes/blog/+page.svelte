@@ -1,5 +1,6 @@
 <script>
 	import Divider from '$lib/components/Divider.svelte';
+	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
 	export let data;
 	let posts = data.posts;
 </script>
@@ -10,7 +11,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="canonical" href="https://isatippens.com/blog" />
 </svelte:head>
-<div class="py-8 px-4 gradient-card-bg rounded-lg text-white">
+<AnimatedHeader>
 	<div>
 		<span class="font-semibold text-white"
 			><a href="/" class="text-white">Home</a> / <span class="crumb-end text-white">Blog</span></span
@@ -19,7 +20,7 @@
 	<div class="sticky top-0 z-10">
 		<p class="text-3xl semibold text-white">Stuff I Wrote</p>
 	</div>
-</div>
+</AnimatedHeader>
 <main>
 		{#each posts as post, i}
 			<div class="card">

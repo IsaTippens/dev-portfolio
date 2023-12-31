@@ -1,5 +1,6 @@
 <script context="module">
 	import Divider from '$lib/components/Divider.svelte';
+	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
 </script>
 
 <script>
@@ -17,7 +18,7 @@
 	<meta name="twitter:site" content="@issssaaaaaaaaah" />
 	<meta name="twitter:creator" content="@issssaaaaaaaaah" />
 </svelte:head>
-<div class="py-8 px-4 gradient-card-bg rounded-lg text-white">
+<AnimatedHeader>
 	<div>
 		<span class="font-semibold text-white">
 			<a href="/" class="text-white">Home</a> /
@@ -33,7 +34,7 @@
 		</p>
 		<p class="text-white">{new Date(date).toDateString()}</p>
 	</div>
-</div>
+</AnimatedHeader>
 <main class="blog-body">
 	<div class="all-prose blog"><svelte:component this={Content} /></div>
 </main>
