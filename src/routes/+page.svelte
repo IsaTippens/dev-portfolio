@@ -1,6 +1,7 @@
 <script context="module">
 	import LinkText from '$lib/components/LinkText.svelte';
 
+	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
 	export const load = async () => {};
 </script>
 
@@ -16,18 +17,22 @@
 </svelte:head>
 
 <div>
-	<div class="py-8 px-4 gradient-card-bg rounded-lg sm:min-w-screen">
+	<AnimatedHeader>
 		<p class="text-3xl font-semibold text-white">I'm Isa</p>
 		<p class="text-3xl font-semibold text-white">This is what I do</p>
-	</div>
+	</AnimatedHeader>
 	<br />
 	<p>{data.age} y/o <span class="highlight-text">programmer</span> of {data.devYear} years</p>
 	<p>
-		<a href="https://sites.google.com/myuwc.ac.za/quantum-money/home" class="highlight-link" target="_blank"
-			>Computer Science Honours</a
+		<a
+			href="https://sites.google.com/myuwc.ac.za/quantum-money/home"
+			class="highlight-link"
+			target="_blank">Computer Science Honours</a
 		>
 		student from the
-		<a href="https://uwc.ac.za" class="highlight-link" target="_blank">University of the Western Cape</a>
+		<a href="https://uwc.ac.za" class="highlight-link" target="_blank"
+			>University of the Western Cape</a
+		>
 	</p>
 	<br />
 	<p>
@@ -37,9 +42,9 @@
 	<br />
 
 	<div>
-		<div class="py-8 px-4 gradient-card-bg rounded-lg sm:min-w-screen">
+		<AnimatedHeader>
 			<a href="/blog" class="text-3xl font-semibold text-white">Blog</a>
-		</div>
+		</AnimatedHeader>
 		<br />
 		<ul class="list-bullets">
 			{#each data.posts.slice(0, 5) as post}
@@ -53,9 +58,9 @@
 	</div>
 	<br />
 	<div>
-		<div class="py-8 px-4 gradient-card-bg rounded-lg sm:min-w-screen">
+		<AnimatedHeader>
 			<span class="text-3xl font-semibold text-white">Socials</span>
-		</div>
+		</AnimatedHeader>
 		<br />
 		<ul class="list-bullets">
 			<li>

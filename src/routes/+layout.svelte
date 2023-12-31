@@ -4,7 +4,7 @@
 </script>
 
 <div class="h-screen sm:flex">
-	<div class="max-w-2xl m-auto p-4 sm:flex-grow">
+	<div class="max-w-xl m-auto p-4 sm:flex-grow">
 		<slot />
 	</div>
 </div>
