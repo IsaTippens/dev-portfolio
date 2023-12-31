@@ -1,8 +1,17 @@
 <script>
-	export let color = '#3498db';
+  import { onMount } from 'svelte';
+
+  let randomStartingPosition;
+
+  let background;
+
+  onMount(() => {
+    randomStartingPosition = Math.random() * 100;
+    background.style.animationDelay = `-${randomStartingPosition}s`;
+  });
 </script>
 
-<div class="gradient-card-bg rounded-lg background-animate">
+<div class="gradient-card-bg rounded-lg background-animate" bind:this={background}>
 	<div class="py-8 px-4">
 		<slot />
 	</div>
