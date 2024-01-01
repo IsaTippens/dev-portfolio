@@ -6,7 +6,7 @@
   let background;
 
   onMount(() => {
-    randomStartingPosition = Math.random() * 100;
+    randomStartingPosition = Math.random() * 100 * 60;
     background.style.animationDelay = `-${randomStartingPosition}s`;
   });
 </script>
