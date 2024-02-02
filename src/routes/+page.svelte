@@ -24,7 +24,7 @@
 	<br />
 	<p>{data.age} y/o <span class="highlight-text">programmer</span> of {data.devYear} years</p>
 	<p>
-		<span class="highlight-link">MSc in Computer Science</span>
+		<span class="highlight-text">MSc Computer Science</span>
 		student at the
 		<a href="https://uwc.ac.za" class="highlight-link" target="_blank"
 			>University of the Western Cape</a
