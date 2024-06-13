@@ -1,74 +1,17 @@
+
+@import '@fontsource/open-sans/400.css';
+@import '@fontsource/open-sans/500.css';
+@import '@fontsource/open-sans/600.css';
+@import '@fontsource/open-sans/700.css';
+@import '@fontsource/open-sans/800.css';
+
+@import '@fontsource/jetbrains-mono/400-italic.css';
+@import '@fontsource/jetbrains-mono/700-italic.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/700.css';
+
 /* Write your global styles here, in PostCSS syntax */
 @tailwind base;
-
-@layer base {
-
-  /* add all Lato fonts */
-  @font-face {
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('/fonts/Lato-Regular.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('/fonts/Lato-Bold.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: italic;
-    font-weight: 400;
-    font-display: swap;
-    src: url('/fonts/Lato-Italic.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: italic;
-    font-weight: 700;
-    font-display: swap;
-    src: url('/fonts/Lato-BoldItalic.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 900;
-    font-display: swap;
-    src: url('/fonts/Lato-Black.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: italic;
-    font-weight: 900;
-    font-display: swap;
-    src: url('/fonts/Lato-BlackItalic.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    src: url('/fonts/Lato-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    src: url('/fonts/Lato-LightItalic.ttf') format('truetype');
-    font-weight: 300;
-    font-style: italic;
-    font-display: swap;
-  }
-}
-
 @tailwind components;
 @tailwind utilities;
 
@@ -81,7 +24,7 @@
 }
 
 body {
-  @apply font-lato bg-light dark:bg-dark;
+  @apply bg-light dark:bg-dark;
 
 }
 

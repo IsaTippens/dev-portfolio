@@ -1,10 +1,13 @@
+const tailwind_theme = require('tailwindcss/defaultTheme')
+
 const config = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
 	theme: {
 		extend: {
             fontFamily: {
-				lato: ['Lato'],
+				sans: ['Open Sans', ...tailwind_theme.fontFamily.sans],
+				mono: ['JetBrains Mono', ...tailwind_theme.fontFamily.mono],
             },
 			colors: {
 				'dark': '#000000',
