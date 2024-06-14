@@ -19,8 +19,8 @@
 
 
 <style>
-
   .background-animate {
+    z-index: -1;
     background-size: 400%;
 
     -webkit-animation: AnimationName 60s ease infinite;

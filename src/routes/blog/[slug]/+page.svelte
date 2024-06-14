@@ -22,7 +22,7 @@
 	<div>
 		<span class="font-semibold text-white">
 			<a href="/" class="text-white">Home</a> /
-			<a href="/blog" class="text-white">Blog</a> /
+			<a href="/blog" class="text-white">Posts</a> /
 			<span class="crumb-end truncate whitespace-nowrap text-white">{slug}</span>
 		</span>
 	</div>

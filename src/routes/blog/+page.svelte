@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Blog</title>
+	<title>Posts</title>
 	<meta name="description" content="Interesting Readables" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="canonical" href="https://isatippens.com/blog" />
@@ -14,7 +14,7 @@
 <AnimatedHeader>
 	<div>
 		<span class="font-semibold text-white"
-			><a href="/" class="text-white">Home</a> / <span class="crumb-end text-white">Blog</span></span
+			><a href="/" class="text-white">Home</a> / <span class="crumb-end text-white">Posts</span></span
 		>
 	</div>
 	<div class="sticky top-0 z-10">

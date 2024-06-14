@@ -42,6 +42,7 @@
 		"@fontsource/jetbrains-mono": "^5.0.20",
 		"@fontsource/noto-sans": "^5.0.22",
 		"@fontsource/open-sans": "^5.0.28",
-		"dayjs": "^1.11.11"
+		"dayjs": "^1.11.11",
+		"gsap": "^3.12.5"
 	}
 }

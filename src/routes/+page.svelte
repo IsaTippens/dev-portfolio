@@ -3,10 +3,62 @@
 
 	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
 	export const load = async () => {};
+
+	import { gsap } from "gsap";
+	import { TextPlugin } from "gsap/dist/TextPlugin";
+	gsap.registerPlugin(TextPlugin);
+
+	import { onMount } from 'svelte';
 </script>
 
 <script>
 	export let data;
+
+	onMount(() => {
+		const tl = gsap.timeline();
+		const text_tl = gsap.timeline();
+		const duration = 2;
+		const delay = 2;
+
+		text_tl.to('.gsap-info', {
+			duration: duration,
+			delay: delay,
+			text: {
+				value: 'developer',
+				delimiter: ''
+			}
+		}).to('.gsap-info', {
+			duration: duration,
+			delay: delay,
+			text: {
+				value: 'coder',
+				delimiter: ''
+			}
+		}).to('.gsap-info', {
+			duration: duration,
+			delay: delay,
+			text: {
+				value: 'programmer',
+				delimiter: ''
+			}
+		}).repeat(-1);
+
+		tl.from('.gsap-this', {
+			duration,
+			opacity: 0
+		}).from(
+			'.gsap-this',
+			{
+				duration,
+				yPercent: 50,
+				ease: 'bounce.out'
+			},
+			`-=${duration * 0.75}`
+		);
+
+		//GOOD:
+		
+	});
 </script>
 
 <svelte:head>
@@ -22,7 +74,9 @@
 		<p class="text-3xl font-semibold text-white">This is what I do</p>
 	</AnimatedHeader>
 	<br />
-	<p>{data.age} y/o <span class="highlight-text">programmer</span> of {data.devYear} years</p>
+	<p>
+		{data.age} y/o <span class="highlight-text gsap-info">programmer</span> of {data.devYear} years
+	</p>
 	<p>
 		<span class="highlight-text">MSc Computer Science</span>
 		student at the
@@ -31,7 +85,7 @@
 		>
 	</p>
 	<br />
-	<p>
+	<p class="gsap-this">
 		Made apps with React Native and Flutter, games with C and C#. A little web3 too. Currently
 		learning Zig and Rust and many other cool tech.
 	</p>
@@ -39,7 +93,7 @@
 
 	<div>
 		<AnimatedHeader>
-			<a href="/blog" class="text-3xl font-semibold text-white">Blog</a>
+			<a href="/blog" class="text-3xl font-semibold text-white">Posts</a>
 		</AnimatedHeader>
 		<br />
 		<ul class="list-bullets">
