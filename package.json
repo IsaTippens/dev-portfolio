@@ -38,6 +38,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fontsource/atkinson-hyperlegible": "^5.0.20",
 		"@fontsource/jetbrains-mono": "^5.0.20",
 		"@fontsource/noto-sans": "^5.0.22",
 		"@fontsource/open-sans": "^5.0.28",

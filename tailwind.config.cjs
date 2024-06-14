@@ -6,7 +6,7 @@ const config = {
 	theme: {
 		extend: {
             fontFamily: {
-				sans: ['Open Sans', ...tailwind_theme.fontFamily.sans],
+				sans: ['Atkinson Hyperlegible', ...tailwind_theme.fontFamily.sans],
 				mono: ['JetBrains Mono', ...tailwind_theme.fontFamily.mono],
             },
 			colors: {

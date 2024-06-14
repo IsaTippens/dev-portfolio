@@ -1,9 +1,8 @@
 
-@import '@fontsource/open-sans/400.css';
-@import '@fontsource/open-sans/500.css';
-@import '@fontsource/open-sans/600.css';
-@import '@fontsource/open-sans/700.css';
-@import '@fontsource/open-sans/800.css';
+@import '@fontsource/atkinson-hyperlegible/400-italic.css';
+@import '@fontsource/atkinson-hyperlegible/700-italic.css';
+@import '@fontsource/atkinson-hyperlegible/400.css';
+@import '@fontsource/atkinson-hyperlegible/700.css';
 
 @import '@fontsource/jetbrains-mono/400-italic.css';
 @import '@fontsource/jetbrains-mono/700-italic.css';
@@ -119,7 +118,10 @@ span {
   @apply text-xl font-semibold;
 }
 
-.blog-content h1 h2 h3 p {
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content p {
   @apply dark:text-white;
 }
 
