@@ -22,11 +22,6 @@
   @apply font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-indigo-500 dark:bg-gradient-to-r dark:from-blue-500 dark:to-indigo-600;
 }
 
-body {
-  @apply bg-light dark:bg-dark;
-
-}
-
 .highlight-faint {
   @apply bg-cyan-100;
 }
@@ -61,13 +56,6 @@ body {
 
 .crumb-end {
   @apply underline;
-}
-
-p,
-a,
-li,
-span {
-  @apply text-light-text dark:text-dark-text;
 }
 
 .all-prose {
@@ -149,14 +137,6 @@ span {
 
 hr {
   @apply !border-slate-300 dark:!border-slate-700;
-}
-
-button {
-  @apply rounded-md;
-}
-
-a {
-  @apply rounded-sm;
 }
 
 svg {

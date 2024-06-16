@@ -5,10 +5,6 @@ const config = {
 
 	theme: {
 		extend: {
-            fontFamily: {
-				sans: ['Atkinson Hyperlegible'],
-				mono: ['JetBrains Mono'],
-            },
 			colors: {
 				'dark': '#000000',
 				'dark-text': '#e0e0e0',
