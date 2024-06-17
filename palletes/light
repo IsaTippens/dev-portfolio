@@ -1,0 +1,33 @@
+- Tailwind
+
+{ 'white': { DEFAULT: '#ffffff', 100: '#333333', 200: '#666666', 300: '#999999', 400: '#cccccc', 500: '#ffffff', 600: '#ffffff', 700: '#ffffff', 800: '#ffffff', 900: '#ffffff' }, 'eerie_black': { DEFAULT: '#1f1f1f', 100: '#060606', 200: '#0c0c0c', 300: '#121212', 400: '#181818', 500: '#1f1f1f', 600: '#4b4b4b', 700: '#787878', 800: '#a5a5a5', 900: '#d2d2d2' }, 'true_blue': { DEFAULT: '#3066be', 100: '#0a1526', 200: '#13294d', 300: '#1d3e73', 400: '#265299', 500: '#3066be', 600: '#5284d4', 700: '#7da3df', 800: '#a9c1e9', 900: '#d4e0f4' }, 'bittersweet': { DEFAULT: '#ed6a5a', 100: '#3b0d07', 200: '#76190d', 300: '#b02614', 400: '#e6361f', 500: '#ed6a5a', 600: '#f0897b', 700: '#f4a69c', 800: '#f8c4bd', 900: '#fbe1de' }, 'amethyst': { DEFAULT: '#9b5de5', 100: '#1e0937', 200: '#3c126f', 300: '#591ba6', 400: '#7725dc', 500: '#9b5de5', 600: '#ae7dea', 700: '#c29eef', 800: '#d7bef4', 900: '#ebdffa' } }
+
+- CSV
+
+ffffff,1f1f1f,3066be,ed6a5a,9b5de5
+
+- With #
+
+#ffffff, #1f1f1f, #3066be, #ed6a5a, #9b5de5
+
+- Array
+
+["ffffff","1f1f1f","3066be","ed6a5a","9b5de5"]
+
+- Object
+
+{"White":"ffffff","Eerie black":"1f1f1f","True Blue":"3066be","Bittersweet":"ed6a5a","Amethyst":"9b5de5"}
+
+- Extended Array
+
+[{"name":"White","hex":"ffffff","rgb":[255,255,255],"cmyk":[0,0,0,0],"hsb":[0,0,100],"hsl":[0,0,100],"lab":[100,0,0]},{"name":"Eerie black","hex":"1f1f1f","rgb":[31,31,31],"cmyk":[0,0,0,88],"hsb":[0,0,12],"hsl":[0,0,12],"lab":[12,0,0]},{"name":"True Blue","hex":"3066be","rgb":[48,102,190],"cmyk":[75,46,0,25],"hsb":[217,75,75],"hsl":[217,60,47],"lab":[44,13,-51]},{"name":"Bittersweet","hex":"ed6a5a","rgb":[237,106,90],"cmyk":[0,55,62,7],"hsb":[7,62,93],"hsl":[7,80,64],"lab":[61,49,34]},{"name":"Amethyst","hex":"9b5de5","rgb":[155,93,229],"cmyk":[32,59,0,10],"hsb":[267,59,90],"hsl":[267,72,63],"lab":[52,52,-60]}]
+
+- XML
+
+<palette>
+  <color name="White" hex="ffffff" r="255" g="255" b="255" />
+  <color name="Eerie black" hex="1f1f1f" r="31" g="31" b="31" />
+  <color name="True Blue" hex="3066be" r="48" g="102" b="190" />
+  <color name="Bittersweet" hex="ed6a5a" r="237" g="106" b="90" />
+  <color name="Amethyst" hex="9b5de5" r="155" g="93" b="229" />
+</palette>

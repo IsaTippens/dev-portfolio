@@ -1,15 +1,21 @@
 <script context="module">
 	import { ClickableTile, Tile } from 'carbon-components-svelte';
-	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
+	import SuperHeader from '$lib/components/SuperHeader.svelte';
 	import About from '$lib/components/About.svelte';
 	import { gsap } from 'gsap';
 	import { TextPlugin } from 'gsap/dist/TextPlugin';
 	gsap.registerPlugin(TextPlugin);
 
 	import { onMount } from 'svelte';
+
+	import RightArrow from 'virtual:icons/mingcute/right-fill.svelte';
 </script>
 
 <script>
+	import Intro from '$lib/components/Intro.svelte';
+	import PostTile from '$lib/components/PostTile.svelte';
+	import Socials from '$lib/components/Socials.svelte';
+
 	export let data;
 
 	onMount(() => {});
@@ -24,45 +30,25 @@
 
 <div class="grid gap-4">
 	<div class="grid gap-2">
-		<div class="">
-			<h1 class="text-3xl font-semibold">I'm Isa</h1>
-			<h1 class="text-3xl font-semibold">This is what I do</h1>
+		<div>
+			<Intro />
 		</div>
 		<div>
 			<About {data} />
 		</div>
 	</div>
-	<div class="grid gap-4 md:grid-cols-2 sm:grid-cols-1">
-		<div class="grid gap-2">
-			<ClickableTile href="/blog">
-				<h1>Posts</h1>
-			</ClickableTile>
-			<div class="grid gap-2">
-				{#each data.posts.slice(0, 5) as post}
-					<ClickableTile href={'blog/' + post.path}>
-						<p class="text-lg">
-							{post.meta.title}
-						</p>
-						<p class="text-sm">
-							{post.meta.description}
-						</p>
-					</ClickableTile>
-				{/each}
-			</div>
+	<a href="/blog">
+		<div class="flex justify-between">
+			<p class="text-3xl font-semibold">Posts</p>
+			<RightArrow class="w-8 h-8" />
 		</div>
-		<div class="grid gap-2 grid-cols-1">
-			<Tile>
-				<h1>Socials</h1>
-			</Tile>
-			<div class="grid gap-2 md:grid-cols-2 sm:grid-cols-1">
-				<ClickableTile href="mailto:isatippens2@gmail.com">Email</ClickableTile>
-				<ClickableTile href="https://www.github.com/IsaTippens">Github</ClickableTile>
-				<ClickableTile href="https://x.com/issssaaaaaaaaah">Twitter</ClickableTile>
-				<ClickableTile href="https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/"
-					>Instagram</ClickableTile
-				>
-				<ClickableTile href="https://www.youtube.com/@issaaahhhh">Youtube</ClickableTile>
-			</div>
-		</div>
+	</a>
+	<div class="grid">
+		{#each data.posts.slice(0, 5) as post}
+			<PostTile data={post} />
+		{/each}
+	</div>
+	<div class="p-4">
+		<Socials />
 	</div>
 </div>

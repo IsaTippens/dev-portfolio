@@ -12,9 +12,7 @@
 </script>
 
 <div class="gradient-card-bg rounded-lg background-animate" bind:this={background}>
-	<div class="py-8 px-4">
 		<slot />
-	</div>
 </div>
 
 
