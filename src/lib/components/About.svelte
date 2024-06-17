@@ -21,10 +21,10 @@
 		<p>Cape Town, South Africa</p>
 	</div>
 
-	<p class="text-3xl font-semibold">MSc Student</p>
+	<p class="text-3xl font-semibold">MSc Comp Sci Student</p>
 	<div>
 		<p>
-			Doing Computer Science at the <a href="https://uwc.ac.za" target="_blank"
+			Studying at the <a href="https://uwc.ac.za" target="_blank" class="highlight-link"
 				>University of the Western Cape</a
 			>
 		</p>

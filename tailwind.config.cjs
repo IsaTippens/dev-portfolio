@@ -6,7 +6,7 @@ const config = {
 	theme: {
 		extend: {
 			colors: {
-				'dark': '#000000',
+				'dark': '#111111',
 				'dark-text': '#e0e0e0',
 				'dark-divider': '#424242',
 				'light': '#fafafa',

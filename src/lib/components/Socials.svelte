@@ -17,7 +17,7 @@
 	>
 		<Instagram class="w-8 h-8" />
 	</a>
-	<a href="https://www.youtube.com/channel/UCJ1X6F7lGMEadnNETSzgZCQ" target="_blank" rel="noopener">
+	<a href="https://www.youtube.com/@issaaahhhh" target="_blank" rel="noopener">
 		<YouTube class="w-8 h-8" />
 	</a>
 	<a href="https://x.com/issssaaaaaaaaah" target="_blank" rel="noopener">

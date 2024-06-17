@@ -11,7 +11,7 @@ Description
 -->
 
 <a class="grid gap-2 p-4" href={`blog/${data.path}`}>
-        <div class="flex flex-row justify-between ">
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-between ">
             <h1 class="text-2xl">{data.meta.title}</h1>
             <p class="text-sm highlight-text">{new Date(data.meta.date).toDateString()}</p>
         </div>
