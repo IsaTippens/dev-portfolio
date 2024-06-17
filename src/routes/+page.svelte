@@ -1,12 +1,24 @@
 <script context="module">
-	import LinkText from '$lib/components/LinkText.svelte';
+	import { ClickableTile, Tile } from 'carbon-components-svelte';
+	import SuperHeader from '$lib/components/SuperHeader.svelte';
+	import About from '$lib/components/About.svelte';
+	import { gsap } from 'gsap';
+	import { TextPlugin } from 'gsap/dist/TextPlugin';
+	gsap.registerPlugin(TextPlugin);
 
-	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
-	export const load = async () => {};
+	import { onMount } from 'svelte';
+
+	import RightArrow from 'virtual:icons/mingcute/right-fill.svelte';
 </script>
 
 <script>
+	import Intro from '$lib/components/Intro.svelte';
+	import PostTile from '$lib/components/PostTile.svelte';
+	import Socials from '$lib/components/Socials.svelte';
+
 	export let data;
+
+	onMount(() => {});
 </script>
 
 <svelte:head>
@@ -16,66 +28,27 @@
 	<link rel="canonical" href="https://isatippens.com" />
 </svelte:head>
 
-<div>
-	<AnimatedHeader>
-		<p class="text-3xl font-semibold text-white">I'm Isa</p>
-		<p class="text-3xl font-semibold text-white">This is what I do</p>
-	</AnimatedHeader>
-	<br />
-	<p>{data.age} y/o <span class="highlight-text">programmer</span> of {data.devYear} years</p>
-	<p>
-		<span class="highlight-text">MSc Computer Science</span>
-		student at the
-		<a href="https://uwc.ac.za" class="highlight-link" target="_blank"
-			>University of the Western Cape</a
-		>
-	</p>
-	<br />
-	<p>
-		Made apps with React Native and Flutter, games with C and C#. A little web3 too. Currently
-		learning Zig and Rust and many other cool tech.
-	</p>
-	<br />
-
-	<div>
-		<AnimatedHeader>
-			<a href="/blog" class="text-3xl font-semibold text-white">Blog</a>
-		</AnimatedHeader>
-		<br />
-		<ul class="list-bullets">
-			{#each data.posts.slice(0, 5) as post}
-				<li>
-					<LinkText url={'blog/' + post.path} open_tab={false}>
-						{post.meta.title}
-					</LinkText>
-				</li>
-			{/each}
-		</ul>
+<div class="grid gap-4">
+	<div class="grid gap-2">
+		<div>
+			<Intro />
+		</div>
+		<div>
+			<About {data} />
+		</div>
 	</div>
-	<br />
-	<div>
-		<AnimatedHeader>
-			<span class="text-3xl font-semibold text-white">Socials</span>
-		</AnimatedHeader>
-		<br />
-		<ul class="list-bullets">
-			<li>
-				<LinkText url="mailto:isatippens2@gmail.com" open_tab={false}>Email</LinkText>
-			</li>
-			<li>
-				<LinkText url="https://www.github.com/IsaTippens">Github</LinkText>
-			</li>
-			<li>
-				<LinkText url="https://twitter.com/issssaaaaaaaaah">Twitter</LinkText>
-			</li>
-			<li>
-				<LinkText url="https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/"
-					>Instagram</LinkText
-				>
-			</li>
-			<li>
-				<LinkText url="https://www.youtube.com/@issaaahhhh">Youtube</LinkText>
-			</li>
-		</ul>
+	<a href="/blog">
+		<div class="flex justify-between">
+			<p class="text-3xl font-semibold">Posts</p>
+			<RightArrow class="w-8 h-8" />
+		</div>
+	</a>
+	<div class="grid">
+		{#each data.posts.slice(0, 5) as post}
+			<PostTile data={post} />
+		{/each}
+	</div>
+	<div class="p-4">
+		<Socials />
 	</div>
 </div>

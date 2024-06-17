@@ -18,23 +18,23 @@
 	<meta name="twitter:site" content="@issssaaaaaaaaah" />
 	<meta name="twitter:creator" content="@issssaaaaaaaaah" />
 </svelte:head>
-<AnimatedHeader>
+<div>
 	<div>
-		<span class="font-semibold text-white">
-			<a href="/" class="text-white">Home</a> /
-			<a href="/blog" class="text-white">Blog</a> /
-			<span class="crumb-end truncate whitespace-nowrap text-white">{slug}</span>
+		<span class="font-semibold">
+			<a href="/" class="">Home</a> /
+			<a href="/blog" class="">Posts</a> /
+			<span class="crumb-end truncate whitespace-nowrap">{slug}</span>
 		</span>
 	</div>
 	<div>
 		<p
-			class="text-3xl font-semibold truncate whitespace-nowrap hover:whitespace-normal text-white"
+			class="text-3xl font-semibold truncate whitespace-nowrap hover:whitespace-normal"
 		>
 			{title}
 		</p>
-		<p class="text-white">{new Date(date).toDateString()}</p>
+		<p class="">{new Date(date).toDateString()}</p>
 	</div>
-</AnimatedHeader>
+</div>
 <main class="blog-body">
 	<div class="all-prose blog"><svelte:component this={Content} /></div>
 </main>

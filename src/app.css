@@ -1,76 +1,23 @@
+
+@import '@fontsource/atkinson-hyperlegible/400-italic.css';
+@import '@fontsource/atkinson-hyperlegible/700-italic.css';
+@import '@fontsource/atkinson-hyperlegible/400.css';
+@import '@fontsource/atkinson-hyperlegible/700.css';
+
+@import '@fontsource/jetbrains-mono/400-italic.css';
+@import '@fontsource/jetbrains-mono/700-italic.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/700.css';
+
 /* Write your global styles here, in PostCSS syntax */
 @tailwind base;
-
-@layer base {
-
-  /* add all Lato fonts */
-  @font-face {
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('/fonts/Lato-Regular.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('/fonts/Lato-Bold.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: italic;
-    font-weight: 400;
-    font-display: swap;
-    src: url('/fonts/Lato-Italic.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: italic;
-    font-weight: 700;
-    font-display: swap;
-    src: url('/fonts/Lato-BoldItalic.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 900;
-    font-display: swap;
-    src: url('/fonts/Lato-Black.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    font-style: italic;
-    font-weight: 900;
-    font-display: swap;
-    src: url('/fonts/Lato-BlackItalic.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    src: url('/fonts/Lato-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: 'Lato';
-    src: url('/fonts/Lato-LightItalic.ttf') format('truetype');
-    font-weight: 300;
-    font-style: italic;
-    font-display: swap;
-  }
-}
-
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply bg-white dark:bg-dark text-zinc-700 dark:text-white;
+
+}
 
 .global-gradient {
   @apply bg-gradient-to-r from-emerald-500 to-indigo-500 dark:bg-gradient-to-r dark:from-blue-500 dark:to-indigo-600
@@ -78,11 +25,6 @@
 
 .highlight-text {
   @apply font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-indigo-500 dark:bg-gradient-to-r dark:from-blue-500 dark:to-indigo-600;
-}
-
-body {
-  @apply font-lato bg-light dark:bg-dark;
-
 }
 
 .highlight-faint {
@@ -119,13 +61,6 @@ body {
 
 .crumb-end {
   @apply underline;
-}
-
-p,
-a,
-li,
-span {
-  @apply text-light-text dark:text-dark-text;
 }
 
 .all-prose {
@@ -176,7 +111,10 @@ span {
   @apply text-xl font-semibold;
 }
 
-.blog-content h1 h2 h3 p {
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content p {
   @apply dark:text-white;
 }
 
@@ -204,14 +142,6 @@ span {
 
 hr {
   @apply !border-slate-300 dark:!border-slate-700;
-}
-
-button {
-  @apply rounded-md;
-}
-
-a {
-  @apply rounded-sm;
 }
 
 svg {
