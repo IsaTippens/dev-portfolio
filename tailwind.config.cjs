@@ -5,6 +5,9 @@ const config = {
 
 	theme: {
 		extend: {
+			fontFamily: {
+				sans: ["Atkinson Hyperlegible", ...tailwind_theme.fontFamily.sans],
+			},
 			colors: {
 				'dark': '#111111',
 				'dark-text': '#e0e0e0',

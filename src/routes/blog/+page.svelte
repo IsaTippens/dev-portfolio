@@ -1,6 +1,7 @@
 <script>
 	import Divider from '$lib/components/Divider.svelte';
 	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
+	import PostTile from '$lib/components/PostTile.svelte';
 	export let data;
 	let posts = data.posts;
 </script>
@@ -24,23 +25,7 @@
 </div>
 <main>
 	{#each posts as post, i}
-		<div class="card">
-			<div class="card-inner">
-				<a href={'blog/' + post.path}>
-					<div class="flex flex-col sm:flex-row">
-						<div class="flex-auto text-lg">
-							{post.meta.title}
-						</div>
-						<div>
-							{new Date(post.meta.date).toDateString()}
-						</div>
-					</div>
-					<div>
-						{post.meta.description}
-					</div>
-				</a>
-			</div>
-		</div>
+		<PostTile data={post} />
 		{#if i < posts.length - 1}
 			<Divider />
 		{/if}

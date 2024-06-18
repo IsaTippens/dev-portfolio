@@ -1,5 +1,4 @@
 <script context="module">
-	import { Tile, SkeletonPlaceholder, AspectRatio } from 'carbon-components-svelte';
 	import InfoTile from './InfoTile.svelte';
 	import { onMount } from 'svelte';
 	import PlaceHolder from './PlaceHolder.svelte';

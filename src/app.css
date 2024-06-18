@@ -14,8 +14,12 @@
 @tailwind components;
 @tailwind utilities;
 
+.global-text-color {
+  @apply text-neutral-900 dark:text-white;
+}
+
 body {
-  @apply bg-white dark:bg-dark text-zinc-700 dark:text-white;
+  @apply bg-white dark:bg-dark global-text-color
 
 }
 
@@ -23,8 +27,12 @@ body {
   @apply bg-gradient-to-r from-emerald-500 to-indigo-500 dark:bg-gradient-to-r dark:from-blue-500 dark:to-indigo-600
 }
 
+.highlighter {
+  @apply text-emerald-600 dark:text-teal-400;
+}
+
 .highlight-text {
-  @apply font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-indigo-500 dark:bg-gradient-to-r dark:from-blue-500 dark:to-indigo-600;
+  @apply font-bold text-transparent bg-clip-text highlighter;
 }
 
 .highlight-faint {
@@ -32,12 +40,9 @@ body {
 }
 
 .highlight-link {
-  @apply font-bold hover:underline text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-indigo-500 dark:bg-gradient-to-r dark:from-blue-500 dark:to-indigo-600;
+  @apply font-bold underline decoration-2 underline-offset-2 text-transparent bg-clip-text highlighter;
 }
 
-.list-bullets {
-  @apply dark:marker:text-blue-500 list-disc pl-4 marker:text-emerald-500;
-}
 
 .card {
   @apply mt-2 p-[3px];
@@ -67,15 +72,24 @@ body {
   @apply prose max-w-full;
 }
 
-.prose h1,
-.prose h2,
-.prose h3,
+.prose h1 {
+  @apply global-text-color;
+}
+.prose h2 {
+  @apply global-text-color
+}
+.prose h3 {
+  @apply global-text-color;
+}
 .prose p {
-  @apply dark:text-white font-bold;
+  @apply global-text-color;
 }
 
 .prose p {
-  @apply text-justify font-normal;
+  @apply global-text-color text-justify font-normal;
+}
+.prose li {
+  @apply global-text-color;
 }
 
 .prose img {
@@ -95,7 +109,7 @@ body {
 }
 
 .blog-content {
-  @apply text-zinc-700 dark:text-white;
+  @apply text-neutral-900 dark:text-white;
 }
 
 .blog-content h1 {
@@ -121,8 +135,6 @@ body {
 .blog-content p {
   @apply mb-4;
 }
-
-
 
 .blog-content img {
   @apply rounded-md mx-auto;

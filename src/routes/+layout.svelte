@@ -1,7 +1,11 @@
 <script>
+	import { is_dark } from '$lib/stores/theme';
+	import { setContext } from 'svelte';
+	setContext('theme', { is_dark });
+
+	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
 	import '../app.css';
 	import '../prism.css';
-
 </script>
 
 <!--
@@ -11,9 +15,12 @@
 	not using tailwind, only css or carbon-components-svelte
 	All screen sizes should use full height
 -->
-<div class="flex flex-col items-center justify-center min-h-screen">
-	<div class= "max-w-[95%] m-auto p-4
-				sm:max-w-[640px] sm:p-2">
+<div class="flex flex-col items-center justify-center min-h-screen relative">
+	<div class="absolute inset-0 z-[-1]"><NoisyGradient /></div>
+	<div
+		class="max-w-[95%] m-auto p-4
+				sm:max-w-[640px] sm:p-2 z-10 backdrop-blur-none sm:backdrop-blur-[2px]"
+	>
 		<slot />
 	</div>
 </div>

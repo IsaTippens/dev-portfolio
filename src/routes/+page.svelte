@@ -1,5 +1,4 @@
 <script context="module">
-	import { ClickableTile, Tile } from 'carbon-components-svelte';
 	import SuperHeader from '$lib/components/SuperHeader.svelte';
 	import About from '$lib/components/About.svelte';
 	import { gsap } from 'gsap';
