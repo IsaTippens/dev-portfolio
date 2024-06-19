@@ -15,11 +15,11 @@
 @tailwind utilities;
 
 .global-text-color {
-  @apply text-neutral-900 dark:text-white;
+  @apply text-white;
 }
 
 body {
-  @apply bg-white dark:bg-dark global-text-color
+  @apply bg-dark global-text-color
 
 }
 
