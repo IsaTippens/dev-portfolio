@@ -2,11 +2,6 @@
 https://daniel.do/article/making-noisy-svgs/
 https://css-tricks.com/grainy-gradients/
 -->
-<script context="module">
-   import { getContext } from 'svelte';
-   
-
-</script>
 <script>
     let dark_top = "#2367BD";
     let dark_bottom = "#1F131E";
@@ -14,13 +9,9 @@ https://css-tricks.com/grainy-gradients/
     let light_top = "#7EC2F5";
     let light_bottom = "#A292B4";
 
-    // set a boolean is_dark
-    // listen for media event to change is_dark
-    // if is_dark, set colors to dark
-    const { is_dark } = getContext('theme')
 
-    $: top_color = $is_dark ? dark_top : light_top;
-    $: bottom_color = $is_dark ? dark_bottom : light_bottom;
+    let top_color = dark_top;
+    let bottom_color = dark_bottom;
 
 </script>
 
