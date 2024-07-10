@@ -28,8 +28,8 @@ https://css-tricks.com/grainy-gradients/
 			<filter id="noise">
 				<feTurbulence
 					type="fractalNoise"
-					baseFrequency="19.5"
-					numOctaves="10"
+					baseFrequency="10 14"
+					numOctaves="1"
 					result="turbulence"
 				/>
 				<feComposite operator="in" in="turbulence" in2="SourceAlpha" result="composite" />
