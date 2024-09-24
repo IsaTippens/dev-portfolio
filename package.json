@@ -19,6 +19,7 @@
 		"@sveltejs/vite-plugin-svelte": "^3.1.1",
 		"@tailwindcss/typography": "^0.5.13",
 		"autoprefixer": "^10.4.19",
+		"daisyui": "^4.12.10",
 		"eslint": "^9.4.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.39.3",
