@@ -16,7 +16,7 @@
 	All screen sizes should use full height
 -->
 <div class="flex flex-col items-center justify-center min-h-screen relative">
-	<div class="absolute inset-0 z-[-1]"><NoisyGradient /></div>
+	<div class="absolute inset-0"><NoisyGradient /></div>
 	<div
 		class="max-w-full m-auto p-4
 				sm:max-w-[640px] sm:p-2 z-10 backdrop-blur-[2px]"
