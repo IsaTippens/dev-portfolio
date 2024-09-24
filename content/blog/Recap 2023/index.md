@@ -6,7 +6,7 @@ published: true
 ---
 
 <script>
-    import { Tweet } from 'sveltekit-embed'
+    import Tweet  from '$lib/components/embeds/Tweet.svelte';
     import HighlightedLink from '$lib/components/HighlightedLink.svelte';
 </script>
 
