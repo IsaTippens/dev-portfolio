@@ -26,8 +26,5 @@
 <main>
 	{#each posts as post, i}
 		<PostTile data={post} />
-		{#if i < posts.length - 1}
-			<Divider />
-		{/if}
 	{/each}
 </main>

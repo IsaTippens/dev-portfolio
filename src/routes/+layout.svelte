@@ -15,11 +15,11 @@
 	not using tailwind, only css or carbon-components-svelte
 	All screen sizes should use full height
 -->
-<div class="flex flex-col items-center justify-center min-h-screen relative">
+<div class="flex flex-col items-center justify-center min-h-screen relative" data-theme="nord">
 	<div class="absolute inset-0"><NoisyGradient /></div>
 	<div
-		class="max-w-full m-auto p-4
-				sm:max-w-[640px] sm:p-2 z-10 backdrop-blur-[2px]"
+		class="max-w-full p-4
+				sm:min-w-[720px] sm:max-w-[1080px] z-10 backdrop-blur-[2px]"
 	>
 		<slot />
 	</div>

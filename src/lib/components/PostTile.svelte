@@ -10,12 +10,12 @@ Title -> Date (on the right)
 Description
 -->
 
-<a class="grid gap-2 p-4" href={`blog/${data.path}`}>
-	<div class="flex flex-col-reverse sm:flex-row sm:justify-between">
-		<h1 class="text-xl">{data.meta.title}</h1>
-		<p class="text-sm highlight-text">{new Date(data.meta.date).toDateString()}</p>
-	</div>
-	<div>
-		<p>{data.meta.description}</p>
+<a class="card bg-primary text-primary-content w-full" href={`blog/${data.path}`}>
+	<div class="card-body">
+		<h2 class="card-title text-white">{data.meta.title}</h2>
+		<p class="text-white">{data.meta.description}</p>
+		<div class="card-actions justify-end">
+			<div class="text-white">{new Date(data.meta.date).toDateString()}</div>
+		</div>
 	</div>
 </a>

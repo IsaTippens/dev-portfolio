@@ -13,7 +13,7 @@ https://css-tricks.com/grainy-gradients/
 	let bottom_color = dark_bottom;
 </script>
 
-<div class="w-full h-full">
+<div class="w-full h-full bg-violet-950">
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		width="100%"
@@ -53,7 +53,7 @@ https://css-tricks.com/grainy-gradients/
 				<use href="#circle" fill="url('#fade2')" />
 			</mask>
 		</defs>
-		<use href="#circle" fill="#2367BD" mask="url(#gradient2)" filter="url('#noise')" />
-		<use href="#shape" fill="#345D92" mask="url(#gradient)" filter="url('#noise')" />
+		<use href="#circle" fill="#2367BD" mask="url(#gradient2)" />
+		<use href="#shape" fill="#345D92" mask="url(#gradient)" />
 	</svg>
 </div>

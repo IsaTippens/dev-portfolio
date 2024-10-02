@@ -42,8 +42,8 @@
 			<RightArrow class="w-8 h-8" />
 		</div>
 	</a>
-	<div class="grid">
-		{#each data.posts.slice(0, 5) as post}
+	<div class="grid grid-cols-2 gap-4">
+		{#each data.posts.slice(0, 4) as post}
 			<PostTile data={post} />
 		{/each}
 	</div>
