@@ -10,7 +10,7 @@ const RE_SRC = /src\s*=\s*"(.+?)"/;
 
 const config = {
   extensions: ['.svelte.md', '.md', '.svx'],
-  remarkPlugins: [marshalImages],
+  remarkPlugins: [],
 }
 
 function marshalImages() {
