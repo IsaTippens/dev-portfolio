@@ -6,7 +6,7 @@
 	import Mail from 'virtual:icons/carbon/email.svelte';
 </script>
 
-<div class="flex flex-row justify-around w-full">
+<div class="grid grid-rows-1 grid-flow-col auto-cols-min gap-36">
 	<a href="https://www.github.com/IsaTippens" target="_blank" rel="noopener">
 		<Github class="w-8 h-8" />
 	</a>
