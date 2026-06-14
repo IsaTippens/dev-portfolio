@@ -36,7 +36,7 @@
 			02 / MSC_CS_CANDIDATE
 		</div>
 		<div class="text-xs leading-relaxed mt-1 text-justify">
-			<span class="font-bold text-black dark:text-white uppercase">UWC Thesis</span>: "A framework for secure financial transactions using relativistic quantum tokens", combining quantum computing and software engineering to develop next-generation secure transaction protocols. Currently in the final year of an MSc in Computer Science at the University of the Western Cape.
+			<span class="font-bold text-black dark:text-white uppercase">Thesis</span>: "A framework for secure financial transactions using relativistic quantum tokens", combining quantum computing and software engineering to develop next-generation secure transaction protocols. Currently in the final year of an MSc in Computer Science at the University of the Western Cape.
 		</div>
 	</div>
 
