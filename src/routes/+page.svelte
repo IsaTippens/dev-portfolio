@@ -32,7 +32,7 @@
 			<About {data} />
 		</div>
 	</div>
-	<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+	<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 my-6">
 		<a href="/blog" class="flex flex-col border border-black dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900/60 hover:border-accent hover:bg-accent/5 transition-all p-3 rounded-none">
 			<span class="text-[8px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">[F1_BLOG]</span>
 			<span class="text-base font-bold text-black dark:text-white mt-1 uppercase">Blog</span>
@@ -47,6 +47,11 @@
 			<span class="text-[8px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">[F3_RESM]</span>
 			<span class="text-base font-bold text-black dark:text-white mt-1 uppercase">Resume</span>
 			<span class="text-[9px] text-neutral-500 dark:text-neutral-400 mt-1 uppercase">DOWNLOAD // PDF</span>
+		</a>
+		<a href="/gear" class="flex flex-col border border-black dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900/60 hover:border-accent hover:bg-accent/5 transition-all p-3 rounded-none">
+			<span class="text-[8px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">[F4_GEAR]</span>
+			<span class="text-base font-bold text-black dark:text-white mt-1 uppercase">Gear</span>
+			<span class="text-[9px] text-neutral-500 dark:text-neutral-400 mt-1 uppercase">HARDWARE // SETUP</span>
 		</a>
 	</div>
 	<a href="/blog" class="block border-t border-b border-black dark:border-neutral-700 py-3 my-4 group hover:border-accent transition-colors">
