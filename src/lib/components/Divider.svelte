@@ -1,1 +1,1 @@
-<div class="w-full h-0.5 global-gradient"></div>
+<div class="w-full h-[1px] bg-gradient-to-r from-transparent via-neutral-200 to-transparent dark:via-neutral-800 my-2"></div>
