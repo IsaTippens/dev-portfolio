@@ -152,3 +152,16 @@ hr {
 svg {
 	@apply outline-none focus:outline-none;
 }
+
+@keyframes marquee {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+.animate-marquee {
+	animation: marquee 1.5s linear forwards;
+}
