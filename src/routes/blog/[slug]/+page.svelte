@@ -1,13 +1,10 @@
-<script context="module">
-	import Divider from '$lib/components/Divider.svelte';
-	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
-</script>
-
 <script>
-	export let data;
+	import Divider from '$lib/components/Divider.svelte';
 
-	let { date, title, description, slug } = data.meta;
-	let Content = data.Content;
+	let { data } = $props();
+
+	let { date, title, description, slug } = $derived(data.meta);
+	let Content = $derived(data.Content);
 </script>
 
 <svelte:head>
@@ -36,14 +33,9 @@
 	</div>
 </div>
 <main class="blog-body">
-	<div class="all-prose blog"><svelte:component this={Content} /></div>
+	<div class="all-prose blog"><Content /></div>
 </main>
 <footer>
 	<Divider />
 </footer>
 
-<style>
-	img {
-		border-radius: 25%;
-	}
-</style>

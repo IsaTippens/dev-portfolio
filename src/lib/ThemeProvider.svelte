@@ -3,6 +3,7 @@
 	import { setContext } from 'svelte';
 
 	setContext('theme', { is_dark });
+	let { children } = $props();
 </script>
 
-<slot />
+{@render children?.()}

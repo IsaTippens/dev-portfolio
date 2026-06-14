@@ -2,14 +2,19 @@
 	import { onDestroy, onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	export let threshold: number = 0.5
-	export let disable_observer: boolean = false
+	let { threshold = 0.5, disable_observer = false, children } = $props<{
+		threshold?: number;
+		disable_observer?: boolean;
+		children?: import('svelte').Snippet;
+	}>();
 
-	let loaded = disable_observer
+	// svelte-ignore state_referenced_locally
+	let loaded = $state(disable_observer)
 	let root: HTMLElement
 
 	const hasIntersectionObserver =
 		typeof IntersectionObserver !== 'undefined'
+	// svelte-ignore state_referenced_locally
 	let observer: IntersectionObserver | null =
 		hasIntersectionObserver && !disable_observer
 			? new IntersectionObserver(
@@ -44,11 +49,11 @@
 <div bind:this={root} data-testid="general-observer">
 	{#if disable_observer}
 		<div transition:fade>
-			<slot />
+			{@render children?.()}
 		</div>
 	{:else if loaded}
 		<div transition:fade>
-			<slot />
+			{@render children?.()}
 		</div>
 	{/if}
 </div>

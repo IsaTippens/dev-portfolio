@@ -1,1 +1,1 @@
-<div class="w-full h-0.5 global-gradient"/>
+<div class="w-full h-0.5 global-gradient"></div>

@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	export let tweetLink = '';
-	let twitter_widgets_script = null;
+	let { tweetLink = '' } = $props<{ tweetLink?: string }>();
+	let twitter_widgets_script: HTMLScriptElement | null = null;
 	const load_twitter_widgets_script = () => {
 		if (twitter_widgets_script) return;
 		twitter_widgets_script = document.createElement('script');
@@ -21,7 +21,7 @@
 
 <div class="tweet-wrapper">
 	<blockquote class="twitter-tweet">
-		<a href={`https://twitter.com/${tweetLink}`}/>
+		<a href={`https://twitter.com/${tweetLink}`}>Twitter Link</a>
 	</blockquote>
 </div>
 

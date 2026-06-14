@@ -1,9 +1,8 @@
 <script>
 	import Divider from '$lib/components/Divider.svelte';
-	import AnimatedHeader from '$lib/components/AnimatedHeader.svelte';
 	import PostTile from '$lib/components/PostTile.svelte';
-	export let data;
-	let posts = data.posts;
+	let { data } = $props();
+	let posts = $derived(data.posts);
 </script>
 
 <svelte:head>

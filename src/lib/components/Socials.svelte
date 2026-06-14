@@ -1,4 +1,4 @@
-<script context="module">
+<script>
 	import X from 'virtual:icons/carbon/logo-x.svelte';
 	import YouTube from 'virtual:icons/carbon/logo-youtube.svelte';
 	import Github from 'virtual:icons/carbon/logo-github.svelte';

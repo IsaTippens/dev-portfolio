@@ -1,18 +1,20 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
 
-  let randomStartingPosition;
+  let randomStartingPosition: number;
 
-  let background;
+  let background: HTMLDivElement;
 
   onMount(() => {
     randomStartingPosition = Math.random() * 100 * 60;
     background.style.animationDelay = `-${randomStartingPosition}s`;
   });
+
+  let { children } = $props();
 </script>
 
 <div class="gradient-card-bg rounded-lg background-animate" bind:this={background}>
-		<slot />
+		{@render children?.()}
 </div>
 
 

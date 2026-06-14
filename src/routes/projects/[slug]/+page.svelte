@@ -1,13 +1,8 @@
-<script context="module">
-	// export const prerender = true
-	import Divider from '$lib/components/Divider.svelte';
-</script>
-
 <script>
-	export let data;
+	let { data } = $props();
 
-	let { date, title, description } = data.meta;
-	let Content = data.Content;
+	let { date, title, description } = $derived(data.meta);
+	let Content = $derived(data.Content);
 </script>
 
 <svelte:head>
@@ -36,12 +31,6 @@
 	</div>
 </div>
 <main class="blog-body">
-	<div class="all-prose blog"><svelte:component this={Content} /></div>
+	<div class="all-prose blog"><Content /></div>
 </main>
-<footer class="border-t grid grid-cols-1 text-xl" />
-
-<style>
-	img {
-		border-radius: 25%;
-	}
-</style>
+<footer class="border-t grid grid-cols-1 text-xl"></footer>

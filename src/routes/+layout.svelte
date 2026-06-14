@@ -6,6 +6,8 @@
 	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
 	import '../app.css';
 	import '../prism.css';
+
+	let { children } = $props();
 </script>
 
 <!--
@@ -21,6 +23,6 @@
 		class="max-w-full m-auto p-4
 				sm:max-w-[640px] sm:p-2 z-10 backdrop-blur-[2px]"
 	>
-		<slot />
+		{@render children()}
 	</div>
 </div>

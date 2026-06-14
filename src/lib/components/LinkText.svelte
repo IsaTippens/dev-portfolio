@@ -1,9 +1,8 @@
 <script>
-    export let url;
-    export let open_tab = true;
+    let { url, open_tab = true, children } = $props();
 </script>
 
 
 <a href="{url}" class="hover:underline" target={open_tab ? '_blank' : '_self'}>
-    <slot />   
+    {@render children?.()}   
 </a>
