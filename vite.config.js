@@ -20,9 +20,9 @@ const config = {
 				{
 					name: 'ignore-icons',
 					setup(build) {
-						build.onResolve({ filter: /^(virtual:icons\/|~icons\/)/ }, args => {
-							return { path: args.path, external: true }
-						})
+						build.onResolve({ filter: /^(virtual:icons\/|~icons\/)/ }, (args) => {
+							return { path: args.path, external: true };
+						});
 					}
 				}
 			]

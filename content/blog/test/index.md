@@ -41,6 +41,7 @@ Nextline with a empty line above
         }
     }
 ```
+
 ### Embeds
 
 <Spotify spotifyLink="track/2pscAWkm3jAxcrpBwOtQmS" height="80" width="100%" disable_observer=true/>
