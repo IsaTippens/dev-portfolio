@@ -1,40 +1,23 @@
-<script context="module">
-	import InfoTile from './InfoTile.svelte';
-	import { onMount } from 'svelte';
-	import PlaceHolder from './PlaceHolder.svelte';
-</script>
-
 <script>
-	import SuperHeader from './SuperHeader.svelte';
+	import { onMount } from 'svelte';
 
-	export let data;
+	let { data } = $props();
 
 	onMount(() => {});
 </script>
 
 <div class="grid gap-4">
 	<div class="text-lg">
-		<p>
-			{data.age} y/o <span class="highlight-text gsap-info">programmer</span> of {data.devYear} years
-		</p>
-		<p>Cape Town, South Africa</p>
+		<p>Cape Town, South Africa • {data.age} y/o engineer with {data.devYear} years of experience</p>
 	</div>
 
-	<p class="text-3xl font-semibold">MSc Comp Sci Student</p>
-	<div>
-		<p>
-			Studying at the <a href="https://uwc.ac.za" target="_blank" class="highlight-link"
-				>University of the Western Cape</a
-			>
-		</p>
-		<p>
-			Combining Quantum Computing and Software Engineering to develop a fully secure token
-			transaction protocol
-		</p>
-	</div>
-
-	<p class="text-3xl font-semibold">Software Developer</p>
+	<p class="text-3xl font-semibold">Chief Technology Officer</p>
 	<div class="">
-		<p>Developing a high-frequency trading system and back-testing tools for crypto exchanges</p>
+		<p>Chief Technology Officer at Alphacrest. Directing technical strategy and execution, managing scalable AWS cloud infrastructure, developing and optimizing low-latency algorithmic trading systems, and engineering critical internal developer tooling.</p>
+	</div>
+
+	<p class="text-3xl font-semibold">MSc Computer Science Candidate</p>
+	<div>
+		<p>Currently in the final year of an MSc in Computer Science at the University of the Western Cape. Research thesis titled 'A framework for secure financial transactions using relativistic quantum tokens', combining quantum computing and software engineering to develop next-generation secure transaction protocols.</p>
 	</div>
 </div>
