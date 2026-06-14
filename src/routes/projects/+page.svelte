@@ -1,7 +1,7 @@
 <script>
 	import Divider from '$lib/components/Divider.svelte';
-	export let data;
-	let posts = data.posts;
+	let { data } = $props();
+	let posts = $derived(data.posts);
 </script>
 
 <svelte:head>
@@ -24,7 +24,7 @@
 	{#each posts as post, i}
 			<div class="card">
 				<div class="card-inner">
-					<a href={'blog/' + post.path}>
+					<a href={'/projects/' + post.path}>
 						<div class="flex flex-col sm:flex-row">
 							<div class="flex-auto text-lg">
 								{post.meta.title}

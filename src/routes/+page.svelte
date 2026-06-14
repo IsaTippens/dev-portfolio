@@ -1,5 +1,4 @@
-<script context="module">
-	import SuperHeader from '$lib/components/SuperHeader.svelte';
+<script>
 	import About from '$lib/components/About.svelte';
 	import { gsap } from 'gsap';
 	import { TextPlugin } from 'gsap/dist/TextPlugin';
@@ -8,14 +7,11 @@
 	import { onMount } from 'svelte';
 
 	import RightArrow from 'virtual:icons/mingcute/right-fill.svelte';
-</script>
-
-<script>
 	import Intro from '$lib/components/Intro.svelte';
 	import PostTile from '$lib/components/PostTile.svelte';
 	import Socials from '$lib/components/Socials.svelte';
 
-	export let data;
+	let { data } = $props();
 
 	onMount(() => {});
 </script>
@@ -35,6 +31,20 @@
 		<div>
 			<About {data} />
 		</div>
+	</div>
+	<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+		<a href="/blog" class="p-4 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-indigo-500/50 hover:bg-neutral-900/60 transition-all text-center">
+			<span class="block text-lg font-bold text-white">Blog</span>
+			<span class="text-xs text-neutral-400">Articles & notes</span>
+		</a>
+		<a href="/projects" class="p-4 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-indigo-500/50 hover:bg-neutral-900/60 transition-all text-center">
+			<span class="block text-lg font-bold text-white">Projects</span>
+			<span class="text-xs text-neutral-400">Code & systems</span>
+		</a>
+		<a href="/resume" target="_blank" class="p-4 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-indigo-500/50 hover:bg-neutral-900/60 transition-all text-center">
+			<span class="block text-lg font-bold text-white">Resume</span>
+			<span class="text-xs text-neutral-400">Download CV (PDF)</span>
+		</a>
 	</div>
 	<a href="/blog">
 		<div class="flex justify-between">
