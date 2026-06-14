@@ -15,6 +15,7 @@ vite.config.ts.timestamp-*
 # Logs
 *.log
 dev-server.log
+cloudflarelog.txt
 
 # Wrangler
 .wrangler/
