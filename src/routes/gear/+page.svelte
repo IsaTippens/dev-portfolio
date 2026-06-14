@@ -76,7 +76,7 @@
 				04 / RASPBERRY_PI_5_8GB
 			</div>
 			<div class="text-xs leading-relaxed mt-1">
-				<span class="font-bold text-black dark:text-white uppercase">Lab Node A:</span> Broadcom BCM2712 Quad-core ARM Cortex-A76 processor @ 2.4GHz, 8GB LPDDR4X. Powered by Raspberry Pi OS (PiOS). Handles local API prototypes, container testing, and script automations.
+				<span class="font-bold text-black dark:text-white uppercase">Lab Node A:</span> Broadcom BCM2712 Quad-core ARM Cortex-A76 processor @ 2.4GHz, 8GB LPDDR4X. Powered by Raspberry Pi OS (PiOS). Handles local API prototypes, container testing, script automations and Tailscale Exit Node.
 			</div>
 		</div>
 
@@ -86,7 +86,7 @@
 				05 / RASPBERRY_PI_4_4GB
 			</div>
 			<div class="text-xs leading-relaxed mt-1">
-				<span class="font-bold text-black dark:text-white uppercase">Lab Node B:</span> Broadcom BCM2711 Quad-core ARM Cortex-A72 processor @ 1.5GHz, 4GB LPDDR4. Configured with NixOS for declarative environment deployments and lightweight network services.
+				<span class="font-bold text-black dark:text-white uppercase">Lab Node B:</span> Broadcom BCM2711 Quad-core ARM Cortex-A72 processor @ 1.5GHz, 4GB LPDDR4. Configured with NixOS for funsies.
 			</div>
 		</div>
 	</div>
@@ -136,7 +136,8 @@
 				<span class="font-bold text-black dark:text-white uppercase">Google Gemini:</span> AI pair programming and quick reasoning. <br />
 				<span class="font-bold text-black dark:text-white uppercase">Notion:</span> Structured task planning, logging, and notebook notes. <br />
 				<span class="font-bold text-black dark:text-white uppercase">Spotify:</span> Essential soundtrack generation for coding focus. <br />
-				<span class="font-bold text-black dark:text-white uppercase">VSCode:</span> Lightweight editor environment for web, Rust, and systems scripts.
+				<span class="font-bold text-black dark:text-white uppercase">VSCode:</span> Lightweight editor environment for web, Rust, and systems scripts. <br />
+				<span class="font-bold text-black dark:text-white uppercase">Tailscale:</span> Secure, zero-config mesh VPN connecting workstation, mobile, and lab nodes.
 			</div>
 		</div>
 	</div>
