@@ -1,56 +1,50 @@
-@import '@fontsource/atkinson-hyperlegible/400-italic.css';
-@import '@fontsource/atkinson-hyperlegible/700-italic.css';
-@import '@fontsource/atkinson-hyperlegible/400.css';
-@import '@fontsource/atkinson-hyperlegible/700.css';
-
 @import '@fontsource/jetbrains-mono/400-italic.css';
 @import '@fontsource/jetbrains-mono/700-italic.css';
 @import '@fontsource/jetbrains-mono/400.css';
 @import '@fontsource/jetbrains-mono/700.css';
 
-/* Write your global styles here, in PostCSS syntax */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.global-text-color {
-	@apply text-white;
+body {
+	@apply bg-[#eaeae6] text-[#121212] dark:bg-[#121212] dark:text-[#ffffff] font-mono transition-colors duration-300;
 }
 
-body {
-	@apply bg-dark global-text-color;
+.global-text-color {
+	@apply text-[#121212] dark:text-white;
 }
 
 .global-gradient {
-	@apply bg-gradient-to-r from-emerald-500 to-indigo-500 dark:bg-gradient-to-r dark:from-blue-500 dark:to-indigo-600;
+	@apply bg-[#ff4500] text-white;
 }
 
 .highlighter {
-	@apply text-emerald-600 dark:text-teal-400;
+	@apply text-[#ff4500];
 }
 
 .highlight-text {
-	@apply font-bold text-transparent bg-clip-text highlighter;
+	@apply font-bold text-[#ff4500];
 }
 
 .highlight-faint {
-	@apply bg-cyan-100;
+	@apply bg-orange-100 dark:bg-orange-950/40;
 }
 
 .highlight-link {
-	@apply font-bold underline decoration-2 underline-offset-2 text-transparent bg-clip-text highlighter;
+	@apply font-bold underline decoration-1 underline-offset-4 text-[#ff4500] hover:bg-[#ff4500] hover:text-white transition-colors duration-150;
 }
 
 .card {
-	@apply mt-2 p-[3px];
+	@apply mt-2 p-[1px] border border-[#121212] dark:border-[#444444] rounded-none;
 }
 
 .card-inner {
-	@apply p-4 dark:bg-dark rounded-sm;
+	@apply p-4 bg-[#f4f4f2] dark:bg-[#1c1c1c] rounded-none;
 }
 
 .blog-header {
-	@apply py-8 px-4 bg-gradient-to-r from-cyan-600 to-blue-500 rounded-lg text-white;
+	@apply py-8 px-4 bg-[#ff4500] text-white border-b-2 border-black dark:border-neutral-700 rounded-none;
 }
 
 .blog-body {
@@ -58,47 +52,36 @@ body {
 }
 
 .gradient-card-bg {
-	@apply bg-gradient-to-r from-emerald-500 to-indigo-500 dark:bg-gradient-to-r dark:from-blue-500 dark:to-indigo-600;
+	@apply bg-[#ff4500] text-white border border-black dark:border-neutral-700 rounded-none;
 }
 
 .crumb-end {
-	@apply underline;
+	@apply underline decoration-dotted decoration-2;
 }
 
 .all-prose {
-	@apply prose max-w-full;
+	@apply prose max-w-full font-mono;
 }
 
-.prose h1 {
-	@apply global-text-color;
-}
-.prose h2 {
-	@apply global-text-color;
-}
-.prose h3 {
-	@apply global-text-color;
-}
-.prose p {
-	@apply global-text-color;
-}
-
-.prose p {
-	@apply global-text-color text-justify font-normal;
-}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose p,
 .prose li {
-	@apply global-text-color;
+	@apply text-[#121212] dark:text-white font-mono;
 }
 
-.prose img {
-	@apply rounded-md mx-auto;
+.prose p {
+	@apply text-justify font-normal;
 }
 
+.prose img,
 .prose video {
-	@apply rounded-md mx-auto;
+	@apply rounded-none border border-black dark:border-neutral-700 mx-auto;
 }
 
 .prose pre {
-	@apply mx-auto dark:text-black;
+	@apply mx-auto bg-[#eaeae6] dark:bg-[#1a1a1a] border border-black dark:border-neutral-700 text-[#121212] dark:text-white rounded-none;
 }
 
 .prose a {
@@ -106,42 +89,40 @@ body {
 }
 
 .blog-content {
-	@apply text-neutral-900 dark:text-white;
+	@apply text-[#121212] dark:text-white font-mono;
 }
 
 .blog-content h1 {
-	@apply text-3xl font-semibold mb-4;
+	@apply text-2xl font-bold mb-4 uppercase tracking-wider;
 }
 
 .blog-content h2 {
-	@apply text-2xl font-semibold mb-4;
+	@apply text-xl font-bold mb-4 uppercase tracking-wider;
 }
 
 .blog-content h3 {
-	@apply text-xl font-semibold;
+	@apply text-lg font-bold uppercase tracking-wider;
 }
 
 .blog-content h1,
 .blog-content h2,
 .blog-content h3,
-.blog-content p {
-	@apply dark:text-white;
+.blog-content p,
+.blog-content li {
+	@apply text-[#121212] dark:text-white font-mono;
 }
 
 .blog-content p {
-	@apply mb-4;
+	@apply mb-4 leading-relaxed;
 }
 
-.blog-content img {
-	@apply rounded-md mx-auto;
-}
-
+.blog-content img,
 .blog-content video {
-	@apply rounded-md mx-4;
+	@apply rounded-none border border-black dark:border-neutral-700 mx-auto;
 }
 
 .blog-content pre {
-	@apply mx-4 dark:text-black;
+	@apply bg-[#eaeae6] dark:bg-[#1a1a1a] border border-black dark:border-neutral-700 text-[#121212] dark:text-white p-4 rounded-none overflow-x-auto;
 }
 
 .blog-content a {
@@ -149,7 +130,7 @@ body {
 }
 
 hr {
-	@apply !border-slate-300 dark:!border-slate-700;
+	@apply !border-black dark:!border-neutral-700;
 }
 
 svg {

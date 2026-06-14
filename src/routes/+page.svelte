@@ -33,23 +33,32 @@
 		</div>
 	</div>
 	<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
-		<a href="/blog" class="p-4 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-indigo-500/50 hover:bg-neutral-900/60 transition-all text-center">
-			<span class="block text-lg font-bold text-white">Blog</span>
-			<span class="text-xs text-neutral-400">Articles & notes</span>
+		<a href="/blog" class="flex flex-col border border-black dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900/60 hover:border-[#ff4500] hover:bg-[#ff4500]/5 transition-all p-3 rounded-none">
+			<span class="text-[8px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">[F1_BLOG]</span>
+			<span class="text-base font-bold text-black dark:text-white mt-1 uppercase">Blog</span>
+			<span class="text-[9px] text-neutral-500 dark:text-neutral-400 mt-1 uppercase">READABLES // NOTES</span>
 		</a>
-		<a href="/projects" class="p-4 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-indigo-500/50 hover:bg-neutral-900/60 transition-all text-center">
-			<span class="block text-lg font-bold text-white">Projects</span>
-			<span class="text-xs text-neutral-400">Code & systems</span>
+		<a href="/projects" class="flex flex-col border border-black dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900/60 hover:border-[#ff4500] hover:bg-[#ff4500]/5 transition-all p-3 rounded-none">
+			<span class="text-[8px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">[F2_PROJ]</span>
+			<span class="text-base font-bold text-black dark:text-white mt-1 uppercase">Projects</span>
+			<span class="text-[9px] text-neutral-500 dark:text-neutral-400 mt-1 uppercase">SYSTEMS // CODE</span>
 		</a>
-		<a href="/resume" target="_blank" class="p-4 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-indigo-500/50 hover:bg-neutral-900/60 transition-all text-center">
-			<span class="block text-lg font-bold text-white">Resume</span>
-			<span class="text-xs text-neutral-400">Download CV (PDF)</span>
+		<a href="/resume" target="_blank" class="flex flex-col border border-black dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900/60 hover:border-[#ff4500] hover:bg-[#ff4500]/5 transition-all p-3 rounded-none">
+			<span class="text-[8px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">[F3_RESM]</span>
+			<span class="text-base font-bold text-black dark:text-white mt-1 uppercase">Resume</span>
+			<span class="text-[9px] text-neutral-500 dark:text-neutral-400 mt-1 uppercase">DOWNLOAD // PDF</span>
 		</a>
 	</div>
-	<a href="/blog">
-		<div class="flex justify-between">
-			<p class="text-3xl font-semibold">Posts</p>
-			<RightArrow class="w-8 h-8" />
+	<a href="/blog" class="block border-t border-b border-black dark:border-neutral-700 py-3 my-4 group hover:border-[#ff4500] transition-colors">
+		<div class="flex justify-between items-center">
+			<div class="flex items-center gap-2">
+				<span class="inline-block w-2 h-2 bg-[#ff4500]"></span>
+				<p class="text-xl font-bold uppercase tracking-tight text-black dark:text-white group-hover:text-[#ff4500] transition-colors">Recent Posts</p>
+			</div>
+			<div class="flex items-center gap-1 text-[10px] font-mono text-neutral-400 dark:text-neutral-500 uppercase">
+				<span>View all</span>
+				<RightArrow class="w-4 h-4 text-[#ff4500]" />
+			</div>
 		</div>
 	</a>
 	<div class="grid">

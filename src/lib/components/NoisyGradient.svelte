@@ -7,8 +7,12 @@ https://css-tricks.com/grainy-gradients/
 </script>
 
 <div
-	class="w-full h-full transition-colors duration-500
-	{$is_dark
-		? 'bg-[#111111] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/20 via-[#111111] to-[#111111]'
-		: 'bg-[#fafafa] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-100/30 via-[#fafafa] to-[#fafafa]'}"
+	class="w-full h-full transition-colors duration-300
+	{$is_dark ? 'bg-[#121212] text-white' : 'bg-[#eaeae6] text-[#121212]'}"
+	style="
+		background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+		background-size: 20px 20px;
+		background-position: center;
+		opacity: 0.05;
+	"
 ></div>
