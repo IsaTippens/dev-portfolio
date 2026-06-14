@@ -22,8 +22,22 @@
 <div class="grid gap-6">
 	<!-- Section 1: Hardware Setup -->
 	<div class="grid gap-4">
-		<div class="text-[10px] font-mono text-accent uppercase tracking-widest">
-			[SECTION: HARDWARE_SETUP]
+		<div class="flex items-center gap-2">
+			<svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+				<rect x="4" y="4" width="16" height="16" rx="0" fill="none" />
+				<rect x="9" y="9" width="6" height="6" rx="0" fill="none" />
+				<path d="M9 1v3" />
+				<path d="M15 1v3" />
+				<path d="M9 20v3" />
+				<path d="M15 20v3" />
+				<path d="M20 9h3" />
+				<path d="M20 15h3" />
+				<path d="M1 9h3" />
+				<path d="M1 15h3" />
+			</svg>
+			<div class="text-[10px] font-mono text-accent uppercase tracking-widest">
+				[SECTION: HARDWARE_SETUP]
+			</div>
 		</div>
 
 		<!-- Wootbook -->
@@ -79,8 +93,15 @@
 
 	<!-- Section 2: Software / Environment -->
 	<div class="grid gap-4 mt-2">
-		<div class="text-[10px] font-mono text-accent uppercase tracking-widest">
-			[SECTION: DEV_ENVIRONMENT]
+		<div class="flex items-center gap-2">
+			<svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+				<rect x="2" y="3" width="20" height="18" rx="0" fill="none" />
+				<path d="M6 8l4 4-4 4" />
+				<path d="M12 16h6" />
+			</svg>
+			<div class="text-[10px] font-mono text-accent uppercase tracking-widest">
+				[SECTION: DEV_ENVIRONMENT]
+			</div>
 		</div>
 
 		<!-- Operating Systems & Shells -->
