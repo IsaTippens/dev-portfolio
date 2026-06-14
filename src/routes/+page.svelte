@@ -71,6 +71,54 @@
 			<PostTile data={post} />
 		{/each}
 	</div>
+
+	<!-- Gaming Log Section -->
+	<div class="block border-t border-b border-black dark:border-neutral-700 py-3 my-4">
+		<div class="flex items-center gap-2">
+			<span class="inline-block w-2 h-2 bg-accent"></span>
+			<p class="text-xl font-bold uppercase tracking-tight text-black dark:text-white">Active Gaming Log</p>
+		</div>
+	</div>
+
+	<div class="border border-black dark:border-neutral-700 overflow-x-auto rounded-none my-4 bg-transparent">
+		<table class="w-full text-left font-mono text-xs border-collapse">
+			<thead>
+				<tr class="bg-neutral-200/50 dark:bg-neutral-800/50 border-b border-black dark:border-neutral-700">
+					<th class="p-2 uppercase font-bold text-black dark:text-white text-[10px] tracking-wider border-r border-black dark:border-neutral-700">Game Title</th>
+					<th class="p-2 uppercase font-bold text-black dark:text-white text-[10px] tracking-wider border-r border-black dark:border-neutral-700">Stats / Mode</th>
+					<th class="p-2 uppercase font-bold text-black dark:text-white text-[10px] tracking-wider">Platform</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="border-b border-black dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
+					<td class="p-2 border-r border-black dark:border-neutral-700 font-bold uppercase text-black dark:text-white">Valorant</td>
+					<td class="p-2 border-r border-black dark:border-neutral-700 text-neutral-500 dark:text-neutral-400">PEAK PLATINUM 3</td>
+					<td class="p-2 text-neutral-500 dark:text-neutral-400">PC (RIOT)</td>
+				</tr>
+				<tr class="border-b border-black dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
+					<td class="p-2 border-r border-black dark:border-neutral-700 font-bold uppercase text-black dark:text-white">Geometry Dash</td>
+					<td class="p-2 border-r border-black dark:border-neutral-700 text-neutral-500 dark:text-neutral-400">12 DEMONS COMPLETED</td>
+					<td class="p-2 text-neutral-500 dark:text-neutral-400">PC (STEAM)</td>
+				</tr>
+				<tr class="border-b border-black dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
+					<td class="p-2 border-r border-black dark:border-neutral-700 font-bold uppercase text-black dark:text-white">Fortnite</td>
+					<td class="p-2 border-r border-black dark:border-neutral-700 text-neutral-500 dark:text-neutral-400">ZERO BUILD MODE</td>
+					<td class="p-2 text-neutral-500 dark:text-neutral-400">PC (EPIC)</td>
+				</tr>
+				<tr class="border-b border-black dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
+					<td class="p-2 border-r border-black dark:border-neutral-700 font-bold uppercase text-black dark:text-white">No Man's Sky</td>
+					<td class="p-2 border-r border-black dark:border-neutral-700 text-neutral-500 dark:text-neutral-400">SINGLE PLAYER</td>
+					<td class="p-2 text-neutral-500 dark:text-neutral-400">PC (STEAM)</td>
+				</tr>
+				<tr class="hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
+					<td class="p-2 border-r border-black dark:border-neutral-700 font-bold uppercase text-black dark:text-white">Into the Dead: ODD</td>
+					<td class="p-2 border-r border-black dark:border-neutral-700 text-neutral-500 dark:text-neutral-400">SINGLE PLAYER</td>
+					<td class="p-2 text-neutral-500 dark:text-neutral-400">PC (STEAM)</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
 	<div class="p-4">
 		<Socials />
 	</div>
