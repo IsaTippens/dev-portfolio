@@ -8,7 +8,7 @@
 
 <div class="grid gap-4">
 	<div class="text-lg">
-		<p>Cape Town, South Africa • {data.age} y/o engineer with {data.devYear} years of experience</p>
+		<p>Cape Town, South Africa • {data.age} y/o programmer for {data.devYear} years • software engineer for {data.seYear} years • vibe coder for {data.vibeYear} year</p>
 	</div>
 
 	<p class="text-3xl font-semibold">Chief Technology Officer</p>
