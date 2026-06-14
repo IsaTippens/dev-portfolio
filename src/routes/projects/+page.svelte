@@ -1,7 +1,22 @@
-<script>
+<script lang="ts">
 	import Divider from '$lib/components/Divider.svelte';
 	let { data } = $props();
 	let posts = $derived(data.posts);
+
+	let currentPage = $state(1);
+	const pageSize = 5;
+
+	let totalPages = $derived(Math.ceil(posts.length / pageSize));
+	let paginatedPosts = $derived(
+		posts.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+	);
+
+	function goToPage(page: number) {
+		if (page >= 1 && page <= totalPages) {
+			currentPage = page;
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
 </script>
 
 <svelte:head>
@@ -21,7 +36,12 @@
 	</div>
 </div>
 <main>
-	{#each posts as post, i}
+	{#if posts.length === 0}
+		<div class="py-8 text-center text-neutral-400 text-base">
+			No projects found.
+		</div>
+	{:else}
+		{#each paginatedPosts as post, i}
 			<div class="card">
 				<div class="card-inner">
 					<a href={'/projects/' + post.path}>
@@ -29,7 +49,7 @@
 							<div class="flex-auto text-lg">
 								{post.meta.title}
 							</div>
-							<div>
+							<div class="text-sm text-blue-600 dark:text-blue-400 font-medium">
 								{new Date(post.meta.date).toDateString()}
 							</div>
 						</div>
@@ -39,8 +59,31 @@
 					</a>
 				</div>
 			</div>
-			{#if i < posts.length - 1}
+			{#if i < paginatedPosts.length - 1}
 				<Divider />
 			{/if}
 		{/each}
+
+		{#if totalPages > 1}
+			<div class="flex justify-between items-center mt-6 py-4 border-t border-neutral-800 text-sm">
+				<button
+					onclick={() => goToPage(currentPage - 1)}
+					disabled={currentPage === 1}
+					class="px-3 py-1.5 rounded bg-neutral-900 border border-neutral-800 text-white hover:bg-neutral-800 disabled:opacity-40 disabled:hover:bg-neutral-900 transition-colors"
+				>
+					Previous
+				</button>
+				<span class="text-neutral-400">
+					Page {currentPage} of {totalPages}
+				</span>
+				<button
+					onclick={() => goToPage(currentPage + 1)}
+					disabled={currentPage === totalPages}
+					class="px-3 py-1.5 rounded bg-neutral-900 border border-neutral-800 text-white hover:bg-neutral-800 disabled:opacity-40 disabled:hover:bg-neutral-900 transition-colors"
+				>
+					Next
+				</button>
+			</div>
+		{/if}
+	{/if}
 </main>
