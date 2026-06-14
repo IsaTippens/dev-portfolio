@@ -9,14 +9,14 @@
 <div class="grid gap-6">
 	<!-- Location and Bio Overview Panel -->
 	<div class="border border-black dark:border-neutral-700 p-3 bg-neutral-100 dark:bg-neutral-900/40 relative">
-		<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[8px] uppercase tracking-widest text-[#ff4500] font-mono">
+		<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[8px] uppercase tracking-widest text-accent font-mono">
 			[BIO_DATA]
 		</div>
 		<div class="text-[11px] leading-relaxed font-mono">
-			<span class="text-[#ff4500]">LOCATION:</span> Cape Town, South Africa <br/>
-			<span class="text-[#ff4500]">STATUS:</span> {data.age} y/o programmer ({data.devYear} yrs code) <br/>
-			<span class="text-[#ff4500]">EXPERIENCE:</span> software engineer for {data.seYear} years <br/>
-			<span class="text-[#ff4500]">VIBE_CHECK:</span> vibe coder for {data.vibeYear} year
+			<span class="text-accent">LOCATION:</span> Cape Town, South Africa <br/>
+			<span class="text-accent">STATUS:</span> {data.age} y/o programmer ({data.devYear} yrs code) <br/>
+			<span class="text-accent">EXPERIENCE:</span> software engineer for {data.seYear} years <br/>
+			<span class="text-accent">VIBE_CHECK:</span> vibe coder for {data.vibeYear} year
 		</div>
 	</div>
 

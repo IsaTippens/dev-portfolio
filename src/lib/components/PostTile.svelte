@@ -20,10 +20,10 @@ Description
 	</div>
 
 	<div class="flex flex-col gap-1">
-		<span class="text-[9px] font-mono uppercase tracking-widest text-[#ff4500]">
+		<span class="text-[9px] font-mono uppercase tracking-widest text-accent">
 			{new Date(data.meta.date).toDateString()}
 		</span>
-		<h2 class="text-lg font-bold text-black dark:text-white group-hover:text-[#ff4500] transition-colors duration-150 uppercase tracking-tight">
+		<h2 class="text-lg font-bold text-black dark:text-white group-hover:text-accent transition-colors duration-150 uppercase tracking-tight">
 			{data.meta.title}
 		</h2>
 		<p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 leading-relaxed">

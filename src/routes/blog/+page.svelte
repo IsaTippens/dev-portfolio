@@ -28,7 +28,7 @@
 </svelte:head>
 <div class="border-b border-black dark:border-neutral-700 pb-3 mb-4 flex justify-between items-end">
 	<div>
-		<div class="text-[9px] uppercase tracking-widest font-mono text-[#ff4500]">
+		<div class="text-[9px] uppercase tracking-widest font-mono text-accent">
 			[NAV: <a href="/" class="hover:underline">HOME</a> / POSTS]
 		</div>
 		<h1 class="text-2xl font-bold uppercase tracking-tight text-black dark:text-white mt-1">
@@ -52,7 +52,7 @@
 			<button
 				onclick={() => goToPage(currentPage - 1)}
 				disabled={currentPage === 1}
-				class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-[#ff4500] hover:text-[#ff4500] disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
+				class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
 			>
 				[PREV]
 			</button>
@@ -62,7 +62,7 @@
 			<button
 				onclick={() => goToPage(currentPage + 1)}
 				disabled={currentPage === totalPages}
-				class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-[#ff4500] hover:text-[#ff4500] disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
+				class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
 			>
 				[NEXT]
 			</button>

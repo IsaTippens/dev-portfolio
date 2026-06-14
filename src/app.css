@@ -7,6 +7,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+	--accent-color: #0088ff;
+}
+:root.dark {
+	--accent-color: #00c0ff;
+}
+
 body {
 	@apply bg-[#eaeae6] text-[#121212] dark:bg-[#121212] dark:text-[#ffffff] font-mono transition-colors duration-300;
 }
@@ -16,23 +23,30 @@ body {
 }
 
 .global-gradient {
-	@apply bg-[#ff4500] text-white;
+	background-color: var(--accent-color);
+	@apply text-white;
 }
 
 .highlighter {
-	@apply text-[#ff4500];
+	color: var(--accent-color);
 }
 
 .highlight-text {
-	@apply font-bold text-[#ff4500];
+	@apply font-bold;
+	color: var(--accent-color);
 }
 
 .highlight-faint {
-	@apply bg-orange-100 dark:bg-orange-950/40;
+	@apply bg-blue-100/60 dark:bg-blue-950/30;
 }
 
 .highlight-link {
-	@apply font-bold underline decoration-1 underline-offset-4 text-[#ff4500] hover:bg-[#ff4500] hover:text-white transition-colors duration-150;
+	@apply font-bold underline decoration-1 underline-offset-4 transition-colors duration-150;
+	color: var(--accent-color);
+}
+.highlight-link:hover {
+	background-color: var(--accent-color);
+	@apply text-white;
 }
 
 .card {
@@ -44,7 +58,8 @@ body {
 }
 
 .blog-header {
-	@apply py-8 px-4 bg-[#ff4500] text-white border-b-2 border-black dark:border-neutral-700 rounded-none;
+	background-color: var(--accent-color);
+	@apply py-8 px-4 text-white border-b-2 border-black dark:border-neutral-700 rounded-none;
 }
 
 .blog-body {
@@ -52,7 +67,8 @@ body {
 }
 
 .gradient-card-bg {
-	@apply bg-[#ff4500] text-white border border-black dark:border-neutral-700 rounded-none;
+	background-color: var(--accent-color);
+	@apply text-white border border-black dark:border-neutral-700 rounded-none;
 }
 
 .crumb-end {

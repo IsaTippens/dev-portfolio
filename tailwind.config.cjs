@@ -2,6 +2,7 @@ const tailwind_theme = require('tailwindcss/defaultTheme');
 
 const config = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
+	darkMode: 'class',
 
 	theme: {
 		extend: {
@@ -10,6 +11,7 @@ const config = {
 				mono: ['JetBrains Mono', 'monospace', ...tailwind_theme.fontFamily.mono]
 			},
 			colors: {
+				accent: 'var(--accent-color)',
 				dark: '#111111',
 				'dark-text': '#e0e0e0',
 				'dark-divider': '#424242',

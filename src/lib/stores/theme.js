@@ -1,12 +1,14 @@
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
-const initialValue = browser && window.matchMedia('(prefers-color-scheme: dark)').matches;
+const initialValue = browser
+	? localStorage.getItem('theme') === 'dark' ||
+		(!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+	: false;
 export const is_dark = writable(initialValue);
 
 if (browser) {
-	const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-	const updateTheme = () => is_dark.set(colorSchemeQuery.matches);
-	colorSchemeQuery.addEventListener('change', updateTheme);
-	updateTheme();
+	is_dark.subscribe((value) => {
+		localStorage.setItem('theme', value ? 'dark' : 'light');
+	});
 }

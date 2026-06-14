@@ -27,7 +27,7 @@
 </svelte:head>
 <div class="border-b border-black dark:border-neutral-700 pb-3 mb-4 flex justify-between items-end">
 	<div>
-		<div class="text-[9px] uppercase tracking-widest font-mono text-[#ff4500]">
+		<div class="text-[9px] uppercase tracking-widest font-mono text-accent">
 			[NAV: <a href="/" class="hover:underline">HOME</a> / PROJECTS]
 		</div>
 		<h1 class="text-2xl font-bold uppercase tracking-tight text-black dark:text-white mt-1">
@@ -48,10 +48,10 @@
 			<div class="border border-black dark:border-neutral-700 p-4 transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-900/30 group relative rounded-none">
 				<a href={'/projects/' + post.path} class="block">
 					<div class="flex flex-col gap-1">
-						<span class="text-[9px] font-mono uppercase tracking-widest text-[#ff4500]">
+						<span class="text-[9px] font-mono uppercase tracking-widest text-accent">
 							{new Date(post.meta.date).toDateString()}
 						</span>
-						<h2 class="text-lg font-bold text-black dark:text-white group-hover:text-[#ff4500] transition-colors duration-150 uppercase tracking-tight">
+						<h2 class="text-lg font-bold text-black dark:text-white group-hover:text-accent transition-colors duration-150 uppercase tracking-tight">
 							{post.meta.title}
 						</h2>
 						<p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 leading-relaxed">
@@ -70,7 +70,7 @@
 				<button
 					onclick={() => goToPage(currentPage - 1)}
 					disabled={currentPage === 1}
-					class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-[#ff4500] hover:text-[#ff4500] disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
+					class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
 				>
 					[PREV]
 				</button>
@@ -80,7 +80,7 @@
 				<button
 					onclick={() => goToPage(currentPage + 1)}
 					disabled={currentPage === totalPages}
-					class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-[#ff4500] hover:text-[#ff4500] disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
+					class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
 				>
 					[NEXT]
 				</button>

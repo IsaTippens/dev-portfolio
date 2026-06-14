@@ -8,6 +8,22 @@
 	import '../prism.css';
 
 	let { children } = $props();
+
+	import { browser } from '$app/environment';
+
+	function toggleTheme() {
+		is_dark.update((d) => !d);
+	}
+
+	$effect(() => {
+		if (browser) {
+			if ($is_dark) {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+		}
+	});
 </script>
 
 <!--
@@ -28,14 +44,19 @@
 		<!-- Top Technical Status Bar -->
 		<div class="flex justify-between items-center px-4 py-2 border-b border-black dark:border-neutral-700 text-[9px] uppercase tracking-widest font-mono text-neutral-500 dark:text-neutral-400">
 			<span class="flex items-center gap-1">
-				<span class="inline-block w-2.5 h-2.5 bg-[#ff4500]"></span>
+				<span class="inline-block w-2.5 h-2.5 bg-accent"></span>
 				<span class="font-bold text-black dark:text-white">TE-OP-PORTFOLIO</span>
 			</span>
-			<span class="hidden sm:inline">SYS: RUNNING</span>
+			<button
+				onclick={toggleTheme}
+				class="hover:text-accent font-bold transition-colors uppercase border border-neutral-300 dark:border-neutral-700 px-1.5 py-0.5 bg-neutral-200/50 dark:bg-neutral-800/50 text-[8px]"
+			>
+				MODE: {$is_dark ? 'DARK' : 'LIGHT'}
+			</button>
 			<span class="flex items-center gap-1.5">
 				<span>BAT: 100%</span>
 				<span class="inline-block w-5 h-2.5 border border-neutral-500 dark:border-neutral-400 p-[1px] relative">
-					<span class="block h-full bg-[#ff4500] w-full"></span>
+					<span class="block h-full bg-accent w-full"></span>
 				</span>
 			</span>
 		</div>
