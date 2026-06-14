@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { is_dark } from '$lib/stores/theme';
 	import { setContext } from 'svelte';
 	setContext('theme', { is_dark });
@@ -10,6 +10,45 @@
 	let { children } = $props();
 
 	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+
+	let batteryLevel = $state<number>(100);
+	let fps = $state<number>(60);
+
+	onMount(() => {
+		// Battery status API
+		if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((navigator as any).getBattery() as Promise<any>).then((battery: any) => {
+				batteryLevel = Math.round(battery.level * 100);
+				battery.addEventListener('levelchange', () => {
+					batteryLevel = Math.round(battery.level * 100);
+				});
+			});
+		}
+
+		// FPS counter
+		let lastTime = performance.now();
+		let frameCount = 0;
+		let animationFrameId: number;
+
+		function updateFps() {
+			const now = performance.now();
+			frameCount++;
+			if (now >= lastTime + 1000) {
+				fps = Math.round((frameCount * 1000) / (now - lastTime));
+				frameCount = 0;
+				lastTime = now;
+			}
+			animationFrameId = requestAnimationFrame(updateFps);
+		}
+
+		animationFrameId = requestAnimationFrame(updateFps);
+
+		return () => {
+			cancelAnimationFrame(animationFrameId);
+		};
+	});
 
 	function toggleTheme() {
 		is_dark.update((d) => !d);
@@ -45,7 +84,7 @@
 		<div class="flex justify-between items-center px-4 py-2 border-b border-black dark:border-neutral-700 text-[9px] uppercase tracking-widest font-mono text-neutral-500 dark:text-neutral-400">
 			<span class="flex items-center gap-1">
 				<span class="inline-block w-2.5 h-2.5 bg-accent"></span>
-				<span class="font-bold text-black dark:text-white">TE-OP-PORTFOLIO</span>
+				<span class="font-bold text-black dark:text-white">DEV-PORTFOLIO</span>
 			</span>
 			<button
 				onclick={toggleTheme}
@@ -54,9 +93,9 @@
 				MODE: {$is_dark ? 'DARK' : 'LIGHT'}
 			</button>
 			<span class="flex items-center gap-1.5">
-				<span>BAT: 100%</span>
+				<span>BAT: {batteryLevel}%</span>
 				<span class="inline-block w-5 h-2.5 border border-neutral-500 dark:border-neutral-400 p-[1px] relative">
-					<span class="block h-full bg-accent w-full"></span>
+					<span class="block h-full bg-accent" style="width: {batteryLevel}%"></span>
 				</span>
 			</span>
 		</div>
@@ -69,7 +108,7 @@
 		<!-- Bottom Technical Status Bar -->
 		<div class="flex justify-between items-center px-4 py-2 border-t border-black dark:border-neutral-700 text-[9px] uppercase tracking-widest font-mono text-neutral-500 dark:text-neutral-400 bg-neutral-200/20 dark:bg-neutral-800/20">
 			<span>SVELTE v5</span>
-			<span>60 FPS</span>
+			<span>{fps} FPS</span>
 			<span>REV: 2026.06</span>
 		</div>
 	</div>
