@@ -46,7 +46,7 @@
 				01 / WOOTBOOK_ULTRA_X16
 			</div>
 			<div class="text-xs leading-relaxed mt-1">
-				<span class="font-bold text-black dark:text-white uppercase">Workstation Laptop:</span> Tongfang-based barebone customizable chassis. Configured with an Intel Core i9-13900HX (24 Cores / 32 Threads), NVIDIA GeForce RTX 4070 Laptop GPU, 16" WQXGA 240Hz display, 32GB DDR5 RAM, and 2TB NVMe Gen4 SSD. Liquid-cooling compatible.
+				<span class="font-bold text-black dark:text-white uppercase">Workstation Laptop:</span> Tongfang-based barebone customizable chassis. Configured with an Intel Core i9-13900HX (24 Cores / 32 Threads), NVIDIA GeForce RTX 4060 Laptop GPU, 16" WQXGA 240Hz display, 32GB DDR5 RAM, and 1TB NVMe Gen4 SSD.
 			</div>
 		</div>
 
@@ -56,7 +56,7 @@
 				02 / NOTHING_PHONE_2
 			</div>
 			<div class="text-xs leading-relaxed mt-1">
-				<span class="font-bold text-black dark:text-white uppercase">Primary Phone:</span> Snapdragon 8+ Gen 1, 6.7" 120Hz LTPO OLED display, 12GB RAM, 256GB storage. Features the signature translucent design and programmable Glyph Interface.
+				<span class="font-bold text-black dark:text-white uppercase">Primary Phone:</span> Snapdragon 8+ Gen 1, 6.7" 120Hz LTPO OLED display, 12GB RAM, 512GB storage. Features the signature translucent design and programmable Glyph Interface.
 			</div>
 		</div>
 
@@ -66,7 +66,7 @@
 				03 / GALAXY_TAB_S9
 			</div>
 			<div class="text-xs leading-relaxed mt-1">
-				<span class="font-bold text-black dark:text-white uppercase">Tablet / Slate:</span> Snapdragon 8 Gen 2, 11" 120Hz Dynamic AMOLED 2X display, 12GB RAM. Used with S-Pen for layout planning, drawing architectures, and reading papers.
+				<span class="font-bold text-black dark:text-white uppercase">Tablet / Slate:</span> Snapdragon 8 Gen 2, 11" 120Hz Dynamic AMOLED 2X display, 12GB RAM. Used with S-Pen for architecture planning, writing notes, and reading papers. Additionally serves as a on-the-go dev machine.
 			</div>
 		</div>
 
