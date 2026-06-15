@@ -119,6 +119,14 @@
 		</table>
 	</div>
 
+	<!-- Social Interfaces Section -->
+	<div class="block border-t border-b border-black dark:border-neutral-700 py-3 my-4">
+		<div class="flex items-center gap-2">
+			<span class="inline-block w-2 h-2 bg-accent"></span>
+			<p class="text-xl font-bold uppercase tracking-tight text-black dark:text-white">Social Interfaces</p>
+		</div>
+	</div>
+
 	<div class="p-4">
 		<Socials />
 	</div>
