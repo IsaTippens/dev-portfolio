@@ -25,16 +25,16 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="canonical" href="https://isatippens.com/projects" />
 </svelte:head>
-<div class="border-b border-black dark:border-neutral-700 pb-3 mb-4 flex justify-between items-end">
+<div class="border-b border-border pb-3 mb-4 flex justify-between items-end">
 	<div>
-		<div class="text-[9px] uppercase tracking-widest font-mono text-accent">
+		<div class="text-tiny uppercase tracking-widest font-mono text-accent">
 			[NAV: <a href="/" class="hover:underline">HOME</a> / PROJECTS]
 		</div>
-		<h1 class="text-2xl font-bold uppercase tracking-tight text-black dark:text-white mt-1">
+		<h1 class="text-2xl font-bold uppercase tracking-tight text-main mt-1">
 			STUFF I MADE
 		</h1>
 	</div>
-	<div class="text-[8px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
+	<div class="text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
 		TOTAL: {posts.length}
 	</div>
 </div>
@@ -45,16 +45,16 @@
 		</div>
 	{:else}
 		{#each paginatedPosts as post, i}
-			<div class="border border-black dark:border-neutral-700 p-4 transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-900/30 group relative rounded-none">
+			<div class="border border-border p-4 transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-900/30 group relative rounded-none">
 				<a href={'/projects/' + post.path} class="block">
 					<div class="flex flex-col gap-1">
-						<span class="text-[9px] font-mono uppercase tracking-widest text-accent">
+						<span class="text-tiny font-mono uppercase tracking-widest text-accent">
 							{new Date(post.meta.date).toDateString()}
 						</span>
-						<h2 class="text-lg font-bold text-black dark:text-white group-hover:text-accent transition-colors duration-150 uppercase tracking-tight">
+						<h2 class="text-lg font-bold text-main group-hover:text-accent transition-colors duration-150 uppercase tracking-tight">
 							{post.meta.title}
 						</h2>
-						<p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 leading-relaxed">
+						<p class="text-xs text-muted mt-1 leading-relaxed">
 							{post.meta.description}
 						</p>
 					</div>
@@ -66,21 +66,21 @@
 		{/each}
 
 		{#if totalPages > 1}
-			<div class="flex justify-between items-center mt-6 py-4 border-t border-black dark:border-neutral-700 text-xs font-mono">
+			<div class="flex justify-between items-center mt-6 py-4 border-t border-border text-xs font-mono">
 				<button
 					onclick={() => goToPage(currentPage - 1)}
 					disabled={currentPage === 1}
-					class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
+					class="btn-primary"
 				>
 					[PREV]
 				</button>
-				<span class="text-neutral-500 dark:text-neutral-400 uppercase tracking-widest text-[9px]">
+				<span class="text-muted uppercase tracking-widest text-tiny">
 					PAGE: {currentPage} // {totalPages}
 				</span>
 				<button
 					onclick={() => goToPage(currentPage + 1)}
 					disabled={currentPage === totalPages}
-					class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
+					class="btn-primary"
 				>
 					[NEXT]
 				</button>

@@ -26,16 +26,16 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="canonical" href="https://isatippens.com/blog" />
 </svelte:head>
-<div class="border-b border-black dark:border-neutral-700 pb-3 mb-4 flex justify-between items-end">
+<div class="border-b border-border pb-3 mb-4 flex justify-between items-end">
 	<div>
-		<div class="text-[9px] uppercase tracking-widest font-mono text-accent">
+		<div class="text-tiny uppercase tracking-widest font-mono text-accent">
 			[NAV: <a href="/" class="hover:underline">HOME</a> / POSTS]
 		</div>
-		<h1 class="text-2xl font-bold uppercase tracking-tight text-black dark:text-white mt-1">
+		<h1 class="text-2xl font-bold uppercase tracking-tight text-main mt-1">
 			STUFF I WROTE
 		</h1>
 	</div>
-	<div class="text-[8px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
+	<div class="text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
 		TOTAL: {posts.length}
 	</div>
 </div>
@@ -48,21 +48,21 @@
 	{/each}
 
 	{#if totalPages > 1}
-		<div class="flex justify-between items-center mt-6 py-4 border-t border-black dark:border-neutral-700 text-xs font-mono">
+		<div class="flex justify-between items-center mt-6 py-4 border-t border-border text-xs font-mono">
 			<button
 				onclick={() => goToPage(currentPage - 1)}
 				disabled={currentPage === 1}
-				class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
+				class="btn-primary"
 			>
 				[PREV]
 			</button>
-			<span class="text-neutral-500 dark:text-neutral-400 uppercase tracking-widest text-[9px]">
+			<span class="text-muted uppercase tracking-widest text-tiny">
 				PAGE: {currentPage} // {totalPages}
 			</span>
 			<button
 				onclick={() => goToPage(currentPage + 1)}
 				disabled={currentPage === totalPages}
-				class="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-neutral-700 text-black dark:text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-black dark:disabled:hover:border-neutral-700 dark:disabled:hover:text-white transition-all rounded-none uppercase text-[10px] tracking-wider"
+				class="btn-primary"
 			>
 				[NEXT]
 			</button>

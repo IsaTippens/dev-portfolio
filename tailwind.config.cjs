@@ -10,14 +10,21 @@ const config = {
 				sans: ['JetBrains Mono', 'monospace', ...tailwind_theme.fontFamily.mono],
 				mono: ['JetBrains Mono', 'monospace', ...tailwind_theme.fontFamily.mono]
 			},
+			fontSize: {
+				'xxs': '10px',
+				'tiny': '9px',
+				'micro': '8px',
+				'nano': '7px',
+				'pico': '6px',
+				'femto': '5px'
+			},
 			colors: {
 				accent: 'var(--accent-color)',
-				dark: '#111111',
-				'dark-text': '#e0e0e0',
-				'dark-divider': '#424242',
-				light: '#fafafa',
-				'light-text': '#121212',
-				'light-divider': '#e0e0e0'
+				background: 'var(--bg-body)',
+				card: 'var(--bg-card)',
+				main: 'var(--text-main)',
+				muted: 'var(--text-muted)',
+				border: 'var(--border-main)'
 			}
 		}
 	},

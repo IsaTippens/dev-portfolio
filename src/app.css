@@ -9,17 +9,27 @@
 
 :root {
 	--accent-color: #0088ff;
+	--bg-body: #eaeae6;
+	--bg-card: #f4f4f2;
+	--text-main: #121212;
+	--text-muted: #737373;
+	--border-main: #000000;
 }
 :root.dark {
 	--accent-color: #00c0ff;
+	--bg-body: #121212;
+	--bg-card: #1c1c1c;
+	--text-main: #ffffff;
+	--text-muted: #a3a3a3;
+	--border-main: #404040;
 }
 
 body {
-	@apply bg-[#eaeae6] text-[#121212] dark:bg-[#121212] dark:text-[#ffffff] font-mono transition-colors duration-300;
+	@apply bg-background text-main font-mono transition-colors duration-300;
 }
 
 .global-text-color {
-	@apply text-[#121212] dark:text-white;
+	@apply text-main;
 }
 
 .global-gradient {
@@ -50,11 +60,11 @@ body {
 }
 
 .card {
-	@apply mt-2 p-[1px] border border-[#121212] dark:border-[#444444] rounded-none;
+	@apply mt-2 p-[1px] border border-border rounded-none;
 }
 
 .card-inner {
-	@apply p-4 bg-[#f4f4f2] dark:bg-[#1c1c1c] rounded-none;
+	@apply p-4 bg-card rounded-none;
 }
 
 .blog-header {
@@ -84,7 +94,7 @@ body {
 .prose h3,
 .prose p,
 .prose li {
-	@apply text-[#121212] dark:text-white font-mono;
+	@apply text-main font-mono;
 }
 
 .prose p {
@@ -93,11 +103,11 @@ body {
 
 .prose img,
 .prose video {
-	@apply rounded-none border border-black dark:border-neutral-700 mx-auto;
+	@apply rounded-none border border-border mx-auto;
 }
 
 .prose pre {
-	@apply mx-auto bg-[#eaeae6] dark:bg-[#1a1a1a] border border-black dark:border-neutral-700 text-[#121212] dark:text-white rounded-none;
+	@apply mx-auto bg-background border border-border text-main rounded-none;
 }
 
 .prose a {
@@ -105,7 +115,7 @@ body {
 }
 
 .blog-content {
-	@apply text-[#121212] dark:text-white font-mono;
+	@apply text-main font-mono;
 }
 
 .blog-content h1 {
@@ -125,7 +135,7 @@ body {
 .blog-content h3,
 .blog-content p,
 .blog-content li {
-	@apply text-[#121212] dark:text-white font-mono;
+	@apply text-main font-mono;
 }
 
 .blog-content p {
@@ -134,11 +144,11 @@ body {
 
 .blog-content img,
 .blog-content video {
-	@apply rounded-none border border-black dark:border-neutral-700 mx-auto;
+	@apply rounded-none border border-border mx-auto;
 }
 
 .blog-content pre {
-	@apply bg-[#eaeae6] dark:bg-[#1a1a1a] border border-black dark:border-neutral-700 text-[#121212] dark:text-white p-4 rounded-none overflow-x-auto;
+	@apply bg-background border border-border text-main p-4 rounded-none overflow-x-auto;
 }
 
 .blog-content a {
@@ -146,7 +156,7 @@ body {
 }
 
 hr {
-	@apply !border-black dark:!border-neutral-700;
+	@apply !border-border;
 }
 
 svg {
@@ -164,4 +174,14 @@ svg {
 
 .animate-marquee {
 	animation: marquee 1.5s linear forwards;
+}
+
+@layer components {
+	.section-label {
+		@apply absolute top-0 -translate-y-1/2 bg-card px-2 uppercase tracking-widest font-mono;
+	}
+
+	.btn-primary {
+		@apply px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-border text-main hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-border disabled:hover:text-main transition-all rounded-none uppercase text-xxs tracking-wider;
+	}
 }

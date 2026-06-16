@@ -137,7 +137,7 @@
 	);
 </script>
 
-<div class="relative w-full bg-[#e6e6e3] dark:bg-[#1e1e1f] border border-black dark:border-neutral-800 p-4 pt-5 pb-3 flex flex-col gap-3.5 shadow-[3px_3px_0px_#121212] dark:shadow-[3px_3px_0px_#333333] select-none overflow-hidden">
+<div class="relative w-full bg-[#e6e6e3] dark:bg-[#1e1e1f] border border-border dark:border-neutral-800 p-4 pt-5 pb-3 flex flex-col gap-3.5 shadow-[3px_3px_0px_#121212] dark:shadow-[3px_3px_0px_#333333] select-none overflow-hidden">
 	<!-- Grid Dots Background -->
 	<div class="absolute inset-0 pointer-events-none opacity-40 dot-grid-bg"></div>
 
@@ -158,8 +158,8 @@
 	<!-- Device Header -->
 	<div class="flex justify-between items-center z-10 px-1">
 		<div class="flex flex-col">
-			<span class="text-[8px] font-bold tracking-wider text-neutral-800 dark:text-neutral-200 font-mono">PO-100 / ID-PHOTO</span>
-			<span class="text-[6px] tracking-widest text-neutral-500 dark:text-neutral-400 font-mono uppercase">TE_PORTRAIT_ENGINE</span>
+			<span class="text-micro font-bold tracking-wider text-neutral-800 dark:text-neutral-200 font-mono">PO-100 / ID-PHOTO</span>
+			<span class="text-pico tracking-widest text-muted font-mono uppercase">TE_PORTRAIT_ENGINE</span>
 		</div>
 		
 		<!-- Speaker grill -->
@@ -201,7 +201,7 @@
 
 			<!-- Dynamic HUD Overlay -->
 			<div 
-				class="absolute inset-0 pointer-events-none flex flex-col justify-between p-2 font-mono text-[7px] z-30 transition-colors duration-300 select-none"
+				class="absolute inset-0 pointer-events-none flex flex-col justify-between p-2 font-mono text-nano z-30 transition-colors duration-300 select-none"
 				style="color: {hudColor};"
 			>
 				<div class="flex justify-between items-start">
@@ -234,7 +234,7 @@
 		{#each filters as f}
 			<div class="flex flex-col items-center gap-1">
 				<button 
-					class="w-7 h-7 rounded-full flex items-center justify-center font-mono text-[7px] font-bold border transition-all select-none relative focus:outline-none active:scale-95 {activeFilter === f ? 'bg-neutral-900 text-white border-neutral-950 dark:bg-white dark:text-black dark:border-white shadow-[inset_1px_1px_2px_rgba(0,0,0,0.5)] translate-y-px' : 'bg-[#f4f4f2] text-neutral-800 border-neutral-300 dark:bg-neutral-850 dark:text-neutral-250 dark:border-neutral-700 shadow-[0_2px_0_#b5b5b8,0_3px_2px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_0_#111,0_3px_2px_rgba(0,0,0,0.3)] active:translate-y-px active:shadow-none'}"
+					class="{activeFilter === f ? 'filter-btn-active' : 'filter-btn'}"
 					onclick={() => selectFilter(f)}
 				>
 					{f === 'GAMEBOY' ? 'GB' : f === 'DOT_MATRIX' ? 'DM' : f.slice(0, 3)}
@@ -269,8 +269,8 @@
 				</div>
 			</div>
 			<div class="flex flex-col items-center leading-none">
-				<span class="text-[7px] text-neutral-800 dark:text-neutral-200 font-bold font-mono tracking-wider">FREQ</span>
-				<span class="text-[6px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5 font-bold">{Math.round((freq + 180) / 3.63)}</span>
+				<span class="text-nano text-neutral-800 dark:text-neutral-200 font-bold font-mono tracking-wider">FREQ</span>
+				<span class="text-pico text-muted font-mono mt-0.5 font-bold">{Math.round((freq + 180) / 3.63)}</span>
 			</div>
 		</div>
 
@@ -295,8 +295,8 @@
 				</div>
 			</div>
 			<div class="flex flex-col items-center leading-none">
-				<span class="text-[7px] text-neutral-800 dark:text-neutral-200 font-bold font-mono tracking-wider">PHAS</span>
-				<span class="text-[6px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5 font-bold">{Math.round((phase + 180) / 3.63)}</span>
+				<span class="text-nano text-neutral-800 dark:text-neutral-200 font-bold font-mono tracking-wider">PHAS</span>
+				<span class="text-pico text-muted font-mono mt-0.5 font-bold">{Math.round((phase + 180) / 3.63)}</span>
 			</div>
 		</div>
 
@@ -321,14 +321,14 @@
 				</div>
 			</div>
 			<div class="flex flex-col items-center leading-none">
-				<span class="text-[7px] text-neutral-800 dark:text-neutral-200 font-bold font-mono tracking-wider">RGB</span>
-				<span class="text-[6px] text-neutral-500 dark:text-neutral-400 font-mono mt-0.5 font-bold">{Math.round((rgb + 180) / 3.63)}</span>
+				<span class="text-nano text-neutral-800 dark:text-neutral-200 font-bold font-mono tracking-wider">RGB</span>
+				<span class="text-pico text-muted font-mono mt-0.5 font-bold">{Math.round((rgb + 180) / 3.63)}</span>
 			</div>
 		</div>
 	</div>
 
 	<!-- Bottom Hardware Details -->
-	<div class="flex justify-between items-center mt-2.5 pt-2 border-t border-dashed border-neutral-400/40 dark:border-neutral-800 text-[5px] text-neutral-500 dark:text-neutral-400 font-mono uppercase tracking-widest z-10">
+	<div class="flex justify-between items-center mt-2.5 pt-2 border-t border-dashed border-neutral-400/40 dark:border-neutral-800 text-femto text-muted font-mono uppercase tracking-widest z-10">
 		<div class="flex items-center gap-1.5">
 			<!-- 3.5mm Jack -->
 			<div class="w-3.5 h-3.5 rounded-full bg-neutral-950 border border-neutral-400/50 dark:border-neutral-800 flex items-center justify-center relative shadow-inner">
@@ -344,7 +344,7 @@
 			<!-- USB-C Port & Cable -->
 			<div class="relative flex items-center justify-center">
 				<div class="w-4 h-2 rounded-[1px] bg-neutral-950 border border-neutral-400/50 dark:border-neutral-800 flex items-center justify-center shadow-inner">
-					<div class="w-2.5 h-0.5 rounded-full bg-neutral-850 border border-neutral-600"></div>
+					<div class="w-2.5 h-0.5 rounded-full bg-neutral-800 border border-neutral-600"></div>
 				</div>
 				
 				{#if isCharging}
@@ -442,5 +442,11 @@
 			background-color: #7f1d1d;
 			box-shadow: none;
 		}
+	}
+	.filter-btn {
+		@apply w-7 h-7 rounded-full flex items-center justify-center font-mono text-nano font-bold border transition-all select-none relative focus:outline-none active:scale-95 bg-[#f4f4f2] text-neutral-800 border-neutral-300 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700 shadow-[0_2px_0_#b5b5b8,0_3px_2px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_0_#111,0_3px_2px_rgba(0,0,0,0.3)] active:translate-y-px active:shadow-none;
+	}
+	.filter-btn-active {
+		@apply w-7 h-7 rounded-full flex items-center justify-center font-mono text-nano font-bold border transition-all select-none relative focus:outline-none active:scale-95 bg-neutral-900 text-white border-neutral-950 dark:bg-white dark:text-black dark:border-white shadow-[inset_1px_1px_2px_rgba(0,0,0,0.5)] translate-y-px;
 	}
 </style>

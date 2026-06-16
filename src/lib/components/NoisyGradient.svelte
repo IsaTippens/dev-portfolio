@@ -8,7 +8,7 @@ https://css-tricks.com/grainy-gradients/
 
 <div
 	class="w-full h-full transition-colors duration-300
-	{$is_dark ? 'bg-[#121212] text-white' : 'bg-[#eaeae6] text-[#121212]'}"
+	bg-background text-main"
 	style="
 		background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
 		background-size: 20px 20px;
