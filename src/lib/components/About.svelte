@@ -1,109 +1,172 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import ProfilePhoto from '$lib/components/ProfilePhoto.svelte';
 
 	let { data } = $props<{ data: any }>();
-
-	const penguin = [
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0],
-		[0, 0, 0, 3, 3, 3, 5, 3, 3, 5, 3, 3, 3, 0, 0, 0],
-		[0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0],
-		[0, 0, 0, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 0, 0, 0],
-		[0, 0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 3, 3, 0, 0, 0],
-		[0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 0, 0],
-		[0, 0, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 0, 0],
-		[0, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 3, 0],
-		[3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3],
-		[3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3, 3],
-		[0, 3, 3, 3, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 0],
-		[0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0],
-		[0, 0, 0, 0, 4, 4, 4, 0, 0, 4, 4, 4, 0, 0, 0, 0]
-	];
-
-	const spaceship = [
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 7, 7, 7, 7],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 7, 7, 7],
-		[0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 8, 8, 5, 5, 7, 7],
-		[0, 0, 0, 0, 0, 0, 0, 5, 5, 8, 8, 8, 8, 5, 5, 7],
-		[0, 7, 7, 7, 7, 7, 5, 5, 8, 8, 8, 8, 8, 5, 5, 0],
-		[0, 7, 7, 7, 7, 5, 5, 5, 8, 8, 8, 8, 5, 5, 0, 0],
-		[0, 0, 7, 7, 5, 5, 5, 5, 5, 8, 8, 5, 5, 0, 0, 0],
-		[0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0],
-		[0, 0, 0, 4, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0],
-		[0, 0, 4, 4, 4, 5, 5, 5, 5, 5, 7, 0, 0, 0, 0, 0],
-		[0, 0, 4, 4, 4, 4, 5, 5, 5, 7, 7, 0, 0, 0, 0, 0],
-		[0, 0, 4, 4, 4, 4, 4, 5, 7, 7, 7, 0, 0, 0, 0, 0],
-		[0, 0, 0, 4, 4, 4, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	];
-
-	interface Artwork {
-		name: string;
-		matrix: number[][];
-	}
-
-	const emojiArtworks: Artwork[] = [
-		{ name: 'penguin', matrix: penguin },
-		{ name: 'spaceship', matrix: spaceship }
-	];
-
-	let selectedArtwork = $state<Artwork | null>(null);
-
-	onMount(() => {
-		const randomIndex = Math.floor(Math.random() * emojiArtworks.length);
-		selectedArtwork = emojiArtworks[randomIndex];
-	});
 </script>
 
 <div class="grid gap-6">
 	<!-- Location, Bio Overview and Photo Panel -->
 	<div class="flex flex-col md:flex-row gap-6">
-		<div class="border border-black dark:border-neutral-700 p-3 bg-neutral-100 dark:bg-neutral-900/40 relative flex-1">
-			<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[8px] uppercase tracking-widest text-accent font-mono">
-				[BIO_DATA]
-			</div>
-			<div class="text-[11px] leading-relaxed font-mono">
-				<span class="text-accent">LOCATION:</span> Cape Town, South Africa <br/>
-				<span class="text-accent">STATUS:</span> {data.age} y/o programmer ({data.devYear} yrs code) <br/>
-				<span class="text-accent">EXPERIENCE:</span> software engineer for {data.seYear} years <br/>
-				<span class="text-accent">VIBE_CHECK:</span> vibe coder for {data.vibeYear} year
+		<div class="flex flex-col gap-6 flex-1">
+			<div class="border border-black dark:border-neutral-700 p-3 bg-neutral-100 dark:bg-neutral-900/40 relative">
+				<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[8px] uppercase tracking-widest text-accent font-mono">
+					[BIO_DATA]
+				</div>
+				<div class="text-[11px] leading-relaxed font-mono">
+					<span class="text-accent">LOCATION:</span> Cape Town, South Africa <br />
+					<span class="text-accent">STATUS:</span> {data.age} y/o programmer ({data.devYear} yrs code) <br />
+					<span class="text-accent">EXPERIENCE:</span> software engineer for {data.seYear} years <br />
+					<span class="text-accent">VIBE_CHECK:</span> vibe coder for {data.vibeYear} year
+				</div>
 			</div>
 
-			<!-- Random Dot Art Emoji (Cowboy, Penguin, Spaceship) -->
-			{#if selectedArtwork}
-				<div class="absolute bottom-3 right-3 hidden md:block z-10">
-					<div class="flex flex-col items-end gap-1">
-						<!-- Matrix Grid -->
-						<div class="grid gap-0.5 p-1 bg-neutral-200/50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700/60 rounded-none shadow-[1px_1px_0px_rgba(0,0,0,0.15)] dark:shadow-none" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-							{#each selectedArtwork.matrix as row}
-								{#each row as cell}
-									<div 
-										class="w-2 h-2 rounded-full transition-colors duration-300 {
-											cell === 0 ? 'bg-neutral-300 dark:bg-neutral-900 opacity-25' :
-											cell === 1 ? 'bg-[#ffd43b]' :
-											cell === 2 ? 'bg-[#a0522d]' :
-											cell === 3 ? 'bg-neutral-900 dark:bg-black' :
-											cell === 4 ? 'bg-[#ff5500]' :
-											cell === 5 ? 'bg-neutral-100 dark:bg-white' :
-											cell === 7 ? 'bg-[#e03131]' :
-											cell === 8 ? 'bg-[#1c7ed6]' : ''
-										}"
-									></div>
-								{/each}
-							{/each}
+			<!-- Cartography Compartment -->
+			<div class="border border-black dark:border-neutral-700 p-4 relative hidden md:block bg-neutral-100/50 dark:bg-neutral-900/10">
+				<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[8px] uppercase tracking-widest text-accent font-mono">
+					[CARTOGRAPHY_CPT]
+				</div>
+				
+				<div class="flex gap-6 items-center">
+					<!-- Map SVG -->
+					<div class="w-2/3 border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black/40 p-2 relative h-48 flex items-center justify-center overflow-hidden">
+						<!-- Coordinates labels inside map -->
+						<span class="absolute top-1 left-2 text-[6px] font-mono text-neutral-500 dark:text-neutral-450">33°54'00"S</span>
+						<span class="absolute bottom-1 right-2 text-[6px] font-mono text-neutral-500 dark:text-neutral-450">18°26'00"E</span>
+						
+						<svg viewBox="0 -80 320 280" class="w-full h-full text-neutral-800 dark:text-neutral-200 opacity-90">
+							<!-- Grid lines -->
+							<g class="stroke-neutral-200 dark:stroke-neutral-800 stroke-1" stroke-dasharray="2 4">
+								<line x1="80" y1="-80" x2="80" y2="200" />
+								<line x1="160" y1="-80" x2="160" y2="200" />
+								<line x1="240" y1="-80" x2="240" y2="200" />
+								<line x1="0" y1="-50" x2="320" y2="-50" />
+								<line x1="0" y1="0" x2="320" y2="0" />
+								<line x1="0" y1="50" x2="320" y2="50" />
+								<line x1="0" y1="100" x2="320" y2="100" />
+								<line x1="0" y1="150" x2="320" y2="150" />
+							</g>
+							
+							<!-- Coastline & Robben Island -->
+							<path 
+								d="M 40,-70 C 50,-50 65,-30 85,0 C 88,10 90,20 95,25 C 105,30 115,35 105,42 C 100,45 98,48 95,53 C 90,60 92,70 95,78 C 95,85 85,100 85,115 C 85,140 95,160 102,180 C 106,192 112,190 114,180 C 116,160 118,140 125,125 C 130,115 145,108 160,105 C 180,102 195,108 200,115 C 205,125 200,165 208,185 C 212,195 220,185 225,180 C 235,170 250,168 265,165 C 275,162 285,165 295,175 C 305,185 315,190 320,195 M 80,25 C 83,23 85,26 83,28 C 80,29 77,27 80,25 Z M 35,-65 C 38,-67 40,-64 38,-62 C 35,-61 32,-63 35,-65 Z" 
+								fill="none" 
+								class="stroke-neutral-700 dark:stroke-neutral-500"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+							
+							<!-- Elevation/Topography contours (Table Mountain / Peninsula peaks) -->
+							<!-- Table Mountain range contour 1 -->
+							<path 
+								d="M 102,50 Q 112,48 118,52 Q 122,58 115,62 Q 108,65 102,60 Q 98,55 102,50 Z" 
+								fill="none" 
+								class="stroke-neutral-300 dark:stroke-neutral-800" 
+								stroke-width="1"
+							/>
+							<!-- Table Mountain plateau contour 2 -->
+							<path 
+								d="M 106,53 Q 110,50 115,53 Q 118,56 115,60 Q 110,63 106,60 Q 103,56 106,53 Z" 
+								fill="none" 
+								class="stroke-neutral-300 dark:stroke-neutral-800" 
+								stroke-width="1"
+							/>
+							
+							<!-- Constantiaberg range contour -->
+							<path 
+								d="M 95,78 Q 102,75 108,80 Q 112,85 108,92 Q 102,95 95,90 Q 92,85 95,78 Z" 
+								fill="none" 
+								class="stroke-neutral-300 dark:stroke-neutral-800" 
+								stroke-width="1"
+							/>
+							
+							<!-- Swartkop (Simon's Town) range contour -->
+							<path 
+								d="M 108,135 Q 115,130 118,135 Q 120,140 118,145 Q 112,148 108,142 Q 105,138 108,135 Z" 
+								fill="none" 
+								class="stroke-neutral-300 dark:stroke-neutral-800" 
+								stroke-width="1"
+							/>
+							
+							<!-- Kogelberg range contour -->
+							<path 
+								d="M 215,125 Q 225,115 235,125 Q 240,135 230,145 Q 220,150 215,140 Q 210,130 215,125 Z" 
+								fill="none" 
+								class="stroke-neutral-300 dark:stroke-neutral-800" 
+								stroke-width="1"
+							/>
+
+							<!-- Ocean labels -->
+							<text x="35" y="120" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[6px] font-mono tracking-widest uppercase rotate-[-90deg]">Atlantic Ocean</text>
+							<text x="140" y="150" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[6px] font-mono tracking-widest uppercase">False Bay</text>
+							<text x="120" y="25" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[5px] font-mono uppercase">Table Bay</text>
+							
+							<!-- Mountain labels -->
+							<text x="120" y="55" class="fill-neutral-600 dark:fill-neutral-400 text-[4.5px] font-mono uppercase tracking-wider">Table Mt.</text>
+							<text x="120" y="60" class="fill-neutral-500 dark:fill-neutral-500 text-[4px] font-mono">1086m</text>
+							
+							<!-- Point markers & City label -->
+							<!-- Cape Town City Bowl -->
+							<circle cx="110" cy="43" r="2" class="fill-accent opacity-75" />
+							<circle cx="110" cy="43" r="1.5" class="fill-accent" />
+							<text x="115" y="45" class="fill-neutral-800 dark:fill-neutral-200 text-[6px] font-mono font-bold uppercase tracking-wider">Cpt City</text>
+							
+							<!-- Cape of Good Hope / Cape Point -->
+							<circle cx="102" cy="180" r="1.5" class="fill-neutral-550 dark:fill-neutral-400" />
+							<text x="107" y="182" class="fill-neutral-500 dark:fill-neutral-400 text-[5px] font-mono uppercase">Cape Point</text>
+							
+							<!-- Melkbosstrand -->
+							<circle cx="88" cy="10" r="1.5" class="fill-neutral-550 dark:fill-neutral-400" />
+							<text x="93" y="12" class="fill-neutral-500 dark:fill-neutral-400 text-[5px] font-mono uppercase">Melkbosstrand</text>
+							
+							<!-- Yzerfontein -->
+							<circle cx="45" cy="-68" r="1.5" class="fill-neutral-550 dark:fill-neutral-400" />
+							<text x="50" y="-66" class="fill-neutral-500 dark:fill-neutral-400 text-[5px] font-mono uppercase">Yzerfontein</text>
+							
+							<!-- Hermanus -->
+							<circle cx="265" cy="165" r="1.5" class="fill-neutral-550 dark:fill-neutral-400" />
+							<text x="260" y="158" class="fill-neutral-500 dark:fill-neutral-400 text-[5px] font-mono uppercase">Hermanus</text>
+						</svg>
+					</div>
+					
+					<!-- Cartography Metadata and Stats -->
+					<div class="flex-grow font-mono text-[9px] leading-relaxed self-stretch flex flex-col justify-between py-1 border-l border-neutral-300/60 dark:border-neutral-800/80 pl-6">
+						<div>
+							<div class="text-[10px] font-bold text-accent tracking-wider uppercase mb-1">Cape Peninsula Survey</div>
+							<div class="grid grid-cols-2 gap-x-2 gap-y-1 text-neutral-600 dark:text-neutral-400">
+								<div>PROJECTION:</div><div class="text-neutral-800 dark:text-neutral-200">TRANS_MERCATOR</div>
+								<div>DATUM:</div><div class="text-neutral-800 dark:text-neutral-200">WGS84</div>
+								<div>COORDS:</div><div class="text-neutral-800 dark:text-neutral-200">33.9249° S, 18.4241° E</div>
+								<div>ELEVATION:</div><div class="text-neutral-800 dark:text-neutral-200">0m - 1086m (TABLE MT.)</div>
+								<div>VAR_N:</div><div class="text-neutral-800 dark:text-neutral-200">25.3° W (ANNUAL 0.1° W)</div>
+							</div>
 						</div>
-						<!-- Small label under the dot art, matching TE style -->
-						<span class="text-[5px] text-neutral-400 dark:text-neutral-500 font-mono tracking-widest uppercase select-none">
-							SYS_GRP: {selectedArtwork.name}_art.bin
-						</span>
+						
+						<!-- Scale and Compass -->
+						<div class="flex items-center justify-between pt-2 border-t border-dashed border-neutral-350 dark:border-neutral-850">
+							<div class="flex flex-col gap-0.5">
+								<span class="text-[7px] text-neutral-400 dark:text-neutral-500">SCALE: 1 : 250,000</span>
+								<div class="flex items-center gap-1">
+									<div class="w-10 h-1 border border-neutral-400 dark:border-neutral-700 relative p-[0.5px]">
+										<div class="w-1/2 h-full bg-neutral-850 dark:bg-neutral-300"></div>
+									</div>
+									<span class="text-[6px] text-neutral-600 dark:text-neutral-400">5 KM</span>
+								</div>
+							</div>
+							
+							<!-- Mini compass -->
+							<div class="flex items-center gap-1.5 pr-2">
+								<div class="w-6 h-6 rounded-full border border-neutral-300 dark:border-neutral-800 flex items-center justify-center relative">
+									<div class="absolute w-0.5 h-4 bg-neutral-400 dark:bg-neutral-650"></div>
+									<!-- North pointer -->
+									<div class="absolute top-1 w-0 h-0 border-l-[2px] border-r-[2px] border-b-[4px] border-l-transparent border-r-transparent border-b-accent"></div>
+									<span class="absolute -top-1.5 text-[5px] font-bold text-accent">N</span>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-			{/if}
+			</div>
 		</div>
 		<!-- Profile Photo Section -->
 		<div class="w-full max-w-[220px] mx-auto md:max-w-none md:w-48 shrink-0 flex items-center justify-center">
@@ -139,4 +202,5 @@
 			Currently mentoring cybersecurity teams at UWC (2024, 2026). Represented UWC as a SANReN finalist in 2023, and secured 1st place in 2025.
 		</div>
 	</div>
+
 </div>
