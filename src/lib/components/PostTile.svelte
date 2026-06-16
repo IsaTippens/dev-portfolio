@@ -1,5 +1,10 @@
-<script>
-	let { data } = $props();
+<script lang="ts">
+	let { data, basePath = '/blog', showId = true, bordered = false } = $props<{
+		data: any;
+		basePath?: string;
+		showId?: boolean;
+		bordered?: boolean;
+	}>();
 </script>
 
 <!--
@@ -11,13 +16,15 @@ Description
 -->
 
 <a 
-	class="block border border-transparent hover:border-border p-4 transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-900/30 group relative rounded-none" 
-	href={`/blog/${data.path}`}
+	class="block border {bordered ? 'border-border' : 'border-transparent'} hover:border-border p-4 transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-900/30 group relative rounded-none" 
+	href={`${basePath}/${data.path}`}
 >
-	<!-- Tiny technical prefix -->
-	<div class="absolute top-2 right-4 text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
-		[ID: {data.path.slice(0, 8)}]
-	</div>
+	{#if showId}
+		<!-- Tiny technical prefix -->
+		<div class="absolute top-2 right-4 text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
+			[ID: {data.path.slice(0, 8)}]
+		</div>
+	{/if}
 
 	<div class="flex flex-col gap-1">
 		<span class="text-tiny font-mono uppercase tracking-widest text-accent">

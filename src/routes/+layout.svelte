@@ -13,6 +13,7 @@
 	import { onMount } from 'svelte';
 
 	import { isCharging, batteryLevel, playLightning } from '$lib/stores/battery';
+	let fps = $state<number>(60);
 
 	onMount(() => {
 		// Battery status API
