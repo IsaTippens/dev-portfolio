@@ -15,27 +15,31 @@
 	let rgb = $state(filterPresets['LCD'].rgb);
 
 	let isCharging = $state(false);
+	let batteryLevel = $state<number>(100);
 
 	$effect(() => {
 		let battery: any = null;
 		
-		const updateCharging = () => {
+		const updateBattery = () => {
 			if (battery) {
 				isCharging = battery.charging;
+				batteryLevel = Math.round(battery.level * 100);
 			}
 		};
 
 		if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
 			(navigator as any).getBattery().then((b: any) => {
 				battery = b;
-				updateCharging();
-				b.addEventListener('chargingchange', updateCharging);
+				updateBattery();
+				b.addEventListener('chargingchange', updateBattery);
+				b.addEventListener('levelchange', updateBattery);
 			});
 		}
 
 		return () => {
 			if (battery) {
-				battery.removeEventListener('chargingchange', updateCharging);
+				battery.removeEventListener('chargingchange', updateBattery);
+				battery.removeEventListener('levelchange', updateBattery);
 			}
 		};
 	});
@@ -350,7 +354,11 @@
 						<!-- Connector body -->
 						<div class="w-4 h-4 bg-[#eaeae6] dark:bg-[#2e2e30] border border-neutral-800 dark:border-neutral-950 rounded-[1px] flex items-center justify-center relative shadow-md">
 							<!-- Small TE-inspired indicator dot -->
-							<div class="w-1 h-1 rounded-full bg-[#ff5500]"></div>
+							<div 
+								class="w-1 h-1 rounded-full indicator-dot" 
+								class:green={batteryLevel === 100}
+								class:blink-red={batteryLevel !== 100}
+							></div>
 						</div>
 						<!-- Strain relief -->
 						<div class="w-1.5 h-1 bg-neutral-800 dark:bg-neutral-900 rounded-b-[1px]"></div>
@@ -417,5 +425,22 @@
 	}
 	.usb-c-cable {
 		animation: plug-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+	}
+	.indicator-dot.green {
+		background-color: #22c55e;
+		box-shadow: 0 0 2px #22c55e;
+	}
+	.indicator-dot.blink-red {
+		animation: blink-red 2.5s infinite ease-in-out;
+	}
+	@keyframes blink-red {
+		0%, 100% {
+			background-color: #ef4444;
+			box-shadow: 0 0 2px #ef4444;
+		}
+		50% {
+			background-color: #7f1d1d;
+			box-shadow: none;
+		}
 	}
 </style>
