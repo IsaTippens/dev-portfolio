@@ -12,54 +12,60 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 
-	let batteryLevel = $state<number>(100);
-	let fps = $state<number>(60);
-	let isCharging = $state(false);
-	let playLightning = $state(false);
+	import { isCharging, batteryLevel, playLightning } from '$lib/stores/battery';
 
 	onMount(() => {
 		// Battery status API
 		if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((navigator as any).getBattery() as Promise<any>).then((battery: any) => {
-				batteryLevel = Math.round(battery.level * 100);
-				isCharging = battery.charging;
-				battery.addEventListener('levelchange', () => {
-					batteryLevel = Math.round(battery.level * 100);
-				});
-				battery.addEventListener('chargingchange', () => {
-					const newCharging = battery.charging;
-					if (newCharging && !isCharging) {
-						playLightning = true;
-						setTimeout(() => {
-							playLightning = false;
-						}, 1500);
-					}
-					isCharging = newCharging;
-				});
-			});
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				((navigator as any).getBattery() as Promise<any>)
+					.then((battery: any) => {
+						batteryLevel.set(Math.round(battery.level * 100));
+						isCharging.set(battery.charging);
+						battery.addEventListener('levelchange', () => {
+							batteryLevel.set(Math.round(battery.level * 100));
+						});
+						battery.addEventListener('chargingchange', () => {
+							const newCharging = battery.charging;
+							let currentIsCharging = false;
+							isCharging.subscribe(v => currentIsCharging = v)();
+
+							if (newCharging && !currentIsCharging) {
+								playLightning.set(true);
+								setTimeout(() => {
+									playLightning.set(false);
+								}, 1500);
+							}
+							isCharging.set(newCharging);
+						});
+					})
+					.catch(() => {});
+			} catch (e) {
+				// Ignored
+			}
 		}
 
 		// FPS counter
-		let lastTime = performance.now();
+		let lastTime: number | null = null;
 		let frameCount = 0;
 		let animationFrameId: number;
 
-		function updateFps() {
-			const now = performance.now();
+		function updateFps(timestamp: number) {
+			if (lastTime === null) lastTime = timestamp;
 			frameCount++;
-			if (now >= lastTime + 1000) {
-				fps = Math.round((frameCount * 1000) / (now - lastTime));
+			if (timestamp >= lastTime + 1000) {
+				fps = Math.round((frameCount * 1000) / (timestamp - lastTime));
 				frameCount = 0;
-				lastTime = now;
+				lastTime = timestamp;
 			}
-			animationFrameId = requestAnimationFrame(updateFps);
+			animationFrameId = window.requestAnimationFrame(updateFps);
 		}
 
-		animationFrameId = requestAnimationFrame(updateFps);
+		animationFrameId = window.requestAnimationFrame(updateFps);
 
 		return () => {
-			cancelAnimationFrame(animationFrameId);
+			window.cancelAnimationFrame(animationFrameId);
 		};
 	});
 
@@ -95,7 +101,7 @@
 	>
 		<!-- Top Technical Status Bar -->
 		<div class="flex justify-between items-center px-4 py-2 border-b border-border text-xxs uppercase tracking-widest font-mono text-muted relative overflow-hidden">
-			{#if playLightning}
+			{#if $playLightning}
 				<div class="absolute inset-0 bg-accent/20 flex items-center z-20 pointer-events-none">
 					<div class="animate-marquee whitespace-nowrap text-tiny font-bold text-accent font-mono flex items-center">
 						⚡ CHARGER_CONNECTED // POWERING_UP // ⚡ ⚡ ⚡
@@ -112,10 +118,26 @@
 			>
 				MODE: {$is_dark ? 'DARK' : 'LIGHT'}
 			</button>
-			<span class="flex items-center gap-1.5">
-				<span>BAT: {batteryLevel}%</span>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<span
+				class="flex items-center gap-1.5 cursor-pointer"
+				onclick={() => {
+					isCharging.update(v => {
+						const newCharging = !v;
+						if (newCharging) {
+							playLightning.set(true);
+							setTimeout(() => {
+								playLightning.set(false);
+							}, 1500);
+						}
+						return newCharging;
+					});
+				}}
+			>
+				<span>BAT: {$batteryLevel}%</span>
 				<span class="inline-block w-5 h-2.5 border border-muted p-[1px] relative">
-					<span class="block h-full bg-accent" style="width: {batteryLevel}%"></span>
+					<span class="block h-full bg-accent" style="width: {$batteryLevel}%"></span>
 				</span>
 			</span>
 		</div>

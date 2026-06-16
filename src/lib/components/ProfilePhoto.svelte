@@ -14,35 +14,7 @@
 	let phase = $state(filterPresets['LCD'].phase);
 	let rgb = $state(filterPresets['LCD'].rgb);
 
-	let isCharging = $state(false);
-	let batteryLevel = $state<number>(100);
-
-	$effect(() => {
-		let battery: any = null;
-		
-		const updateBattery = () => {
-			if (battery) {
-				isCharging = battery.charging;
-				batteryLevel = Math.round(battery.level * 100);
-			}
-		};
-
-		if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
-			(navigator as any).getBattery().then((b: any) => {
-				battery = b;
-				updateBattery();
-				b.addEventListener('chargingchange', updateBattery);
-				b.addEventListener('levelchange', updateBattery);
-			});
-		}
-
-		return () => {
-			if (battery) {
-				battery.removeEventListener('chargingchange', updateBattery);
-				battery.removeEventListener('levelchange', updateBattery);
-			}
-		};
-	});
+	import { isCharging, batteryLevel } from '$lib/stores/battery';
 
 	function selectFilter(f: FilterType) {
 		activeFilter = f;
@@ -205,7 +177,7 @@
 				style="color: {hudColor};"
 			>
 				<div class="flex justify-between items-start">
-					<span class="bg-black/60 px-1 py-0.5 rounded-sm tracking-wider">{isCharging ? 'PWR: CHG' : 'LNK: ON'}</span>
+					<span class="bg-black/60 px-1 py-0.5 rounded-sm tracking-wider">{$isCharging ? 'PWR: CHG' : 'LNK: ON'}</span>
 					<div class="flex items-center gap-1 bg-black/60 px-1 py-0.5 rounded-sm">
 						<span class="w-1.5 h-1.5 rounded-full bg-[#ff3300] animate-pulse"></span>
 						<span class="text-white">REC</span>
@@ -347,7 +319,7 @@
 					<div class="w-2.5 h-0.5 rounded-full bg-neutral-800 border border-neutral-600"></div>
 				</div>
 				
-				{#if isCharging}
+				{#if $isCharging}
 					<div class="absolute top-[1px] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-30 usb-c-cable">
 						<!-- Connector collar (inserted tip) -->
 						<div class="w-2 h-0.5 bg-neutral-400 dark:bg-neutral-500 border-x border-neutral-500"></div>
@@ -356,8 +328,8 @@
 							<!-- Small TE-inspired indicator dot -->
 							<div 
 								class="w-1 h-1 rounded-full indicator-dot" 
-								class:green={batteryLevel === 100}
-								class:blink-red={batteryLevel !== 100}
+								class:green={$batteryLevel === 100}
+								class:blink-red={$batteryLevel !== 100}
 							></div>
 						</div>
 						<!-- Strain relief -->
