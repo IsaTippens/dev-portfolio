@@ -15,25 +15,21 @@
 	<meta name="twitter:site" content="@issssaaaaaaaaah" />
 	<meta name="twitter:creator" content="@issssaaaaaaaaah" />
 </svelte:head>
-<div>
+<div class="border-b border-border pb-3 mb-6 flex justify-between items-end">
 	<div>
-		<span class="font-semibold">
-			<a href="/" class="">Home</a> /
-			<a href="/blog" class="">Posts</a> /
-			<span class="crumb-end truncate whitespace-nowrap">{slug}</span>
-		</span>
-	</div>
-	<div>
-		<p
-			class="text-3xl font-semibold truncate whitespace-nowrap hover:whitespace-normal"
-		>
+		<div class="text-tiny uppercase tracking-widest font-mono text-accent">
+			[NAV: <a href="/" class="hover:underline">HOME</a> / <a href="/blog" class="hover:underline">POSTS</a> / {slug ? slug.toUpperCase() : ''}]
+		</div>
+		<h1 class="text-2xl font-bold uppercase tracking-tight text-main mt-1">
 			{title}
-		</p>
-		<p class="">{new Date(date).toDateString()}</p>
+		</h1>
+	</div>
+	<div class="text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
+		{new Date(date).toDateString()}
 	</div>
 </div>
-<main class="blog-body">
-	<div class="all-prose blog"><Content /></div>
+<main class="my-6">
+	<div class="blog-content"><Content /></div>
 </main>
 <footer>
 	<Divider />
