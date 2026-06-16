@@ -91,13 +91,13 @@
 
 	<!-- TE Device Chassis -->
 	<div
-		class="w-full max-w-[640px] bg-[#f4f4f2] dark:bg-[#1c1c1c] border-2 border-black dark:border-neutral-700 z-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] flex flex-col relative"
+		class="w-full max-w-[700px] bg-[#f4f4f2] dark:bg-[#1c1c1c] border-2 border-black dark:border-neutral-700 z-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] flex flex-col relative"
 	>
 		<!-- Top Technical Status Bar -->
-		<div class="flex justify-between items-center px-4 py-2 border-b border-black dark:border-neutral-700 text-[9px] uppercase tracking-widest font-mono text-neutral-500 dark:text-neutral-400 relative overflow-hidden">
+		<div class="flex justify-between items-center px-4 py-2 border-b border-black dark:border-neutral-700 text-[10px] uppercase tracking-widest font-mono text-neutral-500 dark:text-neutral-400 relative overflow-hidden">
 			{#if playLightning}
 				<div class="absolute inset-0 bg-accent/20 flex items-center z-20 pointer-events-none">
-					<div class="animate-marquee whitespace-nowrap text-[8px] font-bold text-accent font-mono flex items-center">
+					<div class="animate-marquee whitespace-nowrap text-[9px] font-bold text-accent font-mono flex items-center">
 						⚡ CHARGER_CONNECTED // POWERING_UP // ⚡ ⚡ ⚡
 					</div>
 				</div>
@@ -108,7 +108,7 @@
 			</span>
 			<button
 				onclick={toggleTheme}
-				class="hover:text-accent font-bold transition-colors uppercase border border-neutral-300 dark:border-neutral-700 px-1.5 py-0.5 bg-neutral-200/50 dark:bg-neutral-800/50 text-[8px]"
+				class="hover:text-accent font-bold transition-colors uppercase border border-neutral-300 dark:border-neutral-700 px-1.5 py-0.5 bg-neutral-200/50 dark:bg-neutral-800/50 text-[9px]"
 			>
 				MODE: {$is_dark ? 'DARK' : 'LIGHT'}
 			</button>
@@ -126,7 +126,7 @@
 		</div>
 
 		<!-- Bottom Technical Status Bar -->
-		<div class="flex justify-between items-center px-4 py-2 border-t border-black dark:border-neutral-700 text-[9px] uppercase tracking-widest font-mono text-neutral-500 dark:text-neutral-400 bg-neutral-200/20 dark:bg-neutral-800/20">
+		<div class="flex justify-between items-center px-4 py-2 border-t border-black dark:border-neutral-700 text-[10px] uppercase tracking-widest font-mono text-neutral-500 dark:text-neutral-400 bg-neutral-200/20 dark:bg-neutral-800/20">
 			<span>SVELTE v5</span>
 			<span>{fps} FPS</span>
 			<span>REV: 2026.06</span>

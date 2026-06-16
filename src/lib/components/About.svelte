@@ -9,10 +9,10 @@
 	<div class="flex flex-col md:flex-row gap-6">
 		<div class="flex flex-col gap-6 flex-1">
 			<div class="border border-black dark:border-neutral-700 p-3 bg-neutral-100 dark:bg-neutral-900/40 relative">
-				<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[8px] uppercase tracking-widest text-accent font-mono">
+				<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[9px] uppercase tracking-widest text-accent font-mono">
 					[BIO_DATA]
 				</div>
-				<div class="text-[11px] leading-relaxed font-mono">
+				<div class="text-[12px] leading-relaxed font-mono">
 					<span class="text-accent">LOCATION:</span> Cape Town, South Africa <br />
 					<span class="text-accent">STATUS:</span> {data.age} y/o programmer ({data.devYear} yrs code) <br />
 					<span class="text-accent">EXPERIENCE:</span> software engineer for {data.seYear} years <br />
@@ -22,7 +22,7 @@
 
 			<!-- Cartography Compartment -->
 			<div class="border border-black dark:border-neutral-700 p-4 relative hidden md:block bg-neutral-100/50 dark:bg-neutral-900/10">
-				<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[8px] uppercase tracking-widest text-accent font-mono">
+				<div class="absolute top-0 right-3 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[9px] uppercase tracking-widest text-accent font-mono">
 					[CARTOGRAPHY_CPT]
 				</div>
 				
@@ -30,8 +30,8 @@
 					<!-- Map SVG -->
 					<div class="w-2/3 border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black/40 p-2 relative h-48 flex items-center justify-center overflow-hidden">
 						<!-- Coordinates labels inside map -->
-						<span class="absolute top-1 left-2 text-[6px] font-mono text-neutral-500 dark:text-neutral-450">33°54'00"S</span>
-						<span class="absolute bottom-1 right-2 text-[6px] font-mono text-neutral-500 dark:text-neutral-450">18°26'00"E</span>
+						<span class="absolute top-1 left-2 text-[7px] font-mono text-neutral-550 dark:text-neutral-450">33°54'00"S</span>
+						<span class="absolute bottom-1 right-2 text-[7px] font-mono text-neutral-550 dark:text-neutral-450">18°26'00"E</span>
 						
 						<svg viewBox="0 -80 320 280" class="w-full h-full text-neutral-800 dark:text-neutral-200 opacity-90">
 							<!-- Grid lines -->
@@ -97,42 +97,42 @@
 							/>
 
 							<!-- Ocean labels -->
-							<text x="35" y="120" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[6px] font-mono tracking-widest uppercase rotate-[-90deg]">Atlantic Ocean</text>
-							<text x="140" y="150" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[6px] font-mono tracking-widest uppercase">False Bay</text>
-							<text x="120" y="25" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[5px] font-mono uppercase">Table Bay</text>
+							<text x="35" y="120" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[7px] font-mono tracking-widest uppercase rotate-[-90deg]">Atlantic Ocean</text>
+							<text x="140" y="150" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[7px] font-mono tracking-widest uppercase">False Bay</text>
+							<text x="120" y="25" class="fill-neutral-500/60 dark:fill-neutral-400/50 text-[6px] font-mono uppercase">Table Bay</text>
 							
 							<!-- Mountain labels -->
-							<text x="120" y="55" class="fill-neutral-600 dark:fill-neutral-400 text-[4.5px] font-mono uppercase tracking-wider">Table Mt.</text>
-							<text x="120" y="60" class="fill-neutral-500 dark:fill-neutral-500 text-[4px] font-mono">1086m</text>
+							<text x="120" y="55" class="fill-neutral-600 dark:fill-neutral-400 text-[5px] font-mono uppercase tracking-wider">Table Mt.</text>
+							<text x="120" y="60" class="fill-neutral-500 dark:fill-neutral-500 text-[4.5px] font-mono">1086m</text>
 							
 							<!-- Point markers & City label -->
 							<!-- Cape Town City Bowl -->
 							<circle cx="110" cy="43" r="2" class="fill-accent opacity-75" />
 							<circle cx="110" cy="43" r="1.5" class="fill-accent" />
-							<text x="115" y="45" class="fill-neutral-800 dark:fill-neutral-200 text-[6px] font-mono font-bold uppercase tracking-wider">Cpt City</text>
+							<text x="115" y="45" class="fill-neutral-800 dark:fill-neutral-200 text-[7px] font-mono font-bold uppercase tracking-wider">Cpt City</text>
 							
 							<!-- Cape of Good Hope / Cape Point -->
 							<circle cx="102" cy="180" r="1.5" class="fill-neutral-550 dark:fill-neutral-400" />
-							<text x="107" y="182" class="fill-neutral-500 dark:fill-neutral-400 text-[5px] font-mono uppercase">Cape Point</text>
+							<text x="107" y="182" class="fill-neutral-500 dark:fill-neutral-400 text-[6px] font-mono uppercase">Cape Point</text>
 							
 							<!-- Melkbosstrand -->
 							<circle cx="88" cy="10" r="1.5" class="fill-neutral-550 dark:fill-neutral-400" />
-							<text x="93" y="12" class="fill-neutral-500 dark:fill-neutral-400 text-[5px] font-mono uppercase">Melkbosstrand</text>
+							<text x="93" y="12" class="fill-neutral-500 dark:fill-neutral-400 text-[6px] font-mono uppercase">Melkbosstrand</text>
 							
 							<!-- Yzerfontein -->
 							<circle cx="45" cy="-68" r="1.5" class="fill-neutral-550 dark:fill-neutral-400" />
-							<text x="50" y="-66" class="fill-neutral-500 dark:fill-neutral-400 text-[5px] font-mono uppercase">Yzerfontein</text>
+							<text x="50" y="-66" class="fill-neutral-500 dark:fill-neutral-400 text-[6px] font-mono uppercase">Yzerfontein</text>
 							
 							<!-- Hermanus -->
 							<circle cx="265" cy="165" r="1.5" class="fill-neutral-550 dark:fill-neutral-400" />
-							<text x="260" y="158" class="fill-neutral-500 dark:fill-neutral-400 text-[5px] font-mono uppercase">Hermanus</text>
+							<text x="260" y="158" class="fill-neutral-500 dark:fill-neutral-400 text-[6px] font-mono uppercase">Hermanus</text>
 						</svg>
 					</div>
 					
 					<!-- Cartography Metadata and Stats -->
-					<div class="flex-grow font-mono text-[9px] leading-relaxed self-stretch flex flex-col justify-between py-1 border-l border-neutral-300/60 dark:border-neutral-800/80 pl-6">
+					<div class="flex-grow font-mono text-[10px] leading-relaxed self-stretch flex flex-col justify-between py-1 border-l border-neutral-300/60 dark:border-neutral-800/80 pl-6">
 						<div>
-							<div class="text-[10px] font-bold text-accent tracking-wider uppercase mb-1">Cape Peninsula Survey</div>
+							<div class="text-[11px] font-bold text-accent tracking-wider uppercase mb-1">Cape Peninsula Survey</div>
 							<div class="grid grid-cols-2 gap-x-2 gap-y-1 text-neutral-600 dark:text-neutral-400">
 								<div>PROJECTION:</div><div class="text-neutral-800 dark:text-neutral-200">TRANS_MERCATOR</div>
 								<div>DATUM:</div><div class="text-neutral-800 dark:text-neutral-200">WGS84</div>
@@ -145,12 +145,12 @@
 						<!-- Scale and Compass -->
 						<div class="flex items-center justify-between pt-2 border-t border-dashed border-neutral-350 dark:border-neutral-850">
 							<div class="flex flex-col gap-0.5">
-								<span class="text-[7px] text-neutral-400 dark:text-neutral-500">SCALE: 1 : 250,000</span>
+								<span class="text-[8px] text-neutral-400 dark:text-neutral-500">SCALE: 1 : 250,000</span>
 								<div class="flex items-center gap-1">
 									<div class="w-10 h-1 border border-neutral-400 dark:border-neutral-700 relative p-[0.5px]">
 										<div class="w-1/2 h-full bg-neutral-850 dark:bg-neutral-300"></div>
 									</div>
-									<span class="text-[6px] text-neutral-600 dark:text-neutral-400">5 KM</span>
+									<span class="text-[7px] text-neutral-600 dark:text-neutral-400">5 KM</span>
 								</div>
 							</div>
 							
@@ -160,7 +160,7 @@
 									<div class="absolute w-0.5 h-4 bg-neutral-400 dark:bg-neutral-650"></div>
 									<!-- North pointer -->
 									<div class="absolute top-1 w-0 h-0 border-l-[2px] border-r-[2px] border-b-[4px] border-l-transparent border-r-transparent border-b-accent"></div>
-									<span class="absolute -top-1.5 text-[5px] font-bold text-accent">N</span>
+									<span class="absolute -top-1.5 text-[6px] font-bold text-accent">N</span>
 								</div>
 							</div>
 						</div>
@@ -175,30 +175,30 @@
 	</div>
 	<!-- CTO Compartment -->
 	<div class="border border-black dark:border-neutral-700 p-4 relative">
-		<div class="absolute top-0 left-4 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[9px] uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-mono">
+		<div class="absolute top-0 left-4 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[10px] uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-mono">
 			01 / CHIEF_TECH_OFFICER
 		</div>
-		<div class="text-xs leading-relaxed mt-1 text-justify">
+		<div class="text-[13px] leading-relaxed mt-1 text-justify">
 			<span class="font-bold text-black dark:text-white uppercase">Alphacrest</span>: Directing technical strategy and execution, managing scalable AWS cloud infrastructure, developing and optimizing low-latency algorithmic trading systems, and engineering critical internal developer tooling.
 		</div>
 	</div>
 
 	<!-- MSc Candidate Compartment -->
 	<div class="border border-black dark:border-neutral-700 p-4 relative">
-		<div class="absolute top-0 left-4 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[9px] uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-mono">
+		<div class="absolute top-0 left-4 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[10px] uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-mono">
 			02 / MSC_CS_CANDIDATE
 		</div>
-		<div class="text-xs leading-relaxed mt-1 text-justify">
+		<div class="text-[13px] leading-relaxed mt-1 text-justify">
 			<span class="font-bold text-black dark:text-white uppercase">Thesis</span>: "A framework for secure financial transactions using relativistic quantum tokens", combining quantum computing and software engineering to develop next-generation secure transaction protocols. Currently in the final year of an MSc in Computer Science at the University of the Western Cape.
 		</div>
 	</div>
 
 	<!-- Cybersecurity & SANReN Compartment -->
 	<div class="border border-black dark:border-neutral-700 p-4 relative">
-		<div class="absolute top-0 left-4 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[9px] uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-mono">
+		<div class="absolute top-0 left-4 -translate-y-1/2 bg-[#f4f4f2] dark:bg-[#1c1c1c] px-2 text-[10px] uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-mono">
 			03 / CYBERSECURITY_UWC
 		</div>
-		<div class="text-xs leading-relaxed mt-1 text-justify">
+		<div class="text-[13px] leading-relaxed mt-1 text-justify">
 			Currently mentoring cybersecurity teams at UWC (2024, 2026). Represented UWC as a SANReN finalist in 2023, and secured 1st place in 2025.
 		</div>
 	</div>
