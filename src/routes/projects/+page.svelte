@@ -14,10 +14,12 @@
 		posts.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 	);
 
+	let containerEl = $state<HTMLElement>();
+
 	function goToPage(page: number) {
 		if (page >= 1 && page <= totalPages) {
 			currentPage = page;
-			window.scrollTo({ top: 0, behavior: 'smooth' });
+			containerEl?.closest('.panel-content-viewport')?.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
 </script>
@@ -33,7 +35,7 @@
 	title="STUFF I MADE" 
 	stats={`TOTAL: ${posts.length}`} 
 />
-<main>
+<main bind:this={containerEl}>
 	{#if posts.length === 0}
 		<div class="py-8 text-center text-neutral-400 text-base">
 			No projects found.

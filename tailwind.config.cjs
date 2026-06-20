@@ -11,12 +11,12 @@ const config = {
 				mono: ['JetBrains Mono', 'monospace', ...tailwind_theme.fontFamily.mono]
 			},
 			fontSize: {
-				'xxs': '10px',
-				'tiny': '9px',
-				'micro': '8px',
-				'nano': '7px',
-				'pico': '6px',
-				'femto': '5px'
+				xxs: '10px',
+				tiny: '9px',
+				micro: '8px',
+				nano: '7px',
+				pico: '6px',
+				femto: '5px'
 			},
 			colors: {
 				accent: 'var(--accent-color)',

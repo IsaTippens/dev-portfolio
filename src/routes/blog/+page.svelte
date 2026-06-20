@@ -14,10 +14,12 @@
 		posts.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 	);
 
+	let containerEl = $state<HTMLElement>();
+
 	function goToPage(page: number) {
 		if (page >= 1 && page <= totalPages) {
 			currentPage = page;
-			window.scrollTo({ top: 0, behavior: 'smooth' });
+			containerEl?.closest('.panel-content-viewport')?.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
 
@@ -33,7 +35,7 @@
 	title="STUFF I WROTE" 
 	stats={`TOTAL: ${posts.length}`} 
 />
-<main>
+<main bind:this={containerEl}>
 	{#each paginatedPosts as post, i}
 		<PostTile data={post} />
 		{#if i < paginatedPosts.length - 1}
