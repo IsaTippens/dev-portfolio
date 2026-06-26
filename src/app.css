@@ -178,7 +178,7 @@ svg {
 
 @layer components {
 	.section-label {
-		@apply absolute top-0 -translate-y-1/2 bg-card px-2 uppercase tracking-widest font-mono;
+		@apply absolute top-0 -translate-y-1/2 bg-card px-2 uppercase tracking-widest font-mono w-max max-w-full truncate;
 	}
 
 	.btn-primary {
