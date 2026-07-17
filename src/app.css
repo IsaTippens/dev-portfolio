@@ -98,7 +98,11 @@ body {
 }
 
 .prose p {
-	@apply text-justify font-normal;
+	@apply text-justify font-normal leading-loose mb-6;
+}
+
+.prose li {
+	@apply leading-loose mb-3;
 }
 
 .prose img,
@@ -119,15 +123,15 @@ body {
 }
 
 .blog-content h1 {
-	@apply text-2xl font-bold mb-4 uppercase tracking-wider;
+	@apply text-2xl font-bold mt-10 mb-4 uppercase tracking-wider;
 }
 
 .blog-content h2 {
-	@apply text-xl font-bold mb-4 uppercase tracking-wider;
+	@apply text-xl font-bold mt-10 mb-4 uppercase tracking-wider;
 }
 
 .blog-content h3 {
-	@apply text-lg font-bold uppercase tracking-wider;
+	@apply text-lg font-bold mt-8 mb-3 uppercase tracking-wider;
 }
 
 .blog-content h1,
@@ -139,22 +143,56 @@ body {
 }
 
 .blog-content p {
-	@apply mb-4 leading-relaxed;
+	@apply mb-6 leading-loose;
+}
+
+.blog-content ul {
+	@apply list-disc pl-6 mb-6 space-y-3;
+}
+
+.blog-content ol {
+	@apply list-decimal pl-6 mb-6 space-y-3;
+}
+
+.blog-content li {
+	@apply leading-loose;
+}
+
+.blog-content ul ul,
+.blog-content ol ol,
+.blog-content ul ol,
+.blog-content ol ul {
+	@apply mb-0 mt-3;
+}
+
+.blog-content blockquote {
+	@apply border-l-4 border-border pl-4 italic my-6 text-muted leading-loose;
 }
 
 .blog-content img,
 .blog-content video {
-	@apply rounded-none border border-border mx-auto;
+	@apply rounded-none border border-border mx-auto my-6 block;
 }
 
 .blog-content pre {
-	@apply bg-background border border-border text-main p-4 rounded-none overflow-x-auto;
+	@apply bg-background border border-border text-main p-4 rounded-none overflow-x-auto my-6 block;
+}
+
+.blog-content table {
+	@apply w-full my-6 border-collapse text-left border border-border;
+}
+
+.blog-content th {
+	@apply border border-border p-2 bg-card font-bold uppercase text-xs tracking-wider;
+}
+
+.blog-content td {
+	@apply border border-border p-2 text-sm leading-loose;
 }
 
 .blog-content a {
 	@apply highlight-link;
 }
-
 hr {
 	@apply !border-border;
 }
