@@ -1,4 +1,5 @@
 <script>
+	import PhotoViewer from '$lib/components/PhotoViewer.svelte';
 	let { data } = $props();
 
 	let { date, title, description } = $derived(data.meta);
@@ -28,5 +29,6 @@
 </div>
 <main class="my-6">
 	<div class="blog-content"><Content /></div>
+	<PhotoViewer />
 </main>
 <footer class="border-t grid grid-cols-1 text-xl"></footer>

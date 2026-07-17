@@ -1,5 +1,6 @@
 <script>
 	import Divider from '$lib/components/Divider.svelte';
+	import PhotoViewer from '$lib/components/PhotoViewer.svelte';
 
 	let { data } = $props();
 
@@ -30,6 +31,7 @@
 </div>
 <main class="my-6">
 	<div class="blog-content"><Content /></div>
+	<PhotoViewer />
 </main>
 <footer>
 	<Divider />

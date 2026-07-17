@@ -169,7 +169,10 @@ body {
 	@apply border-l-4 border-border pl-4 italic my-6 text-muted leading-loose;
 }
 
-.blog-content img,
+.blog-content img {
+	@apply rounded-none border border-border mx-auto my-6 block cursor-pointer transition-all duration-200 hover:opacity-90 hover:scale-[1.01];
+}
+
 .blog-content video {
 	@apply rounded-none border border-border mx-auto my-6 block;
 }
