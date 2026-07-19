@@ -1,3 +1,5 @@
+@import '@fontsource/noto-sans/400.css';
+@import '@fontsource/noto-sans/700.css';
 @import '@fontsource/jetbrains-mono/400-italic.css';
 @import '@fontsource/jetbrains-mono/700-italic.css';
 @import '@fontsource/jetbrains-mono/400.css';
@@ -9,19 +11,19 @@
 
 :root {
 	--accent-color: #0088ff;
-	--bg-body: #eaeae6;
-	--bg-card: #f4f4f2;
+	--bg-body: #f4f4f5;
+	--bg-card: #ffffff;
 	--text-main: #121212;
 	--text-muted: #737373;
-	--border-main: #000000;
+	--border-main: #e4e4e7;
 }
 :root.dark {
 	--accent-color: #00c0ff;
-	--bg-body: #121212;
-	--bg-card: #1c1c1c;
+	--bg-body: #09090b;
+	--bg-card: #18181b;
 	--text-main: #ffffff;
 	--text-muted: #a3a3a3;
-	--border-main: #404040;
+	--border-main: #27272a;
 }
 
 body {
@@ -86,15 +88,18 @@ body {
 }
 
 .all-prose {
-	@apply prose max-w-full font-mono;
+	@apply prose max-w-full font-sans;
 }
 
 .prose h1,
 .prose h2,
-.prose h3,
+.prose h3 {
+	@apply text-main font-mono;
+}
+
 .prose p,
 .prose li {
-	@apply text-main font-mono;
+	@apply text-main font-sans;
 }
 
 .prose p {
@@ -119,7 +124,7 @@ body {
 }
 
 .blog-content {
-	@apply text-main font-mono;
+	@apply text-main font-sans;
 }
 
 .blog-content h1 {
@@ -136,10 +141,13 @@ body {
 
 .blog-content h1,
 .blog-content h2,
-.blog-content h3,
+.blog-content h3 {
+	@apply text-main font-mono;
+}
+
 .blog-content p,
 .blog-content li {
-	@apply text-main font-mono;
+	@apply text-main font-sans;
 }
 
 .blog-content p {

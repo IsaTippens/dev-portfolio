@@ -7,7 +7,7 @@ const config = {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['JetBrains Mono', 'monospace', ...tailwind_theme.fontFamily.mono],
+				sans: ['"Noto Sans"', 'sans-serif', ...tailwind_theme.fontFamily.sans],
 				mono: ['JetBrains Mono', 'monospace', ...tailwind_theme.fontFamily.mono]
 			},
 			fontSize: {

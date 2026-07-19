@@ -11,7 +11,7 @@
 <a 
 	{href} 
 	target={target}
-	class="flex flex-col border border-border bg-neutral-100 dark:bg-neutral-900/60 hover:border-accent hover:bg-accent/5 transition-all p-3 rounded-none"
+	class="flex flex-col border border-border bg-neutral-100 dark:bg-neutral-900/60 hover:border-accent hover:bg-accent/5 transition-all p-3 rounded-none hover:scale-[1.02]"
 >
 	<span class="text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">[{prefix}]</span>
 	<span class="text-base font-bold text-main mt-1 uppercase">{title}</span>

@@ -13,7 +13,7 @@
   let { children } = $props();
 </script>
 
-<div class="gradient-card-bg rounded-lg background-animate" bind:this={background}>
+<div class="gradient-card-bg rounded-none background-animate" bind:this={background}>
 		{@render children?.()}
 </div>
 

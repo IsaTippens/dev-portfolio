@@ -16,7 +16,7 @@ Description
 -->
 
 <a 
-	class="block border {bordered ? 'border-border' : 'border-transparent'} hover:border-border p-4 transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-900/30 group relative rounded-none" 
+	class="block border {bordered ? 'border-border' : 'border-transparent'} hover:border-border p-4 transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-900/30 group relative rounded-none hover:scale-[1.02]" 
 	href={`${basePath}/${data.path}`}
 >
 	{#if showId}
