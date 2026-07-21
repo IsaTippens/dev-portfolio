@@ -10,65 +10,6 @@
 	let { children } = $props();
 
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
-
-	import { isCharging, batteryLevel, playLightning } from '$lib/stores/battery';
-	let fps = $state<number>(60);
-
-	onMount(() => {
-		// Battery status API
-		if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
-			try {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				((navigator as any).getBattery() as Promise<any>)
-					.then((battery: any) => {
-						batteryLevel.set(Math.round(battery.level * 100));
-						isCharging.set(battery.charging);
-						battery.addEventListener('levelchange', () => {
-							batteryLevel.set(Math.round(battery.level * 100));
-						});
-						battery.addEventListener('chargingchange', () => {
-							const newCharging = battery.charging;
-							let currentIsCharging = false;
-							isCharging.subscribe(v => currentIsCharging = v)();
-
-							if (newCharging && !currentIsCharging) {
-								playLightning.set(true);
-								setTimeout(() => {
-									playLightning.set(false);
-								}, 1500);
-							}
-							isCharging.set(newCharging);
-						});
-					})
-					.catch(() => {});
-			} catch (e) {
-				// Ignored
-			}
-		}
-
-		// FPS counter
-		let lastTime: number | null = null;
-		let frameCount = 0;
-		let animationFrameId: number;
-
-		function updateFps(timestamp: number) {
-			if (lastTime === null) lastTime = timestamp;
-			frameCount++;
-			if (timestamp >= lastTime + 1000) {
-				fps = Math.round((frameCount * 1000) / (timestamp - lastTime));
-				frameCount = 0;
-				lastTime = timestamp;
-			}
-			animationFrameId = window.requestAnimationFrame(updateFps);
-		}
-
-		animationFrameId = window.requestAnimationFrame(updateFps);
-
-		return () => {
-			window.cancelAnimationFrame(animationFrameId);
-		};
-	});
 
 	function toggleTheme() {
 		is_dark.update((d) => !d);
@@ -83,76 +24,84 @@
 			}
 		}
 	});
+
+	function scrollToTop() {
+		if (browser) {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
 </script>
 
-<!--
-	I want a centered layout with a max-width of 1200px
-	Ideally mobile should be full width
-	Greater than mobile should be a centered column
-	not using tailwind, only css or carbon-components-svelte
-	All screen sizes should use full height
--->
-<div class="flex flex-col items-center justify-center min-h-screen relative overflow-x-hidden p-2 sm:p-4">
-	<!-- Background grid -->
-	<div class="absolute inset-0 z-0"><NoisyGradient /></div>
-
-	<!-- TE Device Chassis -->
-	<div
-		class="w-full max-w-[700px] bg-card border-2 border-border z-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] flex flex-col relative"
-	>
-		<!-- Top Technical Status Bar -->
-		<div class="flex justify-between items-center px-4 py-2 border-b border-border text-xxs uppercase tracking-widest font-mono text-muted relative overflow-hidden">
-			{#if $playLightning}
-				<div class="absolute inset-0 bg-accent/20 flex items-center z-20 pointer-events-none">
-					<div class="animate-marquee whitespace-nowrap text-tiny font-bold text-accent font-mono flex items-center">
-						⚡ CHARGER_CONNECTED // POWERING_UP // ⚡ ⚡ ⚡
-					</div>
-				</div>
-			{/if}
-			<span class="flex items-center gap-1">
-				<span class="inline-block w-2.5 h-2.5 bg-accent"></span>
-				<span class="font-bold text-main">DEV-PORTFOLIO</span>
-			</span>
-			<button
-				onclick={toggleTheme}
-				class="hover:text-accent font-bold transition-colors uppercase border border-neutral-300 dark:border-neutral-700 px-1.5 py-0.5 bg-neutral-200/50 dark:bg-neutral-800/50 text-tiny"
-			>
-				MODE: {$is_dark ? 'DARK' : 'LIGHT'}
-			</button>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<span
-				class="flex items-center gap-1.5 cursor-pointer"
-				onclick={() => {
-					isCharging.update(v => {
-						const newCharging = !v;
-						if (newCharging) {
-							playLightning.set(true);
-							setTimeout(() => {
-								playLightning.set(false);
-							}, 1500);
-						}
-						return newCharging;
-					});
-				}}
-			>
-				<span>BAT: {$batteryLevel}%</span>
-				<span class="inline-block w-5 h-2.5 border border-muted p-[1px] relative">
-					<span class="block h-full bg-accent" style="width: {$batteryLevel}%"></span>
-				</span>
-			</span>
-		</div>
-
-		<!-- Main viewport/content screen -->
-		<div class="p-4 sm:p-6 flex-auto">
-			{@render children()}
-		</div>
-
-		<!-- Bottom Technical Status Bar -->
-		<div class="flex justify-between items-center px-4 py-2 border-t border-border text-xxs uppercase tracking-widest font-mono text-muted bg-neutral-200/20 dark:bg-neutral-800/20">
-			<span>SVELTE v5</span>
-			<span>{fps} FPS</span>
-			<span>REV: 2026.06</span>
-		</div>
+<div class="min-h-screen flex flex-col bg-background text-main relative selection:bg-accent/20">
+	<!-- Background texture -->
+	<div class="fixed inset-0 z-0 pointer-events-none opacity-40">
+		<NoisyGradient />
 	</div>
+
+	<!-- Top Sticky Navbar -->
+	<header class="w-full border-b border-border bg-background/85 backdrop-blur-md sticky top-0 z-50">
+		<div class="max-w-4xl mx-auto px-4 py-3 sm:px-6 flex items-center justify-between font-mono text-xs">
+			<a href="/" class="flex items-center gap-2 group font-bold tracking-tight text-main hover:text-accent transition-colors">
+				<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+				<span class="text-sm">isa<span class="text-accent">.tippens</span></span>
+			</a>
+
+			<nav class="hidden sm:flex items-center gap-6 text-xs text-muted">
+				<a href="/" class="hover:text-main transition-colors">~/home</a>
+				<a href="/projects" class="hover:text-main transition-colors">~/projects</a>
+				<a href="/blog" class="hover:text-main transition-colors">~/blog</a>
+				<a href="/gear" class="hover:text-main transition-colors">~/gear</a>
+				<a href="/resume" target="_blank" class="hover:text-main transition-colors">~/resume ↗</a>
+			</nav>
+
+			<div class="flex items-center gap-3">
+				<button
+					onclick={toggleTheme}
+					class="px-2.5 py-1 text-tiny font-mono uppercase tracking-wider rounded border border-border bg-card/80 hover:border-accent hover:text-accent transition-all flex items-center gap-1.5 shadow-sm"
+					aria-label="Toggle Theme"
+				>
+					<span class="w-1.5 h-1.5 rounded-full {$is_dark ? 'bg-accent' : 'bg-amber-500'}"></span>
+					<span>{$is_dark ? 'DARK' : 'LIGHT'}</span>
+				</button>
+			</div>
+		</div>
+
+		<!-- Mobile Subnav Bar -->
+		<div class="sm:hidden flex items-center justify-around border-t border-border py-2 px-3 text-tiny font-mono text-muted bg-card/50">
+			<a href="/" class="hover:text-main">/home</a>
+			<a href="/projects" class="hover:text-main">/projects</a>
+			<a href="/blog" class="hover:text-main">/blog</a>
+			<a href="/gear" class="hover:text-main">/gear</a>
+			<a href="/resume" target="_blank" class="hover:text-main">/resume ↗</a>
+		</div>
+	</header>
+
+	<!-- Main Viewport Content -->
+	<main class="w-full max-w-4xl mx-auto px-4 py-8 sm:px-6 flex-auto z-10">
+		{@render children()}
+	</main>
+
+	<!-- Minimal High-Tech Footer -->
+	<footer class="w-full border-t border-border py-6 bg-card/30 z-10 font-mono text-tiny text-muted">
+		<div class="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+			<div class="flex items-center gap-3">
+				<span class="inline-flex items-center gap-1.5 text-main font-semibold">
+					<span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+					SYS_STATUS: ONLINE
+				</span>
+				<span>•</span>
+				<span>SVELTE v5</span>
+			</div>
+			
+			<div class="flex items-center gap-4">
+				<span>© {new Date().getFullYear()} ISA TIPPENS</span>
+				<button 
+					onclick={scrollToTop}
+					class="hover:text-main hover:underline flex items-center gap-1 transition-colors"
+				>
+					[TOP ↑]
+				</button>
+			</div>
+		</div>
+	</footer>
 </div>

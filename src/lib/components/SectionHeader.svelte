@@ -8,23 +8,19 @@
 </script>
 
 {#if href}
-	<a {href} class="block border-t border-b border-border py-3 my-4 group hover:border-accent transition-colors">
-		<div class="flex justify-between items-center">
-			<div class="flex items-center gap-2">
-				<span class="inline-block w-2 h-2 bg-accent"></span>
-				<p class="text-xl font-bold uppercase tracking-tight text-main group-hover:text-accent transition-colors">{title}</p>
-			</div>
-			<div class="flex items-center gap-1 text-xxs font-mono text-neutral-400 dark:text-neutral-500 uppercase">
-				<span>{linkText}</span>
-				<RightArrow class="w-4 h-4 text-accent" />
-			</div>
+	<a {href} class="flex items-center justify-between border-b border-border pb-3 my-6 group">
+		<div class="flex items-center gap-2">
+			<span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+			<h2 class="text-xl font-bold font-mono uppercase tracking-tight text-main group-hover:text-accent transition-colors">{title}</h2>
+		</div>
+		<div class="flex items-center gap-1.5 text-xs font-mono text-muted group-hover:text-accent transition-colors">
+			<span>{linkText}</span>
+			<RightArrow class="w-4 h-4 text-accent transition-transform group-hover:translate-x-0.5" />
 		</div>
 	</a>
 {:else}
-	<div class="block border-t border-b border-border py-3 my-4">
-		<div class="flex items-center gap-2">
-			<span class="inline-block w-2 h-2 bg-accent"></span>
-			<p class="text-xl font-bold uppercase tracking-tight text-main">{title}</p>
-		</div>
+	<div class="flex items-center gap-2 border-b border-border pb-3 my-6">
+		<span class="w-2 h-2 rounded-full bg-accent"></span>
+		<h2 class="text-xl font-bold font-mono uppercase tracking-tight text-main">{title}</h2>
 	</div>
 {/if}

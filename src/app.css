@@ -10,19 +10,19 @@
 @tailwind utilities;
 
 :root {
-	--accent-color: #0088ff;
-	--bg-body: #f4f4f5;
+	--accent-color: #0284c7;
+	--bg-body: #f8fafc;
 	--bg-card: #ffffff;
-	--text-main: #121212;
-	--text-muted: #737373;
-	--border-main: #e4e4e7;
+	--text-main: #0f172a;
+	--text-muted: #64748b;
+	--border-main: #e2e8f0;
 }
 :root.dark {
-	--accent-color: #00c0ff;
+	--accent-color: #38bdf8;
 	--bg-body: #09090b;
-	--bg-card: #18181b;
-	--text-main: #ffffff;
-	--text-muted: #a3a3a3;
+	--bg-card: #121215;
+	--text-main: #f8fafc;
+	--text-muted: #a1a1aa;
 	--border-main: #27272a;
 }
 
@@ -212,25 +212,14 @@ svg {
 	@apply outline-none focus:outline-none;
 }
 
-@keyframes marquee {
-	0% {
-		transform: translateX(-100%);
-	}
-	100% {
-		transform: translateX(100%);
-	}
-}
-
-.animate-marquee {
-	animation: marquee 1.5s linear forwards;
-}
+/* marquee unneeded in modern clean layout */
 
 @layer components {
 	.section-label {
-		@apply absolute top-0 -translate-y-1/2 bg-card px-2 uppercase tracking-widest font-mono;
+		@apply absolute top-0 -translate-y-1/2 bg-card px-2 uppercase tracking-widest font-mono text-tiny text-muted border border-border rounded;
 	}
 
 	.btn-primary {
-		@apply px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-border text-main hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-border disabled:hover:text-main transition-all rounded-none uppercase text-xxs tracking-wider;
+		@apply px-3 py-1.5 bg-card border border-border text-main hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-border disabled:hover:text-main transition-all rounded text-xs font-mono font-medium tracking-wide shadow-sm;
 	}
 }

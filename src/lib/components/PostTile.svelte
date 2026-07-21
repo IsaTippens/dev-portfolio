@@ -16,25 +16,29 @@ Description
 -->
 
 <a 
-	class="block border {bordered ? 'border-border' : 'border-transparent'} hover:border-border p-4 transition-all duration-150 hover:bg-neutral-100 dark:hover:bg-neutral-900/30 group relative rounded-none hover:scale-[1.02]" 
+	class="block border border-border bg-card hover:border-accent hover:bg-accent/5 p-4 sm:p-5 transition-all duration-200 group rounded-md shadow-sm mb-3" 
 	href={`${basePath}/${data.path}`}
 >
-	{#if showId}
-		<!-- Tiny technical prefix -->
-		<div class="absolute top-2 right-4 text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
-			[ID: {data.path.slice(0, 8)}]
+	<div class="flex flex-col gap-1.5">
+		<div class="flex items-center justify-between font-mono text-tiny">
+			<span class="text-accent font-semibold tracking-wider uppercase">
+				{new Date(data.meta.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+			</span>
+			{#if showId}
+				<span class="text-muted text-[10px] uppercase font-mono">
+					ref:{data.path.slice(0, 8)}
+				</span>
+			{/if}
 		</div>
-	{/if}
 
-	<div class="flex flex-col gap-1">
-		<span class="text-tiny font-mono uppercase tracking-widest text-accent">
-			{new Date(data.meta.date).toDateString()}
-		</span>
-		<h2 class="text-lg font-bold text-main group-hover:text-accent transition-colors duration-150 uppercase tracking-tight">
+		<h2 class="text-base sm:text-lg font-bold font-mono text-main group-hover:text-accent transition-colors duration-150 leading-snug">
 			{data.meta.title}
 		</h2>
-		<p class="text-xs text-muted mt-1 leading-relaxed">
-			{data.meta.description}
-		</p>
+
+		{#if data.meta.description}
+			<p class="text-xs text-muted leading-relaxed font-sans mt-0.5">
+				{data.meta.description}
+			</p>
+		{/if}
 	</div>
 </a>
