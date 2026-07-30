@@ -1,7 +1,7 @@
 export const load = async ({ fetch }) => {
-	const posts = await fetch(`/api/posts`);
-	let allPosts = await posts.json();
+	const res = await fetch(`/api/posts`);
+	const allPosts = res.ok ? await res.json() : [];
 	return {
-		posts: allPosts
+		posts: Array.isArray(allPosts) ? allPosts : []
 	};
 };

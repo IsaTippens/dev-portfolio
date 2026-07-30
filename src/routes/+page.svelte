@@ -62,7 +62,7 @@
 	</div>
 	<SectionHeader title="Recent Posts" href="/blog" />
 	<div class="grid">
-		{#each data.posts.slice(0, 5) as post}
+		{#each (data.posts ?? []).slice(0, 5) as post}
 			<PostTile data={post} />
 		{/each}
 	</div>

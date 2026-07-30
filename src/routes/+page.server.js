@@ -6,12 +6,12 @@ export async function load({ fetch }) {
 	const vibeYear = new Date().getFullYear() - 2025;
 
 	const res = await fetch(`/api/posts`);
-	const posts = await res.json();
+	const posts = res.ok ? await res.json() : [];
 	return {
 		age,
 		devYear,
 		seYear,
 		vibeYear,
-		posts
+		posts: Array.isArray(posts) ? posts : []
 	};
 }

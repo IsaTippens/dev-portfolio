@@ -4,7 +4,7 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import PaginationControls from '$lib/components/PaginationControls.svelte';
 	let { data } = $props();
-	let posts = $derived(data.posts);
+	let posts = $derived(data.posts ?? []);
 
 	let currentPage = $state(1);
 	const pageSize = 5;

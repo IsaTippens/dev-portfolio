@@ -5,6 +5,21 @@ date: 2026-07-18
 published: true
 ---
 
+<script>
+    import Disclaimer from '$lib/components/Disclaimer.svelte';
+</script>
+
+<Disclaimer title="AI Generated">
+This post (except this disclaimer) was generated autonomously using Kimi K3 with omp. The writing below does not sound like me because it was not written by me.
+
+Tasks handled by Kimi K3 include:
+- Writing a blog post detailing website changes since 14 Jun 2026, comparing old/new designs using screenshots.
+- Explain the new "Teenage Engineering industrial hardware" design philosophy.
+- Highlight easter eggs: FPS counter and battery charging detection.
+- Emphasize the site redesign is fully driven using oh-my-pi, Gemini 3.5 Flash, Gemini 3.1 Pro, and Kimi K3.
+
+</Disclaimer>
+
 The web has become overly rounded, heavily gradiented, and increasingly homogeneous. In a quest to bring back tactile, technical hardware vibes to the browser, I recently embarked on a complete redesign of my portfolio site. Under the hood, this overhaul meant a full framework migration to **Svelte 5** and **SvelteKit 2**. Visually, it represents a pivot to a hardware-inspired, industrial design aesthetic.
 
 Here is a look at what changed, how it works, and the AI stack that powered the transition.
