@@ -7,7 +7,12 @@ published: false
 
 <script>
     import Spotify from '$lib/components/embeds/Spotify.svelte';
+    import Disclaimer from '$lib/components/Disclaimer.svelte';
 </script>
+
+<Disclaimer />
+
+<Disclaimer title="WARNING" text="This is a custom disclaimer message passed via text prop." />
 
 # This is a heading
 

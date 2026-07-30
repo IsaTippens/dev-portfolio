@@ -17,7 +17,7 @@
 		if (!container) return;
 
 		// Event delegation: attach a single click handler to the container
-		const handleClick = (e: MouseEvent) => {
+		const handleClick = (e: Event) => {
 			const target = e.target as HTMLElement;
 			if (target && target.tagName === 'IMG') {
 				const imgElements = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
