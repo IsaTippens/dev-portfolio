@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-
+	import { browser } from '$app/environment';
 	let { containerSelector = '.blog-content' } = $props();
 
 	interface BlogImage {
@@ -51,6 +51,21 @@
 		}
 	});
 
+	// Prevent background scrolling on mobile when modal is active
+	$effect(() => {
+		if (browser && activeIndex !== null) {
+			const originalOverflow = document.body.style.overflow;
+			const originalTouchAction = document.body.style.touchAction;
+			document.body.style.overflow = 'hidden';
+			document.body.style.touchAction = 'none';
+
+			return () => {
+				document.body.style.overflow = originalOverflow;
+				document.body.style.touchAction = originalTouchAction;
+			};
+		}
+	});
+
 	function close() {
 		activeIndex = null;
 	}
@@ -72,6 +87,12 @@
 
 	function handleTouchStart(e: TouchEvent) {
 		touchStartX = e.changedTouches[0].screenX;
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		if (activeIndex !== null) {
+			e.preventDefault();
+		}
 	}
 
 	function handleTouchEnd(e: TouchEvent) {
@@ -103,8 +124,9 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
-		class="fixed inset-0 bg-background/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 select-none font-mono text-main"
+		class="fixed inset-0 bg-background/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 select-none font-mono text-main touch-none"
 		onclick={close}
+		ontouchmove={(e) => e.preventDefault()}
 		role="dialog"
 		aria-modal="true"
 	>
@@ -114,6 +136,7 @@
 			class="w-full max-w-5xl h-[85vh] flex flex-col justify-between border-2 border-border bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] relative p-2.5 sm:p-4"
 			onclick={(e) => e.stopPropagation()}
 			ontouchstart={handleTouchStart}
+			ontouchmove={handleTouchMove}
 			ontouchend={handleTouchEnd}
 		>
 			<!-- Top Technical Status Bar -->
@@ -136,9 +159,9 @@
 
 			<!-- Image Viewer Area -->
 			<div class="flex-grow flex items-center justify-between gap-2 sm:gap-4 py-2 sm:py-4 relative min-h-0">
-				<!-- Prev Button -->
+				<!-- Prev Button (Desktop) -->
 				<button
-					class="border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-x-[2px] active:translate-y-[2px] active:shadow-none w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold text-base sm:text-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] z-20 shrink-0"
+					class="hidden sm:flex border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-x-[2px] active:translate-y-[2px] active:shadow-none w-10 h-10 items-center justify-center font-bold text-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] z-20 shrink-0"
 					onclick={prev}
 					aria-label="Previous image"
 				>
@@ -146,21 +169,37 @@
 				</button>
 
 				<!-- Displayed Image -->
-				<div class="flex-1 min-w-0 h-full flex items-center justify-center relative p-1 sm:p-2">
+				<div class="flex-1 w-full h-full flex items-center justify-center relative p-1 sm:p-2 min-h-0">
 					<img
 						src={images[activeIndex].src}
 						alt={images[activeIndex].alt}
-						class="max-h-[55vh] sm:max-h-[60vh] max-w-full object-contain border-2 border-border bg-background p-1 sm:p-1.5 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.15)] select-text"
+						class="max-h-[50vh] sm:max-h-[60vh] max-w-full object-contain border-2 border-border bg-background p-1 sm:p-1.5 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.15)] select-text"
 					/>
 				</div>
 
-				<!-- Next Button -->
+				<!-- Next Button (Desktop) -->
 				<button
-					class="border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-x-[2px] active:translate-y-[2px] active:shadow-none w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold text-base sm:text-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] z-20 shrink-0"
+					class="hidden sm:flex border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-x-[2px] active:translate-y-[2px] active:shadow-none w-10 h-10 items-center justify-center font-bold text-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] z-20 shrink-0"
 					onclick={next}
 					aria-label="Next image"
 				>
 					&gt;
+				</button>
+			</div>
+
+			<!-- Mobile Navigation Controls (Below Photo) -->
+			<div class="flex sm:hidden justify-between items-center gap-2 pt-2 border-t border-border">
+				<button
+					class="flex-1 border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-y-[1px] py-2 font-bold text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] flex items-center justify-center gap-1"
+					onclick={prev}
+				>
+					&lt; PREV
+				</button>
+				<button
+					class="flex-1 border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-y-[1px] py-2 font-bold text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] flex items-center justify-center gap-1"
+					onclick={next}
+				>
+					NEXT &gt;
 				</button>
 			</div>
 
