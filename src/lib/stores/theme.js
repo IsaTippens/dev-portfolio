@@ -2,15 +2,13 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 /**
- * Available palettes. Every id maps to a `:root[data-theme='<id>']` block in app.css.
- * `dark` also toggles the `.dark` class, which drives Tailwind's `dark:` variants.
+ * Available palettes. The `light` id maps to the `:root` values in app.css, every
+ * other id to a `:root[data-theme='<id>']` block. `dark` also toggles the `.dark`
+ * class, which drives Tailwind's `dark:` variants.
  */
 export const THEMES = [
 	{ id: 'light', label: 'LIGHT', dark: false },
-	{ id: 'dark', label: 'DARK', dark: true },
-	{ id: 'dawn', label: 'DAWN', dark: false },
-	{ id: 'dune', label: 'DUNE', dark: false },
-	{ id: 'ember', label: 'EMBER', dark: true }
+	{ id: 'dark', label: 'DARK', dark: true }
 ];
 
 const stored = browser ? localStorage.getItem('theme') : null;
