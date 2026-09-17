@@ -37,32 +37,33 @@
 	--text-muted: #a3a3a3;
 	--border-main: #27272a;
 }
-/* DAWN: #58a6ff accent + #ff6b6b fill on #ffedd5.
-   #58a6ff verbatim only reaches 2.2:1 as small text on peach, so the text accent
-   is the same hue darkened to 3.4:1. */
+/* DAWN: #58a6ff body, #ff6b6b accent, #ffedd5 fill.
+   #ff6b6b verbatim is 1.2:1 as text on the blue body, so the accent is that hue
+   darkened to 3.5:1 on the body and 4.5:1 on cards. */
 :root[data-theme='dawn'] {
 	color-scheme: light;
-	--accent-color: #4888d1;
-	--accent-color-2: #ff6b6b;
+	--accent-color: #8f1d1d;
+	--accent-color-2: #ffedd5;
 	--accent-contrast: #1f1c1a;
-	--bg-body: #ffedd5;
-	--bg-card: #fff6ea;
-	--text-main: #1f1c1a;
-	--text-muted: #7a7065;
-	--border-main: #e0d1bb;
+	--bg-body: #58a6ff;
+	--bg-card: #82bcff;
+	--text-main: #0b141f;
+	--text-muted: #224062;
+	--border-main: #4888d1;
 }
-/* DUNE: #679f9e accent + #7eaddb fill on #e6d4be. Same treatment as DAWN:
-   #679f9e darkened from 2.1:1 to 3.9:1 for legible small text. */
+/* DUNE: #679f9e body, #7eaddb accent, #e6d4be fill.
+   #7eaddb verbatim is 1.2:1 as text on the teal body, so the accent is that hue
+   darkened to 3.4:1 on the body and 4.7:1 on cards. */
 :root[data-theme='dune'] {
 	color-scheme: light;
-	--accent-color: #507c7b;
-	--accent-color-2: #7eaddb;
+	--accent-color: #004080;
+	--accent-color-2: #e6d4be;
 	--accent-contrast: #1c1917;
-	--bg-body: #e6d4be;
-	--bg-card: #f2eade;
-	--text-main: #1c1917;
-	--text-muted: #6a6157;
-	--border-main: #cabba7;
+	--bg-body: #679f9e;
+	--bg-card: #8db7b6;
+	--text-main: #0c1313;
+	--text-muted: #233636;
+	--border-main: #548282;
 }
 /* EMBER: #eed3ba accent + #4b262f fill on #151311.
    #4b262f is a surface colour (1.4:1 against the body), never text. */
