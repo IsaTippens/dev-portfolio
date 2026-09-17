@@ -235,11 +235,13 @@
 		</div>
 
 		{#if keys_open}
+			<!-- `fixed`, not `absolute`: the chassis is as tall as its content, so an absolute
+			     overlay would centre on the document instead of the screen. -->
 			<div
 				id="key-map"
 				role="region"
 				aria-label="Keyboard shortcuts"
-				class="absolute inset-0 z-30 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4"
+				class="fixed inset-0 z-30 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4"
 			>
 				<div
 					class="w-full max-w-sm border-2 border-border bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
