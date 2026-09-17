@@ -1,27 +1,25 @@
 <script>
+	import Meta from '$lib/components/Meta.svelte';
 	import PhotoViewer from '$lib/components/PhotoViewer.svelte';
 	let { data } = $props();
 
-	let { date, title, description } = $derived(data.meta);
+	let { date, title, description, slug } = $derived(data.meta);
 	let Content = $derived(data.Content);
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-	<meta name="description" content={description} />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta name="twitter:card" content="summary" />
-	<meta name="twitter:site" content="@issssaaaaaaaaah" />
-	<meta name="twitter:creator" content="@issssaaaaaaaaah" />
-</svelte:head>
+<Meta {title} {description} path={`/projects/${slug}`} type="article" published={date} />
 <div class="border-b border-border pb-3 mb-6 flex flex-col gap-2">
 	<div class="text-tiny uppercase tracking-widest font-mono text-accent">
-		[NAV: <a href="/" class="hover:underline">HOME</a> / <a href="/projects" class="hover:underline">PROJECTS</a> / {title ? title.toUpperCase() : ''}]
+		[NAV: <a href="/" class="hover:underline">HOME</a> /
+		<a href="/projects" class="hover:underline">PROJECTS</a>
+		/ {title ? title.toUpperCase() : ''}]
 	</div>
 	<h1 class="text-2xl font-bold uppercase tracking-tight text-main leading-tight">
 		{title}
 	</h1>
-	<div class="text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
+	<div
+		class="text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest"
+	>
 		{new Date(date).toDateString()}
 	</div>
 </div>

@@ -1,14 +1,14 @@
 /**
- * MIT License
- * Copyright (c) 2018 Sarah Drasner
- * Sarah Drasner's[@sdras] Night Owl
- * Ported by Sara vieria [@SaraVieira]
- * Added by Souvik Mandal [@SimpleIndian]
+ * Syntax highlighting, driven by the `--code-*` palette variables in app.css so a
+ * code block follows the active theme instead of always rendering the dark set.
+ *
+ * Token mapping derived from Night Owl (MIT, Sarah Drasner / Sara Vieira /
+ * Souvik Mandal) for the dark palette.
  */
 
 code[class*='language-'],
 pre[class*='language-'] {
-	color: #d6deeb;
+	color: var(--code-fg);
 	font-family: 'Jetbrains Mono', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
 	text-align: left;
 	white-space: pre;
@@ -31,7 +31,7 @@ pre[class*='language-'] ::-moz-selection,
 code[class*='language-']::-moz-selection,
 code[class*='language-'] ::-moz-selection {
 	text-shadow: none;
-	background: rgba(29, 59, 83, 0.99);
+	background: var(--code-selection);
 }
 
 pre[class*='language-']::selection,
@@ -39,7 +39,7 @@ pre[class*='language-'] ::selection,
 code[class*='language-']::selection,
 code[class*='language-'] ::selection {
 	text-shadow: none;
-	background: rgba(29, 59, 83, 0.99);
+	background: var(--code-selection);
 }
 
 @media print {
@@ -51,19 +51,16 @@ code[class*='language-'] ::selection {
 
 /* Code blocks */
 pre[class*='language-'] {
-	/* padding: 1em; */
-	/* margin: 0.5em 0; */
 	overflow: auto;
 }
 
 :not(pre) > code[class*='language-'],
 pre[class*='language-'] {
-	color: #d6deeb;
-	background: #19212e;
+	color: var(--code-fg);
+	background: var(--code-bg);
 }
 
 :not(pre) > code[class*='language-'] {
-	/* padding: 0.1em; */
 	border-radius: 0.3em;
 	white-space: normal;
 }
@@ -71,57 +68,57 @@ pre[class*='language-'] {
 .token.comment,
 .token.prolog,
 .token.cdata {
-	color: rgb(99, 119, 119);
+	color: var(--code-comment);
 }
 
 .token.punctuation {
-	color: rgb(199, 146, 234);
+	color: var(--code-punct);
 }
 
 .namespace {
-	color: rgb(178, 204, 214);
+	color: var(--code-namespace);
 }
 
 .token.deleted {
-	color: rgba(239, 83, 80, 0.56);
+	color: var(--code-deleted);
 	font-style: italic;
 }
 
 .token.symbol,
 .token.property {
-	color: rgb(128, 203, 196);
+	color: var(--code-symbol);
 }
 
 .token.tag,
 .token.operator,
 .token.keyword {
-	color: rgb(127, 219, 202);
+	color: var(--code-tag);
 }
 
 .token.boolean {
-	color: rgb(255, 88, 116);
+	color: var(--code-boolean);
 }
 
 .token.number {
-	color: rgb(247, 140, 108);
+	color: var(--code-number);
 }
 
 .token.constant,
 .token.function,
 .token.builtin,
 .token.char {
-	color: rgb(130, 170, 255);
+	color: var(--code-constant);
 }
 
 .token.selector,
 .token.doctype {
-	color: rgb(199, 146, 234);
+	color: var(--code-selector);
 	font-style: italic;
 }
 
 .token.attr-name,
 .token.inserted {
-	color: rgb(173, 219, 103);
+	color: var(--code-attr);
 	font-style: italic;
 }
 
@@ -130,19 +127,19 @@ pre[class*='language-'] {
 .token.entity,
 .language-css .token.string,
 .style .token.string {
-	color: rgb(173, 219, 103);
+	color: var(--code-string);
 }
 
 .token.class-name,
 .token.atrule,
 .token.attr-value {
-	color: rgb(255, 203, 139);
+	color: var(--code-class);
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-	color: rgb(214, 222, 235);
+	color: var(--code-regex);
 }
 
 .token.important,

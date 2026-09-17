@@ -11,6 +11,8 @@
 
 	let images = $state<BlogImage[]>([]);
 	let activeIndex = $state<number | null>(null);
+	let dialog_el = $state<HTMLDivElement | null>(null);
+	let return_focus: HTMLElement | null = null;
 
 	onMount(() => {
 		const container = document.querySelector(containerSelector);
@@ -113,10 +115,36 @@
 			prev();
 		} else if (e.key === 'Escape') {
 			close();
+		} else if (e.key === 'Tab') {
+			// Keep focus inside the modal while it is open.
+			const focusable = dialog_el?.querySelectorAll<HTMLElement>(
+				'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+			);
+			if (!focusable || focusable.length === 0) return;
+			const first = focusable[0];
+			const last = focusable[focusable.length - 1];
+			if (e.shiftKey && document.activeElement === first) {
+				e.preventDefault();
+				last.focus();
+			} else if (!e.shiftKey && document.activeElement === last) {
+				e.preventDefault();
+				first.focus();
+			}
 		}
 	}
 
+	// Move focus into the modal on open, and hand it back to the thumbnail on close.
+	$effect(() => {
+		if (activeIndex !== null && dialog_el) {
+			if (!return_focus) return_focus = document.activeElement as HTMLElement | null;
+			dialog_el.focus();
+		} else if (activeIndex === null && return_focus) {
+			return_focus.focus?.();
+			return_focus = null;
+		}
+	});
 </script>
+
 <svelte:window onkeydown={handleKeydown} />
 
 {#if activeIndex !== null && images.length > 0}
@@ -124,6 +152,8 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
+		bind:this={dialog_el}
+		tabindex="-1"
 		class="fixed inset-0 bg-background/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 select-none font-mono text-main touch-none"
 		onclick={close}
 		ontouchmove={(e) => e.preventDefault()}
@@ -140,7 +170,9 @@
 			ontouchend={handleTouchEnd}
 		>
 			<!-- Top Technical Status Bar -->
-			<div class="flex justify-between items-center pb-2 border-b border-border text-xxs uppercase tracking-widest font-mono text-muted">
+			<div
+				class="flex justify-between items-center pb-2 border-b border-border text-xxs uppercase tracking-widest font-mono text-muted"
+			>
 				<div class="flex items-center gap-2">
 					<span class="text-accent">●</span>
 					<span class="hidden xs:inline">[DEVICE: PHOTO_VIEWER]</span>
@@ -158,7 +190,9 @@
 			</div>
 
 			<!-- Image Viewer Area -->
-			<div class="flex-grow flex items-center justify-between gap-2 sm:gap-4 py-2 sm:py-4 relative min-h-0">
+			<div
+				class="flex-grow flex items-center justify-between gap-2 sm:gap-4 py-2 sm:py-4 relative min-h-0"
+			>
 				<!-- Prev Button (Desktop) -->
 				<button
 					class="hidden sm:flex border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-x-[2px] active:translate-y-[2px] active:shadow-none w-10 h-10 items-center justify-center font-bold text-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] z-20 shrink-0"
@@ -169,7 +203,9 @@
 				</button>
 
 				<!-- Displayed Image -->
-				<div class="flex-1 w-full h-full flex items-center justify-center relative p-1 sm:p-2 min-h-0">
+				<div
+					class="flex-1 w-full h-full flex items-center justify-center relative p-1 sm:p-2 min-h-0"
+				>
 					<img
 						src={images[activeIndex].src}
 						alt={images[activeIndex].alt}
@@ -204,7 +240,9 @@
 			</div>
 
 			<!-- Footer Bar -->
-			<div class="border-t border-border pt-2 text-xxs uppercase tracking-wider font-mono text-muted flex flex-col sm:flex-row justify-between gap-1 sm:gap-2">
+			<div
+				class="border-t border-border pt-2 text-xxs uppercase tracking-wider font-mono text-muted flex flex-col sm:flex-row justify-between gap-1 sm:gap-2"
+			>
 				<div class="truncate max-w-full sm:max-w-[60vw]">
 					<span>[CAPTION: {images[activeIndex].alt.toUpperCase()}]</span>
 				</div>

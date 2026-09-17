@@ -1,10 +1,7 @@
 <script>
 	import About from '$lib/components/About.svelte';
-	import { gsap } from 'gsap';
-	import { TextPlugin } from 'gsap/dist/TextPlugin';
-	gsap.registerPlugin(TextPlugin);
 
-	import { onMount } from 'svelte';
+	import Meta from '$lib/components/Meta.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import NavButton from '$lib/components/NavButton.svelte';
 	import GamingLog from '$lib/components/GamingLog.svelte';
@@ -13,16 +10,9 @@
 	import Socials from '$lib/components/Socials.svelte';
 
 	let { data } = $props();
-
-	onMount(() => {});
 </script>
 
-<svelte:head>
-	<title>Isa Tippens</title>
-	<meta name="description" content="I code things" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="canonical" href="https://isatippens.com" />
-</svelte:head>
+<Meta title="Isa Tippens" description="I code things" path="/" />
 
 <div class="grid gap-4">
 	<div class="grid gap-2">
@@ -34,31 +24,16 @@
 		</div>
 	</div>
 	<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 my-6">
-		<NavButton 
-			href="/blog" 
-			prefix="F1_BLOG" 
-			title="Blog" 
-			subtitle="READABLES // NOTES" 
+		<NavButton href="/blog" prefix="F1_BLOG" title="Blog" subtitle="READABLES // NOTES" />
+		<NavButton href="/projects" prefix="F2_PROJ" title="Projects" subtitle="SYSTEMS // CODE" />
+		<NavButton
+			href="/resume"
+			target="_blank"
+			prefix="F3_RESM"
+			title="Resume"
+			subtitle="DOWNLOAD // PDF"
 		/>
-		<NavButton 
-			href="/projects" 
-			prefix="F2_PROJ" 
-			title="Projects" 
-			subtitle="SYSTEMS // CODE" 
-		/>
-		<NavButton 
-			href="/resume" 
-			target="_blank" 
-			prefix="F3_RESM" 
-			title="Resume" 
-			subtitle="DOWNLOAD // PDF" 
-		/>
-		<NavButton 
-			href="/gear" 
-			prefix="F4_GEAR" 
-			title="Gear" 
-			subtitle="HARDWARE // SETUP" 
-		/>
+		<NavButton href="/gear" prefix="F4_GEAR" title="Gear" subtitle="HARDWARE // SETUP" />
 	</div>
 	<SectionHeader title="Recent Posts" href="/blog" />
 	<div class="grid">

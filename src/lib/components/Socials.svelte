@@ -51,11 +51,11 @@
 	];
 
 	const knobPresets = [
-		{ a: 45, b: -30, c: 90, d: 180 },    // GH
-		{ a: -90, b: 60, c: -45, d: 90 },    // IG
-		{ a: 180, b: 120, c: 30, d: -60 },   // YT
-		{ a: -30, b: -90, c: 120, d: 45 },   // X
-		{ a: 90, b: 45, c: -120, d: -180 }   // ML
+		{ a: 45, b: -30, c: 90, d: 180 }, // GH
+		{ a: -90, b: 60, c: -45, d: 90 }, // IG
+		{ a: 180, b: 120, c: 30, d: -60 }, // YT
+		{ a: -30, b: -90, c: 120, d: 45 }, // X
+		{ a: 90, b: 45, c: -120, d: -180 } // ML
 	];
 
 	// Derived knob rotation values based on active channel
@@ -65,6 +65,9 @@
 	let knobD = $derived(activeChannel !== null ? knobPresets[activeChannel].d : 0);
 
 	onMount(() => {
+		// The reel and level meters are decoration, so leave them parked on a still frame.
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
 		let frame = 0;
 		let lastTime = performance.now();
 
@@ -109,26 +112,10 @@
 	class="w-full max-w-3xl mx-auto bg-[#eaeaea] dark:bg-[#161617] border-2 border-[#c5c5c5] dark:border-[#2b2b2c] rounded-3xl p-4 sm:p-6 shadow-2xl relative font-mono text-neutral-600 dark:text-neutral-400 select-none transition-colors duration-200"
 >
 	<!-- Corner Screws -->
-	<div
-		class="chassis-screw top-2.5 left-2.5"
-	>
-		+
-	</div>
-	<div
-		class="chassis-screw top-2.5 right-2.5"
-	>
-		+
-	</div>
-	<div
-		class="chassis-screw bottom-2.5 left-2.5"
-	>
-		+
-	</div>
-	<div
-		class="chassis-screw bottom-2.5 right-2.5"
-	>
-		+
-	</div>
+	<div class="chassis-screw top-2.5 left-2.5">+</div>
+	<div class="chassis-screw top-2.5 right-2.5">+</div>
+	<div class="chassis-screw bottom-2.5 left-2.5">+</div>
+	<div class="chassis-screw bottom-2.5 right-2.5">+</div>
 
 	<!-- Chassis Top Labels -->
 	<div
@@ -168,7 +155,11 @@
 							? 'bg-red-700 dark:bg-red-500 animate-pulse'
 							: 'bg-[#7a936d] dark:bg-[#1b301c]'}"
 					></span>
-					<span class="transition-colors {activeChannel !== null ? 'text-red-700 dark:text-red-500' : ''}">
+					<span
+						class="transition-colors {activeChannel !== null
+							? 'text-red-700 dark:text-red-500'
+							: ''}"
+					>
 						{activeChannel !== null ? '● REC' : '▶ PLAY'}
 					</span>
 				</div>
@@ -279,9 +270,13 @@
 						</div>
 
 						<!-- Param Readout -->
-						<div class="text-micro font-bold flex flex-col items-center mt-1 select-none tracking-tight">
+						<div
+							class="text-micro font-bold flex flex-col items-center mt-1 select-none tracking-tight"
+						>
 							<span class="opacity-60">{ch.label}</span>
-							<span class={hovered ? 'text-[#132a10] dark:text-[#00ff66]' : 'opacity-85'}>{toHex(levels[i])}</span>
+							<span class={hovered ? 'text-[#132a10] dark:text-[#00ff66]' : 'opacity-85'}
+								>{toHex(levels[i])}</span
+							>
 						</div>
 					</a>
 				{/each}
@@ -312,7 +307,9 @@
 			class="flex flex-col justify-between bg-[#dfdfdf] dark:bg-[#1d1d1f] p-4 rounded-xl border border-neutral-300 dark:border-neutral-800 shadow-inner transition-colors duration-200"
 		>
 			<!-- Dial Grid -->
-			<div class="grid grid-cols-4 md:grid-cols-2 gap-4 md:gap-y-6 items-center justify-items-center w-full py-2">
+			<div
+				class="grid grid-cols-4 md:grid-cols-2 gap-4 md:gap-y-6 items-center justify-items-center w-full py-2"
+			>
 				<!-- Knob 1 -->
 				<div class="flex flex-col items-center">
 					<div
@@ -321,7 +318,8 @@
 					>
 						<div class="w-1 h-3.5 bg-neutral-950 absolute top-0 rounded-b-sm"></div>
 					</div>
-					<span class="text-micro mt-1 text-neutral-500 dark:text-neutral-500 font-bold tracking-wider font-mono"
+					<span
+						class="text-micro mt-1 text-neutral-500 dark:text-neutral-500 font-bold tracking-wider font-mono"
 						>A-VOL</span
 					>
 				</div>
@@ -333,7 +331,8 @@
 					>
 						<div class="w-1 h-3.5 bg-neutral-950 absolute top-0 rounded-b-sm"></div>
 					</div>
-					<span class="text-micro mt-1 text-neutral-500 dark:text-neutral-500 font-bold tracking-wider font-mono"
+					<span
+						class="text-micro mt-1 text-neutral-500 dark:text-neutral-500 font-bold tracking-wider font-mono"
 						>B-FREQ</span
 					>
 				</div>
@@ -345,7 +344,8 @@
 					>
 						<div class="w-1 h-3.5 bg-neutral-950 absolute top-0 rounded-b-sm"></div>
 					</div>
-					<span class="text-micro mt-1 text-neutral-500 dark:text-neutral-500 font-bold tracking-wider font-mono"
+					<span
+						class="text-micro mt-1 text-neutral-500 dark:text-neutral-500 font-bold tracking-wider font-mono"
 						>C-RES</span
 					>
 				</div>
@@ -357,7 +357,8 @@
 					>
 						<div class="w-1 h-3.5 bg-neutral-950 absolute top-0 rounded-b-sm"></div>
 					</div>
-					<span class="text-micro mt-1 text-neutral-500 dark:text-neutral-500 font-bold tracking-wider font-mono"
+					<span
+						class="text-micro mt-1 text-neutral-500 dark:text-neutral-500 font-bold tracking-wider font-mono"
 						>D-MIX</span
 					>
 				</div>
@@ -393,7 +394,9 @@
 				>
 					{i + 1}
 				</a>
-				<span class="text-micro mt-1.5 text-neutral-500 dark:text-neutral-500 font-bold font-mono">{ch.abbr}</span>
+				<span class="text-micro mt-1.5 text-neutral-500 dark:text-neutral-500 font-bold font-mono"
+					>{ch.abbr}</span
+				>
 			</div>
 		{/each}
 	</div>
@@ -401,14 +404,12 @@
 
 <style>
 	.lcd-grid {
-		background-image: 
-			linear-gradient(rgba(19, 42, 16, 0.04) 1px, transparent 1px),
+		background-image: linear-gradient(rgba(19, 42, 16, 0.04) 1px, transparent 1px),
 			linear-gradient(90deg, rgba(19, 42, 16, 0.04) 1px, transparent 1px);
 		background-size: 3px 3px;
 	}
 	:global(.dark) .lcd-grid {
-		background-image: 
-			linear-gradient(rgba(0, 255, 102, 0.02) 1px, transparent 1px),
+		background-image: linear-gradient(rgba(0, 255, 102, 0.02) 1px, transparent 1px),
 			linear-gradient(90deg, rgba(0, 255, 102, 0.02) 1px, transparent 1px);
 	}
 	:global(.dark) .glow-text {
