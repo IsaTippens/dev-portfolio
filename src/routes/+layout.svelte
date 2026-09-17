@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { is_dark } from '$lib/stores/theme';
-	import { setContext } from 'svelte';
-	setContext('theme', { is_dark });
+	import { THEMES, theme } from '$lib/stores/theme';
 
 	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
 	import '../app.css';
@@ -9,7 +7,6 @@
 
 	let { children } = $props();
 
-	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 
 	import { isCharging, batteryLevel, playLightning } from '$lib/stores/battery';
@@ -70,18 +67,10 @@
 		};
 	});
 
-	function toggleTheme() {
-		is_dark.update((d) => !d);
-	}
-
 	$effect(() => {
-		if (browser) {
-			if ($is_dark) {
-				document.documentElement.classList.add('dark');
-			} else {
-				document.documentElement.classList.remove('dark');
-			}
-		}
+		const active = THEMES.find((t) => t.id === $theme);
+		document.documentElement.dataset.theme = active?.id ?? 'light';
+		document.documentElement.classList.toggle('dark', active?.dark ?? false);
 	});
 </script>
 
@@ -113,12 +102,20 @@
 				<span class="inline-block w-2.5 h-2.5 bg-accent"></span>
 				<span class="font-bold text-main">DEV-PORTFOLIO</span>
 			</span>
-			<button
-				onclick={toggleTheme}
-				class="hover:text-accent font-bold transition-colors uppercase border border-neutral-300 dark:border-neutral-700 px-1.5 py-0.5 bg-neutral-200/50 dark:bg-neutral-800/50 text-tiny"
+			<label
+				class="flex items-center gap-1 font-bold uppercase border border-neutral-300 dark:border-neutral-700 px-1.5 py-0.5 bg-neutral-200/50 dark:bg-neutral-800/50 text-tiny cursor-pointer"
 			>
-				MODE: {$is_dark ? 'DARK' : 'LIGHT'}
-			</button>
+				MODE:
+				<select
+					bind:value={$theme}
+					aria-label="Colour theme"
+					class="bg-transparent text-main uppercase font-bold cursor-pointer hover:text-accent focus:outline-none"
+				>
+					{#each THEMES as t (t.id)}
+						<option value={t.id}>{t.label}</option>
+					{/each}
+				</select>
+			</label>
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<span

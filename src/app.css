@@ -9,21 +9,73 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+	Palettes. `--accent-color` is always used as foreground (labels, links, icons) and
+	`--accent-color-2` as a filled surface (headers, gradient tiles, highlight wash),
+	with `--accent-contrast` as the text colour on top of that fill.
+	`color-scheme` keeps native widgets (select menus, scrollbars) in step with the palette.
+*/
 :root {
+	color-scheme: light;
 	--accent-color: #0088ff;
+	--accent-color-2: #0088ff;
+	--accent-contrast: #ffffff;
 	--bg-body: #f4f4f5;
 	--bg-card: #ffffff;
 	--text-main: #121212;
 	--text-muted: #737373;
 	--border-main: #e4e4e7;
 }
-:root.dark {
+:root[data-theme='dark'] {
+	color-scheme: dark;
 	--accent-color: #00c0ff;
+	--accent-color-2: #00c0ff;
+	--accent-contrast: #ffffff;
 	--bg-body: #09090b;
 	--bg-card: #18181b;
 	--text-main: #ffffff;
 	--text-muted: #a3a3a3;
 	--border-main: #27272a;
+}
+/* DAWN: #58a6ff accent + #ff6b6b fill on #ffedd5.
+   #58a6ff verbatim only reaches 2.2:1 as small text on peach, so the text accent
+   is the same hue darkened to 3.4:1. */
+:root[data-theme='dawn'] {
+	color-scheme: light;
+	--accent-color: #4888d1;
+	--accent-color-2: #ff6b6b;
+	--accent-contrast: #1f1c1a;
+	--bg-body: #ffedd5;
+	--bg-card: #fff6ea;
+	--text-main: #1f1c1a;
+	--text-muted: #7a7065;
+	--border-main: #e0d1bb;
+}
+/* DUNE: #679f9e accent + #7eaddb fill on #e6d4be. Same treatment as DAWN:
+   #679f9e darkened from 2.1:1 to 3.9:1 for legible small text. */
+:root[data-theme='dune'] {
+	color-scheme: light;
+	--accent-color: #507c7b;
+	--accent-color-2: #7eaddb;
+	--accent-contrast: #1c1917;
+	--bg-body: #e6d4be;
+	--bg-card: #f2eade;
+	--text-main: #1c1917;
+	--text-muted: #6a6157;
+	--border-main: #cabba7;
+}
+/* EMBER: #eed3ba accent + #4b262f fill on #151311.
+   #4b262f is a surface colour (1.4:1 against the body), never text. */
+:root[data-theme='ember'] {
+	color-scheme: dark;
+	--accent-color: #eed3ba;
+	--accent-color-2: #4b262f;
+	--accent-contrast: #eed3ba;
+	--bg-body: #151311;
+	--bg-card: #2b1b1d;
+	--text-main: #f3e7da;
+	--text-muted: #a08b7b;
+	--border-main: #3f2c2e;
 }
 
 body {
@@ -35,8 +87,8 @@ body {
 }
 
 .global-gradient {
-	background-color: var(--accent-color);
-	@apply text-white;
+	background-color: var(--accent-color-2);
+	color: var(--accent-contrast);
 }
 
 .highlighter {
@@ -49,7 +101,7 @@ body {
 }
 
 .highlight-faint {
-	@apply bg-blue-100/60 dark:bg-blue-950/30;
+	background-color: color-mix(in srgb, var(--accent-color-2) 15%, transparent);
 }
 
 .highlight-link {
@@ -57,8 +109,8 @@ body {
 	color: var(--accent-color);
 }
 .highlight-link:hover {
-	background-color: var(--accent-color);
-	@apply text-white;
+	background-color: var(--accent-color-2);
+	color: var(--accent-contrast);
 }
 
 .card {
@@ -70,8 +122,9 @@ body {
 }
 
 .blog-header {
-	background-color: var(--accent-color);
-	@apply py-8 px-4 text-white border-b-2 border-black dark:border-neutral-700 rounded-none;
+	background-color: var(--accent-color-2);
+	color: var(--accent-contrast);
+	@apply py-8 px-4 border-b-2 border-black dark:border-neutral-700 rounded-none;
 }
 
 .blog-body {
@@ -79,8 +132,9 @@ body {
 }
 
 .gradient-card-bg {
-	background-color: var(--accent-color);
-	@apply text-white border border-black dark:border-neutral-700 rounded-none;
+	background-color: var(--accent-color-2);
+	color: var(--accent-contrast);
+	@apply border border-black dark:border-neutral-700 rounded-none;
 }
 
 .crumb-end {
