@@ -6,8 +6,6 @@
 	 * the PO-100 and TE-S10 set the standard and this is how everything else meets it.
 	 *
 	 * `tag`     module ID, sits on the top edge (`[BIO_DATA]`, `[CARTOGRAPHY_CPT]`, …)
-	 * `draw`    frame is stroked on when the module seats (SVG rect, CSS border takes over)
-	 * `seat`    module takes part in the scroll-assembly pass
 	 * `screws`  corner screws, for panels that are meant to be bolted down
 	 * `sunk`    recessed surface (a well), rather than a raised panel
 	 */
@@ -16,8 +14,6 @@
 		tag_tone = 'dim',
 		tag_side = 'right',
 		screws = false,
-		draw = false,
-		seat = false,
 		sunk = false,
 		class: klass = '',
 		children,
@@ -27,8 +23,6 @@
 		tag_tone?: 'dim' | 'accent';
 		tag_side?: 'left' | 'right';
 		screws?: boolean;
-		draw?: boolean;
-		seat?: boolean;
 		sunk?: boolean;
 		class?: string;
 		children?: Snippet;
@@ -38,16 +32,7 @@
 	const SCREW_ANGLE = [45, -30, 60, 15];
 </script>
 
-<div
-	class="panel {sunk ? 'bg-sunk' : ''} {klass}"
-	data-draw={draw ? '' : undefined}
-	data-seat={seat ? '' : undefined}
-	{...rest}
->
-	<svg class="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" data-panel-rect>
-		<rect fill="none" stroke="var(--line)" stroke-width="1" pathLength="1" />
-	</svg>
-
+<div class="panel {sunk ? 'bg-sunk' : ''} {klass}" {...rest}>
 	{#if tag}
 		<span
 			class="section-label {tag_side === 'left' ? 'left-4' : 'right-3'} text-tiny {tag_tone === 'accent'

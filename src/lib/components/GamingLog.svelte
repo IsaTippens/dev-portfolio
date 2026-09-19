@@ -15,7 +15,7 @@
 	const HEADINGS = ['Game Title', 'Stats / Mode', 'Platform'];
 </script>
 
-<Panel tag="GAMING_LOG" draw={true} data-stagger class="overflow-x-auto">
+<Panel tag="GAMING_LOG" class="overflow-x-auto">
 	<table class="w-full border-collapse text-left font-mono text-xs">
 		<thead>
 			<tr class="border-b border-line bg-sunk">

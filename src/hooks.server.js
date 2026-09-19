@@ -52,7 +52,6 @@ function theme_boot() {
 				window.__motion_failsafe = setTimeout(() => {
 					root.dataset.motion = 'off';
 					root.dataset.boot = 'done';
-					for (const el of document.querySelectorAll('[data-draw]')) el.dataset.drawn = 'true';
 				}, 4000);
 				window.__motion_ready = () => clearTimeout(window.__motion_failsafe);
 			})();

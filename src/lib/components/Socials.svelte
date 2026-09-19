@@ -1,29 +1,25 @@
-<script lang="ts">
+<script>
 	import { onMount } from 'svelte';
-	import Panel from '$lib/components/Panel.svelte';
-	import { reducedMotion } from '$lib/motion';
 	import X from 'virtual:icons/carbon/logo-x.svelte';
 	import YouTube from 'virtual:icons/carbon/logo-youtube.svelte';
 	import Github from 'virtual:icons/carbon/logo-github.svelte';
 	import Instagram from 'virtual:icons/carbon/logo-instagram.svelte';
 	import Mail from 'virtual:icons/carbon/email.svelte';
 
-	/**
-	 * TE-S10 — social interface. A tape deck with five channels and five keys.
-	 *
-	 * The meters *and* the reels step at 10Hz rather than every frame. A segmented VU
-	 * meter is a stepped readout anyway, and a continuously spinning reel repaints the
-	 * whole document through the grain blend layer on every frame — which measured at
-	 * roughly half the frame budget in this environment. Stepped, it costs nothing; it
-	 * also reads more like a machine than a lava lamp.
-	 */
-
-	let activeChannel = $state<number | null>(null);
+	// Svelte 5 state runes
+	/** @type {number | null} */
+	let activeChannel = $state(null);
 	let levels = $state([20, 35, 15, 30, 45]);
-	let reel_angle = $state(0);
+	let tapeRotation = $state(0);
 
 	const channels = [
-		{ name: 'GITHUB', abbr: 'GH', label: 'SRC', url: 'https://www.github.com/IsaTippens', icon: Github },
+		{
+			name: 'GITHUB',
+			abbr: 'GH',
+			label: 'SRC',
+			url: 'https://www.github.com/IsaTippens',
+			icon: Github
+		},
 		{
 			name: 'INSTAGRAM',
 			abbr: 'IG',
@@ -31,41 +27,80 @@
 			url: 'https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/',
 			icon: Instagram
 		},
-		{ name: 'YOUTUBE', abbr: 'YT', label: 'PLAY', url: 'https://www.youtube.com/@issaaahhhh', icon: YouTube },
-		{ name: 'X', abbr: 'X', label: 'TXT', url: 'https://x.com/issssaaaaaaaaah', icon: X },
-		{ name: 'MAIL', abbr: 'ML', label: 'MSG', url: 'mailto:isatippens2@gmail.com', icon: Mail }
+		{
+			name: 'YOUTUBE',
+			abbr: 'YT',
+			label: 'PLAY',
+			url: 'https://www.youtube.com/@issaaahhhh',
+			icon: YouTube
+		},
+		{
+			name: 'X',
+			abbr: 'X',
+			label: 'TXT',
+			url: 'https://x.com/issssaaaaaaaaah',
+			icon: X
+		},
+		{
+			name: 'MAIL',
+			abbr: 'ML',
+			label: 'MSG',
+			url: 'mailto:isatippens2@gmail.com',
+			icon: Mail
+		}
 	];
 
 	const knobPresets = [
-		{ a: 45, b: -30, c: 90, d: 180 },
-		{ a: -90, b: 60, c: -45, d: 90 },
-		{ a: 180, b: 120, c: 30, d: -60 },
-		{ a: -30, b: -90, c: 120, d: 45 },
-		{ a: 90, b: 45, c: -120, d: -180 }
+		{ a: 45, b: -30, c: 90, d: 180 }, // GH
+		{ a: -90, b: 60, c: -45, d: 90 }, // IG
+		{ a: 180, b: 120, c: 30, d: -60 }, // YT
+		{ a: -30, b: -90, c: 120, d: 45 }, // X
+		{ a: 90, b: 45, c: -120, d: -180 } // ML
 	];
 
-	let knobs = $derived(activeChannel !== null ? knobPresets[activeChannel] : { a: 0, b: 0, c: 0, d: 0 });
+	// Derived knob rotation values based on active channel
+	let knobA = $derived(activeChannel !== null ? knobPresets[activeChannel].a : 0);
+	let knobB = $derived(activeChannel !== null ? knobPresets[activeChannel].b : 0);
+	let knobC = $derived(activeChannel !== null ? knobPresets[activeChannel].c : 0);
+	let knobD = $derived(activeChannel !== null ? knobPresets[activeChannel].d : 0);
 
 	onMount(() => {
-		// Decoration: leave the meters parked on a still frame for reduced motion.
-		if (reducedMotion()) return;
+		// The reel and level meters are decoration, so leave them parked on a still frame.
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-		const STEP = 100;
-		const id = setInterval(() => {
-			levels = levels.map((level, i) => {
-				const range = activeChannel === i ? 35 : 12;
-				const ceiling = activeChannel === i ? 100 : 45;
-				const floor = activeChannel === i ? 20 : 5;
-				return Math.max(floor, Math.min(ceiling, level + (Math.random() - 0.5) * range));
-			});
-			reel_angle = (reel_angle + (activeChannel !== null ? 40 : 12)) % 360;
-		}, STEP);
+		let frame = 0;
+		let lastTime = performance.now();
 
-		return () => clearInterval(id);
+		/** @param {number} time */
+		const update = (time) => {
+			const delta = time - lastTime;
+			lastTime = time;
+
+			// Spin the tape reel. Active channel makes it spin faster!
+			const speed = activeChannel !== null ? 0.35 : 0.08;
+			tapeRotation = (tapeRotation + speed * delta) % 360;
+
+			// Ambient bounce for levels
+			for (let i = 0; i < 5; i++) {
+				if (activeChannel === i) {
+					// High activity when hovered
+					levels[i] = Math.max(20, Math.min(100, levels[i] + (Math.random() - 0.5) * 35));
+				} else {
+					// Low ambient activity
+					levels[i] = Math.max(5, Math.min(45, levels[i] + (Math.random() - 0.5) * 12));
+				}
+			}
+
+			frame = requestAnimationFrame(update);
+		};
+
+		frame = requestAnimationFrame(update);
+		return () => cancelAnimationFrame(frame);
 	});
 
-	/** Level percentage as a hex byte, TE readout style. */
-	function toHex(val: number) {
+	// Helper to display level percentage as hex string (Teenage Engineering style)
+	/** @param {number} val */
+	function toHex(val) {
 		return Math.round(val * 2.55)
 			.toString(16)
 			.toUpperCase()
@@ -73,145 +108,265 @@
 	}
 </script>
 
-<Panel
-	draw={true}
-	screws={true}
-	data-stagger
-	class="mx-auto w-full max-w-3xl border-[var(--hw-case-line)] bg-[var(--hw-case-2)] p-4 font-mono select-none sm:p-6"
+<div
+	class="w-full max-w-3xl mx-auto bg-[var(--hw-case-2)] border-2 border-[var(--hw-case-line)] rounded-3xl p-4 sm:p-6 shadow-2xl relative font-mono text-dim select-none transition-colors duration-200"
 >
-	<!-- Chassis labels -->
+	<!-- Corner Screws -->
+	<div class="chassis-screw top-2.5 left-2.5">+</div>
+	<div class="chassis-screw top-2.5 right-2.5">+</div>
+	<div class="chassis-screw bottom-2.5 left-2.5">+</div>
+	<div class="chassis-screw bottom-2.5 right-2.5">+</div>
+
+	<!-- Chassis Top Labels -->
 	<div
-		class="mb-3 flex items-center justify-between px-1 font-mono text-micro font-bold tracking-wider text-dim uppercase sm:text-tiny"
+		class="flex justify-between items-center text-micro sm:text-tiny text-dim tracking-wider mb-3 px-1 uppercase font-bold"
 	>
 		<span>TE-S10 // SOCIAL INTERFACE</span>
-		<div class="flex gap-1" aria-hidden="true">
-			{#each Array(5) as _}
-				<span class="led" data-on={activeChannel !== null ? 'ok' : 'false'}></span>
-			{/each}
+		<div class="flex gap-1">
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
 		</div>
 		<span>UNIT.04</span>
 	</div>
 
-	<div class="grid grid-cols-1 items-stretch gap-4 sm:gap-6 md:grid-cols-4">
-		<!-- Display module -->
+	<div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 items-stretch">
+		<!-- Left: The Retro Screen Module -->
 		<div
-			class="scanlines relative flex flex-col justify-between overflow-hidden border border-[var(--hw-case-line)] bg-[var(--hw-screen)] p-3 text-[var(--hw-screen-ink)] shadow-inner transition-none sm:p-4 md:col-span-3"
+			class="md:col-span-3 flex flex-col justify-between bg-[var(--hw-screen)] border-2 border-[var(--hw-screen-line)] rounded-xl p-3 sm:p-4 shadow-inner relative overflow-hidden text-[var(--hw-screen-ink)] lcd-grid transition-colors duration-200"
 		>
-			<!-- Screen header -->
+			<!-- Scanline / Glare overlays -->
 			<div
-				class="mb-2 flex items-center justify-between border-b border-[var(--hw-screen-ink)]/25 pb-2 font-mono text-micro font-bold select-none sm:text-tiny"
+				class="absolute inset-0 pointer-events-none opacity-[0.1] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[size:100%_4px]"
+			></div>
+			<div
+				class="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(135deg,rgba(255,255,255,1)_0%,rgba(255,255,255,0)_60%)]"
+			></div>
+
+			<!-- Screen Header Status Bar -->
+			<div
+				class="flex justify-between items-center text-micro sm:text-tiny border-b border-[var(--hw-screen-line)] pb-2 mb-2 select-none glow-text font-bold text-[var(--hw-screen-ink-dim)] transition-colors duration-200"
 			>
 				<div class="flex items-center gap-1.5">
-					<span class="led" data-on={activeChannel !== null ? 'true' : 'false'}></span>
-					<span class="text-ink">{activeChannel !== null ? 'REC' : 'PLAY'}</span>
+					<span
+						class="inline-block w-2 h-2 rounded-full transition-colors {activeChannel !== null
+							? 'bg-rec animate-pulse'
+							: 'bg-[var(--hw-screen-seg-off)]'}"
+					></span>
+					<span
+						class="transition-colors {activeChannel !== null
+							? 'text-rec'
+							: ''}"
+					>
+						{activeChannel !== null ? '● REC' : '▶ PLAY'}
+					</span>
 				</div>
 
-				<!-- Tape reels: CSS-driven, so the spin costs nothing per frame -->
+				<!-- Cassette Tape Reel -->
 				<div
-					class="flex scale-90 items-center gap-1 border border-[var(--hw-screen-ink)]/25 bg-[var(--hw-screen-2)]/40 px-2 py-0.5 sm:scale-100"
+					class="flex items-center gap-1 border border-[var(--hw-screen-line)] px-2 py-0.5 rounded bg-[var(--hw-screen-well)] scale-90 sm:scale-100"
 				>
-					{#each [0, 1] as reel (reel)}
-						<span class="reel-layer" style="transform: rotate({reel_angle}deg)">
-							<svg class="h-3.5 w-3.5" viewBox="0 0 24 24">
-								<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none" stroke-dasharray="6 3 2 3" />
-								<circle cx="12" cy="12" r="3" fill="currentColor" />
-							</svg>
-						</span>
-					{/each}
-					<div class="relative flex h-2 w-4 items-center justify-between border border-[var(--hw-screen-ink)]/25 px-0.5">
-						<div class="h-0.5 w-0.5 rounded-full bg-current"></div>
-						<div class="h-0.5 w-0.5 rounded-full bg-current"></div>
+					<!-- Left Reel -->
+					<svg
+						class="w-3.5 h-3.5 text-current transition-transform duration-75"
+						viewBox="0 0 24 24"
+						style="transform: rotate({tapeRotation}deg);"
+					>
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="currentColor"
+							stroke-width="1.5"
+							fill="none"
+							stroke-dasharray="6 3 2 3"
+						/>
+						<circle cx="12" cy="12" r="3" fill="currentColor" />
+					</svg>
+					<!-- Tape window -->
+					<div
+						class="w-4 h-2 border border-[var(--hw-screen-line)] relative flex items-center justify-between px-0.5"
+					>
+						<div class="w-0.5 h-0.5 bg-current rounded-full"></div>
+						<div class="w-0.5 h-0.5 bg-current rounded-full"></div>
 					</div>
+					<!-- Right Reel -->
+					<svg
+						class="w-3.5 h-3.5 text-current transition-transform duration-75"
+						viewBox="0 0 24 24"
+						style="transform: rotate({tapeRotation}deg);"
+					>
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="currentColor"
+							stroke-width="1.5"
+							fill="none"
+							stroke-dasharray="6 3 2 3"
+						/>
+						<circle cx="12" cy="12" r="3" fill="currentColor" />
+					</svg>
 				</div>
 
-				<span class="tracking-wider">BPM: {activeChannel !== null ? '140' : '110'}</span>
+				<div class="tracking-wider">
+					<span>BPM: {activeChannel !== null ? '140' : '110'}</span>
+				</div>
 			</div>
 
-			<!-- Channels -->
+			<!-- Grid of 5 Channels -->
 			<div class="grid grid-cols-5 gap-1.5 sm:gap-2">
-				{#each channels as ch, i (ch.abbr)}
+				{#each channels as ch, i}
 					{@const hovered = activeChannel === i}
 					<a
 						href={ch.url}
 						target="_blank"
 						rel="noopener"
-						class="flex flex-col items-center border py-2 transition-none {hovered
-							? 'border-[var(--hw-screen-ink)] bg-[var(--hw-screen-2)]/50'
-							: 'border-[var(--hw-screen-ink)]/20'}"
+						class="flex flex-col items-center bg-[var(--hw-screen-cell)] border border-[var(--hw-screen-line)] rounded py-2 transition-all duration-150 {hovered
+							? 'bg-[var(--hw-screen-cell-on)] border-[var(--hw-screen-ink)] text-[var(--hw-screen-ink)]'
+							: 'text-[var(--hw-screen-ink-dim)]'}"
 						onmouseenter={() => (activeChannel = i)}
 						onmouseleave={() => (activeChannel = null)}
 						onfocus={() => (activeChannel = i)}
 						onblur={() => (activeChannel = null)}
 					>
+						<!-- Channel indicator -->
 						<div class="flex flex-col items-center gap-1 select-none">
-							<span class="font-mono text-micro font-bold opacity-60">0{i + 1}</span>
-							<span class="led" data-on={hovered ? 'ok' : 'false'} aria-hidden="true"></span>
+							<span class="text-micro opacity-50 font-bold">0{i + 1}</span>
+							<div
+								class="w-1.5 h-1.5 rounded-full transition-colors {hovered
+									? 'bg-[var(--hw-screen-ink)]'
+									: 'bg-[var(--hw-screen-seg-off)]'}"
+							></div>
 						</div>
 
-						<div class="my-2">
-							<ch.icon class="h-5 w-5 sm:h-6 sm:w-6" />
+						<!-- Social Icon -->
+						<div class="my-2 transition-transform duration-200 {hovered ? 'scale-110' : ''}">
+							{#if ch.abbr === 'GH'}
+								<Github class="w-5 h-5 sm:w-6 sm:h-6" />
+							{:else if ch.abbr === 'IG'}
+								<Instagram class="w-5 h-5 sm:w-6 sm:h-6" />
+							{:else if ch.abbr === 'YT'}
+								<YouTube class="w-5 h-5 sm:w-6 sm:h-6" />
+							{:else if ch.abbr === 'X'}
+								<X class="w-5 h-5 sm:w-6 sm:h-6" />
+							{:else if ch.abbr === 'ML'}
+								<Mail class="w-5 h-5 sm:w-6 sm:h-6" />
+							{/if}
 						</div>
 
-						<!-- Segmented level meter -->
-						<div class="my-1 flex flex-col items-center gap-0.5 select-none" aria-hidden="true">
-							{#each [75, 60, 45, 30, 15, 5] as threshold (threshold)}
-								{@const lit = levels[i] >= threshold}
+						<!-- Equalizer Segment Display -->
+						<div class="flex flex-col gap-0.5 items-center my-1 select-none">
+							{#each [75, 60, 45, 30, 15, 5] as threshold}
+								{@const active = levels[i] >= threshold}
 								<div
-									class="h-1 w-4 sm:w-5 {lit
+									class="w-4 sm:w-5 h-1 rounded-sm transition-colors duration-75 {active
 										? 'bg-[var(--hw-screen-ink)]'
-										: 'bg-[var(--hw-screen-ink)]/20'}"
+										: 'bg-[var(--hw-screen-seg-off)]'}"
 								></div>
 							{/each}
 						</div>
 
-						<div class="mt-1 flex flex-col items-center font-mono text-micro font-bold tracking-tight select-none">
+						<!-- Param Readout -->
+						<div
+							class="text-micro font-bold flex flex-col items-center mt-1 select-none tracking-tight"
+						>
 							<span class="opacity-60">{ch.label}</span>
-							<span class="opacity-90">{toHex(levels[i])}</span>
+							<span class={hovered ? 'text-[var(--hw-screen-ink)]' : 'opacity-85'}
+								>{toHex(levels[i])}</span
+							>
 						</div>
 					</a>
 				{/each}
 			</div>
 
-			<!-- Source readout -->
+			<!-- Dynamic Readout / Technical details -->
 			<div
-				class="mt-3 flex items-center justify-between border border-[var(--hw-screen-ink)]/25 bg-[var(--hw-screen-2)]/30 px-2 py-1.5 font-mono text-micro font-bold tracking-wide select-none sm:text-xxs"
+				class="bg-[var(--hw-screen-well)] border border-[var(--hw-screen-line)] rounded px-2 py-1.5 mt-3 flex items-center justify-between text-micro sm:text-xxs font-bold tracking-wide select-none"
 			>
-				<div class="flex w-full items-center gap-1.5 truncate">
+				<div class="truncate w-full flex items-center gap-1.5 glow-text">
 					{#if activeChannel !== null}
-						<span class="text-accent">▶</span>
-						<span class="uppercase">
+						<span class="text-[var(--hw-screen-ink)] animate-pulse">▶</span>
+						<span class="text-[var(--hw-screen-ink)] uppercase">
 							{channels[activeChannel].name} // TRANSMIT TO: {channels[activeChannel].url
 								.replace('https://www.', '')
 								.replace('https://', '')}
 						</span>
 					{:else}
 						<span class="opacity-55">■</span>
-						<span class="uppercase opacity-55">SYSTEM READY // SELECT SOURCE CHANNEL 01-05</span>
+						<span class="opacity-55 uppercase">SYSTEM READY // SELECT SOURCE CHANNEL 01-05</span>
 					{/if}
 				</div>
 			</div>
 		</div>
 
-		<!-- Control surface -->
+		<!-- Right: Physical Control Knobs & Elements -->
 		<div
-			class="flex flex-col justify-between border border-[var(--hw-case-line)] bg-[var(--hw-case)] p-4 shadow-inner"
+			class="flex flex-col justify-between bg-[var(--hw-case)] p-4 rounded-xl border border-[var(--hw-case-line)] shadow-inner"
 		>
-			<div class="grid w-full grid-cols-4 items-center justify-items-center gap-4 py-2 md:grid-cols-2 md:gap-y-6">
-				{#each [['A-VOL', knobs.a, 'var(--hw-knob-freq)'], ['B-FREQ', knobs.b, 'var(--hw-knob-phase)'], ['C-RES', knobs.c, 'var(--hw-knob-rgb)'], ['D-MIX', knobs.d, 'var(--hw-knob-phase)']] as [label, angle, cap], i (label)}
-					<div class="flex flex-col items-center">
-						<div
-							class="relative flex h-7 w-7 items-center justify-center rounded-full border border-[var(--hw-knob-edge)] shadow-md"
-							style="background: {cap}; transform: rotate({angle}deg); transition: transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1);"
-						>
-							<div class="absolute top-0 h-3.5 w-1 rounded-b-sm bg-[var(--hw-well-2)]"></div>
-						</div>
-						<span class="mt-1 font-mono text-micro font-bold tracking-wider text-dim">{label}</span>
+			<!-- Dial Grid -->
+			<div
+				class="grid grid-cols-4 md:grid-cols-2 gap-4 md:gap-y-6 items-center justify-items-center w-full py-2"
+			>
+				<!-- Knob 1 -->
+				<div class="flex flex-col items-center">
+					<div
+						class="w-7 h-7 rounded-full border border-[var(--hw-knob-edge)] shadow-md relative flex items-center justify-center bg-[#0088ff] cursor-ew-resize transition-transform duration-75"
+						style="transform: rotate({knobA}deg);"
+					>
+						<div class="w-1 h-3.5 bg-[var(--hw-well-2)] absolute top-0 rounded-b-sm"></div>
 					</div>
-				{/each}
+					<span
+						class="text-micro mt-1 text-dim font-bold tracking-wider font-mono"
+						>A-VOL</span
+					>
+				</div>
+				<!-- Knob 2 -->
+				<div class="flex flex-col items-center">
+					<div
+						class="w-7 h-7 rounded-full border border-[var(--hw-knob-edge)] shadow-md relative flex items-center justify-center bg-[#00cc66] cursor-ew-resize transition-transform duration-75"
+						style="transform: rotate({knobB}deg);"
+					>
+						<div class="w-1 h-3.5 bg-[var(--hw-well-2)] absolute top-0 rounded-b-sm"></div>
+					</div>
+					<span
+						class="text-micro mt-1 text-dim font-bold tracking-wider font-mono"
+						>B-FREQ</span
+					>
+				</div>
+				<!-- Knob 3 -->
+				<div class="flex flex-col items-center">
+					<div
+						class="w-7 h-7 rounded-full border border-[var(--hw-knob-edge)] shadow-md relative flex items-center justify-center bg-[#ff5500] cursor-ew-resize transition-transform duration-75"
+						style="transform: rotate({knobC}deg);"
+					>
+						<div class="w-1 h-3.5 bg-[var(--hw-well-2)] absolute top-0 rounded-b-sm"></div>
+					</div>
+					<span
+						class="text-micro mt-1 text-dim font-bold tracking-wider font-mono"
+						>C-RES</span
+					>
+				</div>
+				<!-- Knob 4 -->
+				<div class="flex flex-col items-center">
+					<div
+						class="w-7 h-7 rounded-full border border-[var(--hw-knob-edge)] shadow-md relative flex items-center justify-center bg-[#ffcc00] cursor-ew-resize transition-transform duration-75"
+						style="transform: rotate({knobD}deg);"
+					>
+						<div class="w-1 h-3.5 bg-[var(--hw-well-2)] absolute top-0 rounded-b-sm"></div>
+					</div>
+					<span
+						class="text-micro mt-1 text-dim font-bold tracking-wider font-mono"
+						>D-MIX</span
+					>
+				</div>
 			</div>
 
+			<!-- Mechanical Spec label on chassis -->
 			<div
-				class="mt-4 hidden flex-col gap-0.5 border-t border-[var(--hw-case-line)] pt-3 font-mono text-nano font-bold tracking-widest text-dim uppercase leading-none md:flex"
+				class="hidden md:flex flex-col border-t border-[var(--hw-case-line)] pt-3 mt-4 text-nano text-dim font-bold uppercase tracking-widest gap-0.5 leading-none"
 			>
 				<span>HIGH FIDELITY</span>
 				<span>POCKET CONTROLLER</span>
@@ -220,18 +375,18 @@
 		</div>
 	</div>
 
-	<!-- Physical keys -->
-	<div class="mt-5 grid grid-cols-5 gap-2 px-1">
-		{#each channels as ch, i (ch.abbr)}
+	<!-- Bottom: Physical Buttons of the Pocket Operator -->
+	<div class="grid grid-cols-5 gap-2 mt-5 px-1">
+		{#each channels as ch, i}
 			{@const hovered = activeChannel === i}
 			<div class="flex flex-col items-center">
 				<a
 					href={ch.url}
 					target="_blank"
 					rel="noopener"
-					class="hbtn h-10 w-10 rounded-full text-tiny sm:h-12 sm:w-12"
-					data-active={hovered}
-					aria-label={`Open ${ch.name}`}
+					class="knob-btn {hovered
+						? 'bg-[var(--hw-key)] border-[var(--hw-screen-ink)] text-[var(--hw-screen-ink)] shadow-[0_0_8px_var(--shadow-soft)]'
+						: ''}"
 					onmouseenter={() => (activeChannel = i)}
 					onmouseleave={() => (activeChannel = null)}
 					onfocus={() => (activeChannel = i)}
@@ -239,19 +394,29 @@
 				>
 					{i + 1}
 				</a>
-				<span class="mt-1.5 font-mono text-micro font-bold text-dim">{ch.abbr}</span>
+				<span class="text-micro mt-1.5 text-dim font-bold font-mono"
+					>{ch.abbr}</span
+				>
 			</div>
 		{/each}
 	</div>
-</Panel>
+</div>
 
 <style>
-	/* The reel is rotated from the 10Hz instrument tick, not by a CSS animation or a
-	   transition: either one keeps the compositor busy between steps and repaints the
-	   document through the grain layer, which measured as frame budget lost for no
-	   visible gain. See the note in the script. */
-	.reel-layer {
-		display: inline-block;
-		will-change: transform;
+	.lcd-grid {
+		background-image: linear-gradient(var(--hw-screen-grid) 1px, transparent 1px),
+			linear-gradient(90deg, var(--hw-screen-grid) 1px, transparent 1px);
+		background-size: 3px 3px;
+	}
+
+	.glow-text {
+		text-shadow: var(--hw-screen-glow);
+	}
+
+	.chassis-screw {
+		@apply absolute w-3 h-3 rounded-full border border-[var(--hw-case-line)] bg-[var(--hw-case)] flex items-center justify-center text-micro text-dim font-bold;
+	}
+	.knob-btn {
+		@apply w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--hw-key)] border border-[var(--hw-key-line)] text-[var(--hw-key-ink)] font-bold flex items-center justify-center shadow-lg transition-all duration-150 active:translate-y-0.5 active:shadow-md cursor-pointer;
 	}
 </style>

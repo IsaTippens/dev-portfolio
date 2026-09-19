@@ -26,8 +26,8 @@
 <Meta title="Posts" description="Interesting Readables" path="/blog" />
 <PageHeader pathName="POSTS" title="STUFF I WROTE" stats={`TOTAL: ${posts.length}`} />
 <main>
-	<!-- Rows assemble as the list is reached; `j`/`k` walk them. -->
-	<div data-seat use:rowNav>
+	<!-- `j`/`k` walk the rows. -->
+	<div use:rowNav>
 		{#each paginatedPosts as post, i (post.path)}
 			<PostTile data={post} />
 			{#if i < paginatedPosts.length - 1}

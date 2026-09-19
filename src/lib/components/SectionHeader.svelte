@@ -11,7 +11,6 @@
 	<a
 		{href}
 		class="group my-4 block border-t border-b border-line py-3 transition-colors"
-		data-stagger
 	>
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-2">
@@ -27,7 +26,7 @@
 		</div>
 	</a>
 {:else}
-	<div class="my-4 block border-t border-b border-line py-3" data-stagger>
+	<div class="my-4 block border-t border-b border-line py-3">
 		<div class="flex items-center gap-2">
 			<span class="inline-block h-2 w-2 bg-ink"></span>
 			<p class="text-xl font-bold tracking-tight text-ink uppercase">{title}</p>

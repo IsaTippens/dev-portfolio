@@ -25,8 +25,8 @@
 
 <div class="grid gap-6">
 	{#each ENTRIES as entry (entry.tag)}
-		<Panel tag={entry.tag} tag_side="left" draw={true} seat={true} class="p-4 pb-5">
-			<p class="mt-1 text-[13px] leading-relaxed text-ink" data-stagger>
+		<Panel tag={entry.tag} tag_side="left" class="p-4 pb-5">
+			<p class="mt-1 text-[13px] leading-relaxed text-ink">
 				<span class="font-bold uppercase">{entry.lead}</span>: {entry.body}
 			</p>
 		</Panel>

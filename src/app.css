@@ -100,6 +100,14 @@
 	--hw-screen-2: #071308;
 	--hw-screen-ink: #132a10;
 	--hw-screen-ink-2: #00ff66;
+	--hw-screen-line: #6c8660;
+	--hw-screen-ink-dim: #5e7456;
+	--hw-screen-well: #83a07a;
+	--hw-screen-cell: #899f7c;
+	--hw-screen-cell-on: #86a077;
+	--hw-screen-seg-off: #738a6a;
+	--hw-screen-grid: rgba(19, 42, 16, 0.04);
+	--hw-screen-glow: none;
 	--hw-port: #b8860b;
 	--hw-glass: rgba(255, 255, 255, 0.1);
 	--hw-chip: rgba(0, 0, 0, 0.62);
@@ -169,6 +177,14 @@
 	--hw-screen-2: #040c05;
 	--hw-screen-ink: #13a846;
 	--hw-screen-ink-2: #00ff66;
+	--hw-screen-line: #1c2e1f;
+	--hw-screen-ink-dim: #13a846;
+	--hw-screen-well: #060e07;
+	--hw-screen-cell: #060e07;
+	--hw-screen-cell-on: #0a1e0c;
+	--hw-screen-seg-off: #0e2411;
+	--hw-screen-grid: rgba(0, 255, 102, 0.02);
+	--hw-screen-glow: 0 0 2px rgba(0, 255, 102, 0.4);
 	--hw-port: #ffd700;
 }
 
@@ -235,6 +251,14 @@
 	--hw-screen-2: #010502;
 	--hw-screen-ink: #33ff66;
 	--hw-screen-ink-2: #6bff92;
+	--hw-screen-line: #12351f;
+	--hw-screen-ink-dim: #2ad156;
+	--hw-screen-well: #020c06;
+	--hw-screen-cell: #051309;
+	--hw-screen-cell-on: #072012;
+	--hw-screen-seg-off: #0d3f22;
+	--hw-screen-grid: rgba(51, 255, 102, 0.025);
+	--hw-screen-glow: 0 0 2px rgba(51, 255, 102, 0.45);
 	--hw-port: #33ff66;
 }
 
@@ -309,6 +333,14 @@
 	--hw-screen-2: #0f380f;
 	--hw-screen-ink: #0f380f;
 	--hw-screen-ink-2: #0f380f;
+	--hw-screen-line: #0f380f;
+	--hw-screen-ink-dim: #306230;
+	--hw-screen-well: #84a30e;
+	--hw-screen-cell: #84a30e;
+	--hw-screen-cell-on: #9bbc0f;
+	--hw-screen-seg-off: #6f8f0d;
+	--hw-screen-grid: rgba(15, 56, 15, 0.06);
+	--hw-screen-glow: none;
 	--hw-port: #0f380f;
 }
 
@@ -646,30 +678,11 @@ hr {
 }
 
 /*
-	Pre-paint hiding for the boot sequence and for modules waiting to seat.
-	`data-boot` and `data-motion` are only ever armed by the inline script in
-	hooks.server.js, which also clears them if the app never takes over — so a
-	reduced-motion or script-less visitor never sees a hidden page.
+	Pre-paint hiding, used only by the power-on sequence. `data-boot` is armed by the
+	inline script in hooks.server.js, which also clears it if the app never takes over —
+	so a reduced-motion or script-less visitor never sees a hidden page.
 */
-:root[data-boot='armed'] [data-boot],
-:root[data-motion='on'] [data-seat]:not([data-seated]) {
-	opacity: 0;
-}
-
-/*
-	Frame draw. The panel's own border is the frame; while it is being stroked on by
-	the SVG rect it stands down, and takes over again the moment the rect is complete
-	(`data-drawn`). Both are the same 1px line in the same place, so nothing moves.
-	Without scripts the rect stays hidden and the border is simply always there.
-*/
-:root.js [data-draw]:not([data-drawn]) {
-	border-color: transparent;
-}
-:root.js [data-draw] > [data-panel-rect] rect {
-	stroke-dasharray: 1;
-	stroke-dashoffset: 1;
-}
-:root.js [data-draw][data-drawn] > [data-panel-rect] {
+:root[data-boot='armed'] [data-boot] {
 	opacity: 0;
 }
 

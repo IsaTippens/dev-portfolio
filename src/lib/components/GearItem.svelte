@@ -8,8 +8,8 @@
 	}>();
 </script>
 
-<Panel tag={id} tag_side="left" draw={true} seat={true} class="p-4 pb-5">
-	<div class="mt-1 text-xs leading-relaxed text-ink" data-stagger>
+<Panel tag={id} tag_side="left" class="p-4 pb-5">
+	<div class="mt-1 text-xs leading-relaxed text-ink">
 		<span class="font-bold uppercase">{title}</span> {@html description}
 	</div>
 </Panel>

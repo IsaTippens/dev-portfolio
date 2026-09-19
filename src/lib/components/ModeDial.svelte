@@ -19,6 +19,10 @@
 
 	function openList(start_at_current = true) {
 		active = start_at_current ? index_of($theme) : active;
+		// Measured while the list is still closed. Measuring after it renders puts an
+		// unpositioned panel into the status bar's flex row for a frame, which inflates
+		// the bar and pushes the list down by exactly that much.
+		place();
 		open = true;
 	}
 
@@ -84,6 +88,26 @@
 		if (open) options[active]?.focus();
 	});
 
+	/**
+	 * The dial lives in the status bar, which clips its overflow to keep the charging
+	 * marquee contained — an absolutely positioned popup would be cut off there (and on
+	 * a phone it was cut off entirely). It is placed against the viewport instead, from
+	 * the trigger's measured box, clamped to the screen.
+	 */
+	let placement = $state('');
+
+	function place() {
+		if (!trigger) return;
+		const box = trigger.getBoundingClientRect();
+		const bar = trigger.closest('[data-status-bar]')?.getBoundingClientRect();
+		const width = Math.min(240, window.innerWidth - 16);
+		const left = Math.max(8, Math.min(box.right - width, window.innerWidth - width - 8));
+		// Hung off the bar rather than off the button: the trigger sits mid-bar, so the
+		// list would otherwise cover the readouts next to it.
+		const below = Math.max(box.bottom, bar?.bottom ?? box.bottom) + 6;
+		placement = `position: fixed; top: ${Math.round(below)}px; left: ${Math.round(left)}px; width: ${Math.round(width)}px;`;
+	}
+
 	function onWindowPointerDown(event: PointerEvent) {
 		if (!open) return;
 		const target = event.target as Node | null;
@@ -95,7 +119,11 @@
 	}
 </script>
 
-<svelte:window onpointerdown={onWindowPointerDown} />
+<svelte:window
+	onpointerdown={onWindowPointerDown}
+	onscroll={() => open && close({ focus_trigger: false })}
+	onresize={() => open && place()}
+/>
 
 <div class="relative">
 	<button
@@ -105,7 +133,10 @@
 		aria-haspopup="listbox"
 		aria-expanded={open}
 		aria-controls="mode-list"
-		onclick={() => (open ? close() : openList())}
+		onclick={() => {
+			if (open) close();
+			else openList();
+		}}
 		onkeydown={onTriggerKeydown}
 		title="Face plate — arrow keys, Enter to commit"
 	>
@@ -128,7 +159,8 @@
 		<Panel
 			tag="PLATE_SEL"
 			screws={true}
-			class="absolute right-0 top-[calc(100%+6px)] z-40 w-60 p-2"
+			class="fixed z-40 p-2 shadow-[4px_4px_0_var(--shadow)]"
+			style={placement}
 			role="listbox"
 			id="mode-list"
 			aria-label="Face plate"

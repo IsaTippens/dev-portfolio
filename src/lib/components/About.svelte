@@ -24,8 +24,8 @@
 		<Panel tag="BIO_DATA" class="p-3 pb-4" data-boot="2">
 			<dl class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 font-mono text-[12px] leading-relaxed">
 				{#each FIELDS as field (field.label)}
-					<dt class="text-dim" data-stagger>{field.label}:</dt>
-					<dd class="text-ink" data-stagger>{field.value}</dd>
+					<dt class="text-dim">{field.label}:</dt>
+					<dd class="text-ink">{field.value}</dd>
 				{/each}
 			</dl>
 		</Panel>

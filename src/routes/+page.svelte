@@ -57,8 +57,7 @@
 		<NavButton href="/gear" prefix="F4_GEAR" title="Gear" subtitle="HARDWARE // SETUP" />
 	</div>
 
-	<!-- Recent posts: the light version of a seat — rows only, no frame to stroke on. -->
-	<div data-seat>
+	<div>
 		<SectionHeader title="Recent Posts" href="/blog" />
 		<div class="grid">
 			{#each (data.posts ?? []).slice(0, 5) as post (post.path)}
@@ -67,12 +66,12 @@
 		</div>
 	</div>
 
-	<div data-seat>
+	<div>
 		<SectionHeader title="Active Gaming Log" />
 		<GamingLog />
 	</div>
 
-	<div data-seat>
+	<div>
 		<SectionHeader title="Social Interfaces" />
 		<Socials />
 	</div>

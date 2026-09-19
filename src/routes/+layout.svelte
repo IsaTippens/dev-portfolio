@@ -6,7 +6,6 @@
 	import { THEMES, theme } from '$lib/stores/theme';
 	import { isCharging, batteryLevel, playLightning } from '$lib/stores/battery';
 	import { maybeBoot } from '$lib/motion/boot.js';
-	import { observeSeats, seatAllNow } from '$lib/motion/seat.js';
 	import { motionEnabled } from '$lib/motion';
 
 	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
@@ -167,28 +166,16 @@
 		};
 	});
 
-	/* ── Motion: boot once per session, then seat modules as they arrive ──── */
+	/* ── Motion: power-on once per session ───────────────────────────────── */
 
 	onMount(() => {
 		// The inline boot script drops its own safety net as soon as the app is alive.
 		(window as any).__motion_ready?.();
 		if (!motionEnabled()) {
-			seatAllNow(document);
 			document.documentElement.dataset.boot = 'done';
 			return;
 		}
 		maybeBoot(document);
-		return () => {};
-	});
-
-	// Re-arm the seating pass for whatever the router just rendered.
-	$effect(() => {
-		void page.url.pathname;
-		if (!motionEnabled()) {
-			seatAllNow(document);
-			return;
-		}
-		return observeSeats(document);
 	});
 
 	/* ── Faceplate ───────────────────────────────────────────────────────── */
@@ -232,12 +219,19 @@
 			: ''}"
 	>
 		<!-- Top Technical Status Bar -->
+		<!-- Sticky: MODE, KEYS and BAT are the device's controls, and a control that scrolls
+		     out of reach is not a control. It leaves with the chassis at the end of the page. -->
 		<div
-			class="relative flex items-center justify-between gap-2 overflow-hidden border-b border-line px-4 py-2 font-mono text-xxs uppercase tracking-widest text-dim"
+			class="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-line bg-panel px-4 py-2 font-mono text-xxs uppercase tracking-widest text-dim"
 			data-boot="1"
+			data-status-bar
 		>
 			{#if $playLightning}
-				<div class="pointer-events-none absolute inset-0 z-20 flex items-center bg-accent-wash">
+				<!-- The clip lives here, on the banner, not on the header: an `overflow-hidden`
+				     status bar also clipped the MODE dial's popup out of paint and hit-testing. -->
+				<div
+					class="pointer-events-none absolute inset-0 z-20 flex items-center overflow-hidden bg-accent-wash"
+				>
 					<div
 						class="animate-marquee flex items-center whitespace-nowrap font-mono text-tiny font-bold text-accent"
 					>
@@ -265,14 +259,19 @@
 				type="button"
 				class="flex items-center gap-1.5 bg-transparent p-0 text-xxs uppercase tracking-widest hover:text-accent"
 				aria-pressed={$isCharging}
-				aria-label={`Battery ${$batteryLevel} percent${$isCharging ? ', charging' : ''}`}
+				aria-label={`Battery ${$batteryLevel ?? 'unknown'} percent${$isCharging ? ', charging' : ''}`}
 				onclick={toggleCharging}
 			>
 				<span class="flex items-center gap-1">
-					BAT: <Readout value={$batteryLevel} />%
+					<!-- The readout only exists once there is a real number, so it ticks up
+					     to the machine's actual charge instead of to a placeholder. -->
+					BAT: {#if $batteryLevel !== null}<Readout value={$batteryLevel} />%{:else}--%{/if}
 				</span>
 				<span class="relative inline-block h-2.5 w-5 border border-line p-[1px]">
-					<span class="block h-full bg-accent transition-none" style="width: {$batteryLevel}%"></span>
+					<span
+						class="block h-full bg-accent transition-none"
+						style="width: {$batteryLevel ?? 0}%"
+					></span>
 				</span>
 			</button>
 		</div>

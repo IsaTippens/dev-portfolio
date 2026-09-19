@@ -12,7 +12,6 @@
 	{href}
 	{target}
 	class="hbtn flex-col items-start gap-0 p-3 text-left hover:bg-accent-wash"
-	data-stagger
 >
 	<span class="font-mono text-micro tracking-widest text-dim uppercase">[{prefix}]</span>
 	<span class="mt-1 text-base font-bold uppercase">{title}</span>

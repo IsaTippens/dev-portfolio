@@ -271,8 +271,8 @@
 						>
 							<div
 								class="indicator-dot h-1 w-1"
-								class:green={$batteryLevel === 100}
-								class:blink-red={$batteryLevel !== 100}
+								class:green={$batteryLevel !== null && $batteryLevel >= 99}
+								class:blink-red={$batteryLevel === null || $batteryLevel < 99}
 							></div>
 						</div>
 						<div class="h-1 w-1.5 rounded-b-[1px] bg-[var(--hw-well-2)]"></div>

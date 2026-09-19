@@ -1,6 +1,5 @@
-import { animate, createTimeline, stagger, utils } from 'animejs';
+import { animate, createTimeline, stagger } from 'animejs';
 import { EASE_SNAP, MODULE_STAGGER, SNAP, STEPS_FLICKER, motionEnabled } from './index.js';
-import { drawFrame } from './seat.js';
 
 /**
  * Power-on sequence. Runs once per session, on the first cold paint, and is the only
@@ -9,6 +8,11 @@ import { drawFrame } from './seat.js';
  * Order is fixed and derived from the `data-boot` attribute (1 = header, … 7 = footer).
  * Displays (`data-boot-screen`) do not fade — they flicker up in steps, and the PO-100
  * screen is deliberately held dark until the end of the sweep.
+ *
+ * The inline styles are cleaned off when the sweep finishes. Leaving a `transform` on a
+ * module is not cosmetic: it makes that element a containing block and a stacking
+ * context, which silently breaks any `position: fixed` descendant — the MODE dial's
+ * popup was being painted underneath the page because of it.
  */
 const BUDGET = 900;
 
@@ -40,8 +44,16 @@ export function maybeBoot(root) {
 	const last = orders[orders.length - 1];
 	const span = Math.min(MODULE_STAGGER, BUDGET / orders.length);
 
-	const finish = () => {
+	/** Hands every module back to the stylesheet once the sweep is over. */
+	const release = () => {
+		// Order matters: the flag lifts the pre-paint hiding first, then the inline
+		// styles go, so nothing flashes.
 		html.dataset.boot = 'done';
+		for (const node of nodes) {
+			node.style.removeProperty('opacity');
+			node.style.removeProperty('transform');
+			node.style.removeProperty('translate');
+		}
 		try {
 			sessionStorage.setItem('booted', '1');
 		} catch {
@@ -51,7 +63,7 @@ export function maybeBoot(root) {
 
 	const timeline = createTimeline({
 		defaults: { ease: EASE_SNAP },
-		onComplete: finish
+		onComplete: release
 	});
 
 	orders.forEach((order, index) => {
@@ -64,12 +76,13 @@ export function maybeBoot(root) {
 		const scrambles = group.filter((n) => n.hasAttribute('data-boot-scramble'));
 
 		if (chassis.length) {
-			utils.set(chassis, { opacity: 0, translateY: 6 });
+			// Explicit start values, never `utils.set`: the start values must not become
+			// inline styles, or clearing them at the end would restore the hidden state.
 			timeline.add(
 				chassis,
 				{
-					opacity: 1,
-					translateY: 0,
+					opacity: [0, 1],
+					translateY: [6, 0],
 					duration: SNAP,
 					delay: stagger(Math.min(40, span))
 				},
@@ -101,19 +114,6 @@ export function maybeBoot(root) {
 			);
 		}
 
-		for (const node of group) {
-			if (node.hasAttribute('data-draw')) drawFrame(node);
-			const stagger_children = /** @type {HTMLElement[]} */ (
-				[...node.querySelectorAll('[data-boot-stagger]')]
-			);
-			for (const child of stagger_children) {
-				timeline.add(
-					child,
-					{ opacity: [0, 1], translateY: [6, 0], duration: SNAP },
-					offset + 40
-				);
-			}
-		}
 	});
 
 	return timeline;

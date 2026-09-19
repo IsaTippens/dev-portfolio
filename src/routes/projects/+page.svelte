@@ -29,7 +29,7 @@
 <main>
 	{#if posts.length === 0}
 		<!-- A failure should still look like the device telling you about it. -->
-		<Panel tag="PROJECTS" draw={true} seat={true} class="p-6">
+		<Panel tag="PROJECTS" class="p-6">
 			<div class="flex flex-col items-center gap-2 py-6 text-center font-mono">
 				<div class="font-mono text-tiny tracking-widest text-warn uppercase">
 					MODULE EMPTY // NO DATA ON TAPE
@@ -43,7 +43,7 @@
 			</div>
 		</Panel>
 	{:else}
-		<div data-seat use:rowNav>
+		<div use:rowNav>
 			{#each paginatedPosts as post, i (post.path)}
 				<PostTile data={post} basePath="/projects" showId={false} bordered={true} project={true} />
 				{#if i < paginatedPosts.length - 1}
