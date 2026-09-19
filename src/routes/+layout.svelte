@@ -145,7 +145,7 @@
 
 		// The hero pins under this bar, so its height has to be a real number, not a
 		// guess. Published as `--bar-h` for the homepage's sticky hero.
-		const bar = document.querySelector('[data-status-bar]');
+		const bar = document.querySelector<HTMLElement>('[data-status-bar]');
 		let bar_observer: ResizeObserver | undefined;
 		if (bar) {
 			const set_bar_h = () =>
