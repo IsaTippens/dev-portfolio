@@ -90,10 +90,13 @@ export function drawFrame(node, { duration = PANEL } = {}) {
 	}
 
 	// Measured, not derived: user units are CSS pixels, so the stroke lands exactly on
-	// the box edge on all four sides at any size.
+	// the box edge on all four sides at any size. The radius comes from the faceplate so
+	// the stroked frame has the same corners as the border that replaces it.
 	const box = panel.getBoundingClientRect();
+	const radius = parseFloat(getComputedStyle(panel).getPropertyValue('--radius')) || 0;
 	rect.setAttribute('x', '0.5');
 	rect.setAttribute('y', '0.5');
+	rect.setAttribute('rx', String(radius));
 	rect.setAttribute('width', String(Math.max(0, box.width - 1)));
 	rect.setAttribute('height', String(Math.max(0, box.height - 1)));
 
