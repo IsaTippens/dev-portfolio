@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { animate, clamp, createSpring } from 'animejs';
+	import { reducedMotion } from '$lib/motion';
 
 	/**
 	 * A physical knob.
@@ -41,6 +42,12 @@
 	function settle(target: number) {
 		settle_anim?.cancel();
 		const next = quantize(target);
+		// Reduced motion: the cap lands on the detent, it does not spring onto it.
+		if (reducedMotion()) {
+			rotation = next;
+			value = next;
+			return;
+		}
 		const proxy = { v: rotation };
 		settling = true;
 		settle_anim = animate(proxy, {
