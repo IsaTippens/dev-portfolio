@@ -44,6 +44,7 @@
 	"dependencies": {
 		"@fontsource/jetbrains-mono": "^5.0.20",
 		"@fontsource/noto-sans": "^5.0.22",
+		"animejs": "^4.5.0",
 		"dayjs": "^1.11.11",
 		"gsap": "^3.12.5"
 	}

@@ -80,7 +80,7 @@
 		font-family: monospace;
 		font-size: 8px;
 		letter-spacing: 0.15em;
-		color: var(--accent-color);
+		color: var(--accent);
 	}
 
 	.spinner {
@@ -93,7 +93,7 @@
 	}
 
 	.loading-text {
-		color: var(--accent-color);
+		color: var(--accent);
 	}
 
 	@keyframes spin {

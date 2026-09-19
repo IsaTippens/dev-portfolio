@@ -1,6 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import Panel from '$lib/components/Panel.svelte';
+
+	/**
+	 * PHOTO_VIEWER — every image in a content column opens here.
+	 *
+	 * A dark screen, the image framed in a bezel with screws, and a caption bar that
+	 * reports the file and its real pixel dimensions. Neighbouring images are preloaded,
+	 * so a comparison set steps without a blank frame between shots.
+	 */
 	let { containerSelector = '.blog-content' } = $props();
 
 	interface BlogImage {
@@ -11,112 +20,110 @@
 
 	let images = $state<BlogImage[]>([]);
 	let activeIndex = $state<number | null>(null);
+	let dims = $state<{ w: number; h: number } | null>(null);
 	let dialog_el = $state<HTMLDivElement | null>(null);
 	let return_focus: HTMLElement | null = null;
+
+	const filename = $derived(
+		activeIndex === null || !images[activeIndex]
+			? ''
+			: decodeURIComponent(images[activeIndex].src.split('/').pop() ?? 'UNKNOWN')
+	);
 
 	onMount(() => {
 		const container = document.querySelector(containerSelector);
 		if (!container) return;
 
-		// Event delegation: attach a single click handler to the container
-		const handleClick = (e: Event) => {
-			const target = e.target as HTMLElement;
-			if (target && target.tagName === 'IMG') {
-				const imgElements = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
-				images = imgElements.map((el) => ({
-					src: el.src,
-					alt: el.alt || 'PORTFOLIO_IMAGE',
-					el
-				}));
+		/** @param {Event} event */
+		const handleClick = (event: Event) => {
+			const target = event.target as HTMLElement;
+			if (!target || target.tagName !== 'IMG') return;
 
-				const index = imgElements.indexOf(target as HTMLImageElement);
-				if (index !== -1) {
-					activeIndex = index;
-				}
-			}
+			const imgElements = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
+			images = imgElements.map((el) => ({
+				src: el.currentSrc || el.src,
+				alt: el.alt || 'PORTFOLIO_IMAGE',
+				el
+			}));
+
+			const index = imgElements.indexOf(target as HTMLImageElement);
+			if (index !== -1) activeIndex = index;
 		};
 
 		container.addEventListener('click', handleClick);
-
-		return () => {
-			container.removeEventListener('click', handleClick);
-		};
+		return () => container.removeEventListener('click', handleClick);
 	});
 
-	// Reactive effect to scroll background page to the navigated image
+	// Keep the page behind the modal parked on the image being inspected, so closing
+	// puts the reader back where they opened it. Instant, not smooth: the page behind is
+	// not the thing being looked at, and scrolling it smoothly costs frames.
 	$effect(() => {
 		if (activeIndex !== null && images[activeIndex]) {
-			images[activeIndex].el.scrollIntoView({
-				behavior: 'smooth',
-				block: 'center'
-			});
+			images[activeIndex].el.scrollIntoView({ block: 'center' });
 		}
 	});
 
-	// Prevent background scrolling on mobile when modal is active
+	// Preload the neighbours. A comparison set is meant to be stepped through.
+	$effect(() => {
+		const index = activeIndex;
+		if (index === null || images.length < 2) return;
+		for (const offset of [1, -1]) {
+			const neighbour = images[(index + offset + images.length) % images.length];
+			if (!neighbour) continue;
+			const preload = new Image();
+			preload.src = neighbour.src;
+		}
+	});
+
+	// Lock the page while the screen is up.
 	$effect(() => {
 		if (browser && activeIndex !== null) {
-			const originalOverflow = document.body.style.overflow;
-			const originalTouchAction = document.body.style.touchAction;
+			const overflow = document.body.style.overflow;
+			const touch = document.body.style.touchAction;
 			document.body.style.overflow = 'hidden';
 			document.body.style.touchAction = 'none';
-
 			return () => {
-				document.body.style.overflow = originalOverflow;
-				document.body.style.touchAction = originalTouchAction;
+				document.body.style.overflow = overflow;
+				document.body.style.touchAction = touch;
 			};
 		}
 	});
 
 	function close() {
 		activeIndex = null;
+		dims = null;
 	}
 
 	function next(e?: Event) {
-		if (e) e.stopPropagation();
+		e?.stopPropagation();
 		if (activeIndex === null || images.length === 0) return;
+		dims = null;
 		activeIndex = (activeIndex + 1) % images.length;
 	}
 
 	function prev(e?: Event) {
-		if (e) e.stopPropagation();
+		e?.stopPropagation();
 		if (activeIndex === null || images.length === 0) return;
+		dims = null;
 		activeIndex = (activeIndex - 1 + images.length) % images.length;
 	}
 
-	let touchStartX = 0;
-	let touchEndX = 0;
+	let touch_start_x = 0;
 
-	function handleTouchStart(e: TouchEvent) {
-		touchStartX = e.changedTouches[0].screenX;
-	}
-
-	function handleTouchMove(e: TouchEvent) {
-		if (activeIndex !== null) {
-			e.preventDefault();
-		}
-	}
-
-	function handleTouchEnd(e: TouchEvent) {
-		touchEndX = e.changedTouches[0].screenX;
-		const swipeThreshold = 40;
-		if (touchEndX < touchStartX - swipeThreshold) {
-			next();
-		} else if (touchEndX > touchStartX + swipeThreshold) {
-			prev();
-		}
+	function handle_touch_end(e: TouchEvent) {
+		const end_x = e.changedTouches[0].screenX;
+		const threshold = 40;
+		if (end_x < touch_start_x - threshold) next();
+		else if (end_x > touch_start_x + threshold) prev();
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (activeIndex === null) return;
-		if (e.key === 'ArrowRight' || e.key === 'Right') {
-			next();
-		} else if (e.key === 'ArrowLeft' || e.key === 'Left') {
-			prev();
-		} else if (e.key === 'Escape') {
-			close();
-		} else if (e.key === 'Tab') {
-			// Keep focus inside the modal while it is open.
+		if (e.key === 'ArrowRight') next();
+		else if (e.key === 'ArrowLeft') prev();
+		else if (e.key === 'Escape') close();
+		else if (e.key === 'Tab') {
+			// Focus stays inside the modal while it is up.
 			const focusable = dialog_el?.querySelectorAll<HTMLElement>(
 				'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 			);
@@ -133,7 +140,7 @@
 		}
 	}
 
-	// Move focus into the modal on open, and hand it back to the thumbnail on close.
+	// Focus moves into the screen on open, and back to the thumbnail on close.
 	$effect(() => {
 		if (activeIndex !== null && dialog_el) {
 			if (!return_focus) return_focus = document.activeElement as HTMLElement | null;
@@ -148,108 +155,87 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if activeIndex !== null && images.length > 0}
-	<!-- Modal Backdrop Overlay -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		bind:this={dialog_el}
 		tabindex="-1"
-		class="fixed inset-0 bg-background/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 select-none font-mono text-main touch-none"
+		class="fixed inset-0 z-50 flex touch-none items-center justify-center bg-screen-dark p-4 font-mono text-ink select-none backdrop-blur-[2px]"
 		onclick={close}
 		ontouchmove={(e) => e.preventDefault()}
 		role="dialog"
 		aria-modal="true"
+		aria-label="Image viewer"
 	>
-		<!-- Modal Layout Container -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div
-			class="w-full max-w-5xl h-[85vh] flex flex-col justify-between border-2 border-border bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] relative p-2.5 sm:p-4"
-			onclick={(e) => e.stopPropagation()}
-			ontouchstart={handleTouchStart}
-			ontouchmove={handleTouchMove}
-			ontouchend={handleTouchEnd}
+		<!-- The screen itself -->
+		<Panel
+			tag="PHOTO_VIEWER"
+			screws={true}
+			class="crt-on flex h-[85vh] w-full max-w-5xl flex-col justify-between bg-panel p-2.5 shadow-[4px_4px_0_var(--shadow)] sm:p-4"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			ontouchstart={(e: TouchEvent) => (touch_start_x = e.changedTouches[0].screenX)}
+			ontouchend={handle_touch_end}
 		>
-			<!-- Top Technical Status Bar -->
+			<!-- Status bar -->
 			<div
-				class="flex justify-between items-center pb-2 border-b border-border text-xxs uppercase tracking-widest font-mono text-muted"
+				class="flex items-center justify-between border-b border-line pb-2 font-mono text-xxs tracking-widest text-dim uppercase"
 			>
 				<div class="flex items-center gap-2">
-					<span class="text-accent">●</span>
+					<span class="led" data-on="ok" aria-hidden="true"></span>
 					<span class="hidden xs:inline">[DEVICE: PHOTO_VIEWER]</span>
-					<span class="text-main font-bold">[{activeIndex + 1}/{images.length}]</span>
+					<span class="font-bold text-ink">[{activeIndex + 1}/{images.length}]</span>
 				</div>
-				<div class="hidden sm:block">
-					<span>MODE: INTERACTIVE_SPEC</span>
-				</div>
+				<div class="hidden sm:block">MODE: INTERACTIVE_SPEC</div>
 				<button
-					class="border border-border px-2 py-1 bg-background hover:bg-accent hover:text-background active:translate-y-[1px] text-xxs uppercase tracking-widest font-bold font-mono transition-all shrink-0"
+					class="hbtn shrink-0 px-2 py-1 text-xxs"
 					onclick={close}
+					aria-label="Close image viewer"
 				>
 					[ESC_CLOSE]
 				</button>
 			</div>
 
-			<!-- Image Viewer Area -->
-			<div
-				class="flex-grow flex items-center justify-between gap-2 sm:gap-4 py-2 sm:py-4 relative min-h-0"
-			>
-				<!-- Prev Button (Desktop) -->
-				<button
-					class="hidden sm:flex border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-x-[2px] active:translate-y-[2px] active:shadow-none w-10 h-10 items-center justify-center font-bold text-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] z-20 shrink-0"
-					onclick={prev}
-					aria-label="Previous image"
-				>
+			<!-- Bezel -->
+			<div class="relative flex min-h-0 flex-grow items-center justify-between gap-2 py-2 sm:gap-4 sm:py-4">
+				<button class="hbtn hidden h-10 w-10 shrink-0 text-lg sm:flex" onclick={prev} aria-label="Previous image">
 					&lt;
 				</button>
 
-				<!-- Displayed Image -->
-				<div
-					class="flex-1 w-full h-full flex items-center justify-center relative p-1 sm:p-2 min-h-0"
-				>
+				<div class="relative flex h-full w-full min-h-0 flex-1 items-center justify-center p-1 sm:p-2">
 					<img
 						src={images[activeIndex].src}
 						alt={images[activeIndex].alt}
-						class="max-h-[50vh] sm:max-h-[60vh] max-w-full object-contain border-2 border-border bg-background p-1 sm:p-1.5 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.15)] select-text"
+						class="max-h-[50vh] max-w-full border-2 border-[var(--hw-well-2)] bg-[var(--hw-well)] object-contain p-1 select-text sm:max-h-[60vh] sm:p-1.5"
+						onload={(e: Event) =>
+							(dims = {
+								w: (e.currentTarget as HTMLImageElement).naturalWidth,
+								h: (e.currentTarget as HTMLImageElement).naturalHeight
+							})}
 					/>
 				</div>
 
-				<!-- Next Button (Desktop) -->
-				<button
-					class="hidden sm:flex border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-x-[2px] active:translate-y-[2px] active:shadow-none w-10 h-10 items-center justify-center font-bold text-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] z-20 shrink-0"
-					onclick={next}
-					aria-label="Next image"
-				>
+				<button class="hbtn hidden h-10 w-10 shrink-0 text-lg sm:flex" onclick={next} aria-label="Next image">
 					&gt;
 				</button>
 			</div>
 
-			<!-- Mobile Navigation Controls (Below Photo) -->
-			<div class="flex sm:hidden justify-between items-center gap-2 pt-2 border-t border-border">
-				<button
-					class="flex-1 border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-y-[1px] py-2 font-bold text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] flex items-center justify-center gap-1"
-					onclick={prev}
-				>
-					&lt; PREV
-				</button>
-				<button
-					class="flex-1 border-2 border-border bg-background hover:bg-accent hover:text-background active:translate-y-[1px] py-2 font-bold text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] flex items-center justify-center gap-1"
-					onclick={next}
-				>
-					NEXT &gt;
-				</button>
+			<!-- Mobile keys -->
+			<div class="flex items-center justify-between gap-2 border-t border-line pt-2 sm:hidden">
+				<button class="hbtn flex-1 py-2 text-xs" onclick={prev}>&lt; PREV</button>
+				<button class="hbtn flex-1 py-2 text-xs" onclick={next}>NEXT &gt;</button>
 			</div>
 
-			<!-- Footer Bar -->
+			<!-- Caption bar -->
 			<div
-				class="border-t border-border pt-2 text-xxs uppercase tracking-wider font-mono text-muted flex flex-col sm:flex-row justify-between gap-1 sm:gap-2"
+				class="flex flex-col justify-between gap-1 border-t border-line pt-2 font-mono text-xxs tracking-wider text-dim uppercase sm:flex-row sm:gap-2"
 			>
-				<div class="truncate max-w-full sm:max-w-[60vw]">
-					<span>[CAPTION: {images[activeIndex].alt.toUpperCase()}]</span>
+				<div class="max-w-full truncate sm:max-w-[60vw]">
+					<span>IMG: {filename}</span>
 				</div>
-				<div class="text-right whitespace-nowrap">
-					<span>[SYS_OK // INDEX_{activeIndex}]</span>
+				<div class="whitespace-nowrap text-right">
+					<span>{dims ? `${dims.w}×${dims.h}PX` : 'READING…'} // SYS_OK // INDEX_{activeIndex}</span>
 				</div>
 			</div>
-		</div>
+		</Panel>
 	</div>
 {/if}

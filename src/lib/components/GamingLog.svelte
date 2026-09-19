@@ -1,38 +1,43 @@
-<div class="border border-border overflow-x-auto rounded-none my-4 bg-transparent">
-	<table class="w-full text-left font-mono text-xs border-collapse">
+<script lang="ts">
+	import Panel from '$lib/components/Panel.svelte';
+
+	/**
+	 * Active log. Read-only telemetry, so the rows are a table and not a control surface.
+	 */
+	const ROWS = [
+		{ game: 'Valorant', stat: 'PEAK PLATINUM 3', platform: 'PC (RIOT)' },
+		{ game: 'Geometry Dash', stat: '12 DEMONS COMPLETED', platform: 'PC (STEAM)' },
+		{ game: 'Fortnite', stat: 'ZERO BUILD MODE', platform: 'PC (EPIC)' },
+		{ game: "No Man's Sky", stat: 'SINGLE PLAYER', platform: 'PC (STEAM)' },
+		{ game: 'Into the Dead: ODD', stat: 'SINGLE PLAYER', platform: 'PC (STEAM)' }
+	];
+
+	const HEADINGS = ['Game Title', 'Stats / Mode', 'Platform'];
+</script>
+
+<Panel tag="GAMING_LOG" draw={true} data-stagger class="overflow-x-auto">
+	<table class="w-full border-collapse text-left font-mono text-xs">
 		<thead>
-			<tr class="bg-neutral-200/50 dark:bg-neutral-800/50 border-b border-border">
-				<th class="p-2 uppercase font-bold text-main text-xxs tracking-wider border-r border-border">Game Title</th>
-				<th class="p-2 uppercase font-bold text-main text-xxs tracking-wider border-r border-border">Stats / Mode</th>
-				<th class="p-2 uppercase font-bold text-main text-xxs tracking-wider">Platform</th>
+			<tr class="border-b border-line bg-sunk">
+				{#each HEADINGS as heading, i (heading)}
+					<th
+						class="p-2 text-xxs font-bold tracking-wider text-ink uppercase {i < HEADINGS.length - 1
+							? 'border-r border-line'
+							: ''}"
+					>
+						{heading}
+					</th>
+				{/each}
 			</tr>
 		</thead>
 		<tbody>
-			<tr class="border-b border-border hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
-				<td class="p-2 border-r border-border font-bold uppercase text-main">Valorant</td>
-				<td class="p-2 border-r border-border text-muted">PEAK PLATINUM 3</td>
-				<td class="p-2 text-muted">PC (RIOT)</td>
-			</tr>
-			<tr class="border-b border-border hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
-				<td class="p-2 border-r border-border font-bold uppercase text-main">Geometry Dash</td>
-				<td class="p-2 border-r border-border text-muted">12 DEMONS COMPLETED</td>
-				<td class="p-2 text-muted">PC (STEAM)</td>
-			</tr>
-			<tr class="border-b border-border hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
-				<td class="p-2 border-r border-border font-bold uppercase text-main">Fortnite</td>
-				<td class="p-2 border-r border-border text-muted">ZERO BUILD MODE</td>
-				<td class="p-2 text-muted">PC (EPIC)</td>
-			</tr>
-			<tr class="border-b border-border hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
-				<td class="p-2 border-r border-border font-bold uppercase text-main">No Man's Sky</td>
-				<td class="p-2 border-r border-border text-muted">SINGLE PLAYER</td>
-				<td class="p-2 text-muted">PC (STEAM)</td>
-			</tr>
-			<tr class="hover:bg-neutral-100 dark:hover:bg-neutral-900/30">
-				<td class="p-2 border-r border-border font-bold uppercase text-main">Into the Dead: ODD</td>
-				<td class="p-2 border-r border-border text-muted">SINGLE PLAYER</td>
-				<td class="p-2 text-muted">PC (STEAM)</td>
-			</tr>
+			{#each ROWS as row (row.game)}
+				<tr class="border-b border-line last:border-b-0 hover:bg-hover">
+					<td class="border-r border-line p-2 font-bold text-ink uppercase">{row.game}</td>
+					<td class="border-r border-line p-2 text-dim">{row.stat}</td>
+					<td class="p-2 text-dim">{row.platform}</td>
+				</tr>
+			{/each}
 		</tbody>
 	</table>
-</div>
+</Panel>

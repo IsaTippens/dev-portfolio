@@ -3,9 +3,8 @@ import { json } from '@sveltejs/kit';
 export const GET = async () => {
 	// glob all md and svx files in the posts folder
 
-	const allPostFiles = import.meta.glob('/content/projects/**/*.{md,svx}');
+	const allPostFiles = import.meta.glob('/content/projects/**/index.{md,svx}');
 	const iterablePostFiles = Object.entries(allPostFiles);
-	console.log({ allPostFiles });
 	let allPosts = await Promise.all(
 		iterablePostFiles.map(async ([path, resolver]) => {
 			const { metadata } = /** @type {any} */ (await resolver());

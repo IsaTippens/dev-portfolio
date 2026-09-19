@@ -4,6 +4,7 @@ export const load = async ({ params }) => {
 	const { slug } = params;
 
 	try {
+		// Runtime-selected specifier: one on-demand chunk per project.
 		const post = await import(`../../../../content/projects/${slug}/index.md`);
 		return {
 			Content: post.default,

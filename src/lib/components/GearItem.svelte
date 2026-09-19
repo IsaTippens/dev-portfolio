@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Panel from '$lib/components/Panel.svelte';
+
 	let { id, title, description } = $props<{
 		id: string;
 		title: string;
@@ -6,11 +8,8 @@
 	}>();
 </script>
 
-<div class="border border-border p-4 relative bg-transparent">
-	<div class="section-label left-4 text-tiny text-muted">
-		{id}
+<Panel tag={id} tag_side="left" draw={true} seat={true} class="p-4 pb-5">
+	<div class="mt-1 text-xs leading-relaxed text-ink" data-stagger>
+		<span class="font-bold uppercase">{title}</span> {@html description}
 	</div>
-	<div class="text-xs leading-relaxed mt-1">
-		<span class="font-bold text-main uppercase">{title}</span> {@html description}
-	</div>
-</div>
+</Panel>

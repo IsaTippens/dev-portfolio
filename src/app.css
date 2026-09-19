@@ -10,20 +10,59 @@
 @tailwind utilities;
 
 /*
-	Palette variables. The `light` id uses these `:root` values; every other
-	`THEMES` id gets a `:root[data-theme='<id>']` block. `color-scheme` keeps
-	native widgets (select menus, scrollbars) in step with the palette.
+	FACE PLATES — the single source of truth.
+
+	Every visual value on the site is one of the custom properties below. Nothing
+	downstream may hardcode a colour, radius or stroke: components consume tokens
+	(Tailwind `bg-panel`, `text-dim`, `border-line`, …), never literals. That is what
+	lets a faceplate be a pure token swap.
+
+	To add a faceplate: add a `:root[data-theme='<id>']` block here and one entry in
+	`$lib/stores/theme.js`. If a component needs a per-theme override to look right,
+	the component is wrong — fix the component, not the palette.
+
+	Semantics, not decoration:
+	  --accent  interactive chrome (one hue: safety orange; tuned per faceplate for
+	            WCAG AA on that faceplate's surfaces — hue is constant, lightness is not)
+	  --ok      "system ready" / live states only
+	  --rec     recording / live capture only
+	  --warn    warnings only (the AI-disclaimer box models this)
+	  --hw-*    physical components (PO-100 knobs, TE-S10 keys). Hardware may be
+	            coloured; interface may not.
 
 	The `--code-*` values are the syntax palette consumed by prism.css.
 */
-:root {
+
+:root,
+:root[data-theme='light'] {
 	color-scheme: light;
-	--accent-color: #0068c9;
-	--bg-body: #f4f4f5;
-	--bg-card: #ffffff;
-	--text-main: #121212;
-	--text-muted: #6b6b6b;
-	--border-main: #e4e4e7;
+
+	--bg: #f4f4f5;
+	--panel: #ffffff;
+	--panel-sunk: #ececee;
+	--hover: rgba(0, 0, 0, 0.045);
+
+	--ink: #121212;
+	--ink-dim: #55555a;
+	--line: #d3d3d7;
+
+	--accent: #c2410c;
+	--accent-ink: #ffffff;
+	--ok: #0f7a3d;
+	--rec: #c0161b;
+	--warn: #8a5300;
+
+	--shadow: #121212;
+	--shadow-soft: rgba(0, 0, 0, 0.15);
+	--scrim: rgba(24, 24, 27, 0.22);
+	--screen-dark: rgba(8, 8, 10, 0.86);
+	--accent-wash: rgba(204, 68, 0, 0.09);
+
+	--radius: 2px;
+	--stroke: 1px;
+	--grain: 0.04;
+	--scan: 0.05;
+
 	--code-bg: #eff1f5;
 	--code-fg: #24292f;
 	--code-comment: #57606a;
@@ -41,16 +80,59 @@
 	--code-class: #953800;
 	--code-regex: #0550ae;
 	--code-selection: rgba(31, 86, 158, 0.18);
+
+	/* Physical components — case, well, key caps, knob caps. */
+	--hw-case: #e6e6e3;
+	--hw-case-2: #dfdfdf;
+	--hw-case-line: #c5c5c5;
+	--hw-well: #1c1c1c;
+	--hw-well-2: #121212;
+	--hw-screw: #c9c9cb;
+	--hw-key: #f4f4f2;
+	--hw-key-line: #cccccc;
+	--hw-key-ink: #4b4b50;
+	--hw-key-shadow: #b5b5b8;
+	--hw-knob-edge: #111111;
+	--hw-knob-freq: linear-gradient(to top right, #0066cc, #33a3ff);
+	--hw-knob-phase: linear-gradient(to top right, #00994d, #33ff99);
+	--hw-knob-rgb: linear-gradient(to top right, #cc4400, #ff7733);
+	--hw-screen: #8ba67e;
+	--hw-screen-2: #071308;
+	--hw-screen-ink: #132a10;
+	--hw-screen-ink-2: #00ff66;
+	--hw-port: #b8860b;
+	--hw-glass: rgba(255, 255, 255, 0.1);
+	--hw-chip: rgba(0, 0, 0, 0.62);
+	--hw-chip-ink: #ffffff;
 }
+
 :root[data-theme='dark'] {
 	color-scheme: dark;
-	--accent-color: #00c0ff;
-	--bg-body: #09090b;
-	--bg-card: #18181b;
-	--text-main: #ffffff;
-	--text-muted: #a3a3a3;
-	--border-main: #27272a;
-	/* Night Owl, as shipped */
+
+	--bg: #1a1b1e;
+	--panel: #232428;
+	--panel-sunk: #191a1d;
+	--hover: rgba(255, 255, 255, 0.055);
+
+	--ink: #f2f2f3;
+	--ink-dim: #a9a9b1;
+	--line: #3a3b40;
+
+	--accent: #ff6a1f;
+	--accent-ink: #14100c;
+	--ok: #3ad07c;
+	--rec: #ff4f4f;
+	--warn: #ffb454;
+
+	--shadow: #0d0d0f;
+	--shadow-soft: rgba(0, 0, 0, 0.5);
+	--scrim: rgba(0, 0, 0, 0.3);
+	--screen-dark: rgba(4, 4, 6, 0.88);
+	--accent-wash: rgba(255, 106, 31, 0.12);
+
+	--grain: 0.035;
+	--scan: 0.06;
+
 	--code-bg: #19212e;
 	--code-fg: #d6deeb;
 	--code-comment: rgb(99, 119, 119);
@@ -68,29 +150,349 @@
 	--code-class: rgb(255, 203, 139);
 	--code-regex: rgb(214, 222, 235);
 	--code-selection: rgba(29, 59, 83, 0.99);
+
+	--hw-case: #1e1e1f;
+	--hw-case-2: #1d1d1f;
+	--hw-case-line: #2b2b2c;
+	--hw-well: #0b0b0c;
+	--hw-well-2: #050505;
+	--hw-screw: #333338;
+	--hw-key: #242426;
+	--hw-key-line: #3f3f46;
+	--hw-key-ink: #a1a1aa;
+	--hw-key-shadow: #111111;
+	--hw-knob-edge: #000000;
+	--hw-knob-freq: linear-gradient(to top right, #004a99, #1f7fd0);
+	--hw-knob-phase: linear-gradient(to top right, #007a3d, #22cc7a);
+	--hw-knob-rgb: linear-gradient(to top right, #993300, #cc5c22);
+	--hw-screen: #071308;
+	--hw-screen-2: #040c05;
+	--hw-screen-ink: #13a846;
+	--hw-screen-ink-2: #00ff66;
+	--hw-port: #ffd700;
 }
 
-body {
-	@apply bg-background text-main font-mono transition-colors duration-300;
+:root[data-theme='phosphor'] {
+	color-scheme: dark;
+
+	--bg: #04070a;
+	--panel: #070f0c;
+	--panel-sunk: #030806;
+	--hover: rgba(51, 255, 102, 0.07);
+
+	--ink: #6bff92;
+	--ink-dim: #35c463;
+	--line: #1d4a2c;
+
+	--accent: #ff6a1f;
+	--accent-ink: #0a0500;
+	--ok: #33ff66;
+	--rec: #ff5252;
+	--warn: #ffb454;
+
+	--shadow: #000000;
+	--shadow-soft: rgba(0, 0, 0, 0.6);
+	--scrim: rgba(0, 0, 0, 0.32);
+	--screen-dark: rgba(0, 3, 1, 0.9);
+	--accent-wash: rgba(255, 106, 31, 0.14);
+
+	--grain: 0.03;
+	--scan: 0.12;
+
+	--code-bg: #04100a;
+	--code-fg: #7dffa3;
+	--code-comment: #2f7a4a;
+	--code-punct: #4fd97a;
+	--code-namespace: #58e089;
+	--code-deleted: #ff5252;
+	--code-symbol: #33ff66;
+	--code-tag: #7dffa3;
+	--code-boolean: #b6ffc4;
+	--code-number: #b6ffc4;
+	--code-constant: #33ff66;
+	--code-selector: #4fd97a;
+	--code-attr: #58e089;
+	--code-string: #9cffb8;
+	--code-class: #7dffa3;
+	--code-regex: #b6ffc4;
+	--code-selection: rgba(51, 255, 102, 0.22);
+
+	--hw-case: #061009;
+	--hw-case-2: #050d07;
+	--hw-case-line: #12351f;
+	--hw-well: #010402;
+	--hw-well-2: #000201;
+	--hw-screw: #12351f;
+	--hw-key: #071109;
+	--hw-key-line: #16452a;
+	--hw-key-ink: #35c463;
+	--hw-key-shadow: #000000;
+	--hw-knob-edge: #000000;
+	--hw-knob-freq: linear-gradient(to top right, #0a5c2c, #33ff66);
+	--hw-knob-phase: linear-gradient(to top right, #0a5c2c, #33ff66);
+	--hw-knob-rgb: linear-gradient(to top right, #0a5c2c, #33ff66);
+	--hw-screen: #04170c;
+	--hw-screen-2: #010502;
+	--hw-screen-ink: #33ff66;
+	--hw-screen-ink-2: #6bff92;
+	--hw-port: #33ff66;
 }
 
-/* Visible for keyboard users, including on the controls that set focus:outline-none. */
-:focus-visible {
-	outline: 2px solid var(--accent-color);
-	outline-offset: 2px;
+/*
+	GAMEBOY — the DMG four-tone palette, strictly enforced.
+
+	The four greens are only ever backgrounds-as-panels or ink; there is no fifth
+	tone. Ink is the brightest tone on the darkest panel (6.0:1) and dim is the
+	second brightest (5.0:1), so both clear AA. `--line` uses the mid tone, which is
+	what separates rows here — the palette has nothing else left to spend on a wash.
+*/
+:root[data-theme='gameboy'] {
+	color-scheme: dark;
+
+	--bg: #306230;
+	--panel: #0f380f;
+	--panel-sunk: #0f380f;
+	--hover: rgba(155, 188, 15, 0.1);
+
+	--ink: #9bbc0f;
+	--ink-dim: #8bac0f;
+	--line: #306230;
+
+	--accent: #ff6a1f;
+	--accent-ink: #0f380f;
+	--ok: #9bbc0f;
+	--rec: #ff6a1f;
+	--warn: #ffb454;
+
+	--shadow: #061f06;
+	--shadow-soft: rgba(6, 31, 6, 0.55);
+	--scrim: rgba(6, 31, 6, 0.28);
+	--screen-dark: rgba(6, 31, 6, 0.9);
+	--accent-wash: rgba(255, 106, 31, 0.14);
+
+	--grain: 0.05;
+	--scan: 0.1;
+
+	--code-bg: #0f380f;
+	--code-fg: #9bbc0f;
+	--code-comment: #306230;
+	--code-punct: #8bac0f;
+	--code-namespace: #8bac0f;
+	--code-deleted: #ff6a1f;
+	--code-symbol: #9bbc0f;
+	--code-tag: #9bbc0f;
+	--code-boolean: #9bbc0f;
+	--code-number: #8bac0f;
+	--code-constant: #9bbc0f;
+	--code-selector: #8bac0f;
+	--code-attr: #8bac0f;
+	--code-string: #8bac0f;
+	--code-class: #9bbc0f;
+	--code-regex: #8bac0f;
+	--code-selection: rgba(155, 188, 15, 0.3);
+
+	--hw-case: #306230;
+	--hw-case-2: #0f380f;
+	--hw-case-line: #0f380f;
+	--hw-well: #0f380f;
+	--hw-well-2: #061f06;
+	--hw-screw: #306230;
+	--hw-key: #8bac0f;
+	--hw-key-line: #0f380f;
+	--hw-key-ink: #0f380f;
+	--hw-key-shadow: #0f380f;
+	--hw-knob-edge: #0f380f;
+	--hw-knob-freq: linear-gradient(to top right, #0f380f, #8bac0f);
+	--hw-knob-phase: linear-gradient(to top right, #0f380f, #8bac0f);
+	--hw-knob-rgb: linear-gradient(to top right, #0f380f, #8bac0f);
+	--hw-screen: #8bac0f;
+	--hw-screen-2: #0f380f;
+	--hw-screen-ink: #0f380f;
+	--hw-screen-ink-2: #0f380f;
+	--hw-port: #0f380f;
 }
 
+@layer base {
+	:root {
+		--font-pixel: 'JetBrains Mono', ui-monospace, monospace;
+		--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+		--font-body: 'Noto Sans', system-ui, sans-serif;
+
+		font-family: var(--font-body);
+	}
+
+	html {
+		-webkit-text-size-adjust: 100%;
+		/* The chassis is a fixed-width device; a hairline scrollbar keeps the
+		   viewport edge quiet in both engines. */
+		scrollbar-width: thin;
+		scrollbar-color: var(--line) transparent;
+	}
+
+	body {
+		background-color: var(--bg);
+		color: var(--ink);
+		font-family: var(--font-mono);
+	}
+
+	::-webkit-scrollbar {
+		width: 10px;
+		height: 10px;
+	}
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	::-webkit-scrollbar-thumb {
+		background: var(--line);
+		border-radius: 0;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: var(--ink-dim);
+	}
+	::-webkit-scrollbar-corner {
+		background: transparent;
+	}
+
+	/* Square, single-pixel, accent-coloured. Keyboard users only. */
+	:focus-visible {
+		outline: var(--stroke) solid var(--accent);
+		outline-offset: 2px;
+		border-radius: 0;
+	}
+}
+
+@layer components {
+	/*
+		Module chassis. One radius, one stroke weight, everywhere — the PO-100 and
+		TE-S10 set the standard and this meets it.
+	*/
+	.panel {
+		position: relative;
+		background-color: var(--panel);
+		border: var(--stroke) solid var(--line);
+		border-radius: var(--radius);
+	}
+
+	/* The module-ID tag that sits on a panel's top edge. */
+	.section-label {
+		position: absolute;
+		top: 0;
+		transform: translateY(-50%);
+		background-color: var(--panel);
+		padding-inline: 0.5rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-family: var(--font-mono);
+	}
+
+	/* Physical key: 1-2px travel on press, hard shadow that compresses with it. */
+	.hbtn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.375rem;
+		border: var(--stroke) solid var(--line);
+		border-radius: var(--radius);
+		background-color: var(--panel-sunk);
+		color: var(--ink);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		font-family: var(--font-mono);
+		font-weight: 700;
+		box-shadow: 2px 2px 0 var(--shadow);
+		transition:
+			transform 80ms cubic-bezier(0.2, 0.9, 0.25, 1),
+			box-shadow 80ms cubic-bezier(0.2, 0.9, 0.25, 1),
+			border-color 120ms linear,
+			color 120ms linear;
+	}
+	.hbtn:hover:not(:disabled) {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	.hbtn:active:not(:disabled),
+	.hbtn[aria-pressed='true'],
+	.hbtn[data-active='true'] {
+		transform: translate(1px, 2px);
+		box-shadow: 0 0 0 var(--shadow);
+	}
+	.hbtn:disabled {
+		opacity: 0.35;
+		box-shadow: 0 0 0 var(--shadow);
+	}
+
+	/*
+		LEDs are discrete. They step between on/off, they never fade, because a
+		diode is not an interpolator.
+	*/
+	.led {
+		width: 0.25rem;
+		height: 0.25rem;
+		border-radius: 0;
+		background-color: var(--line);
+	}
+	.led[data-on='true'] {
+		background-color: var(--rec);
+		box-shadow: 0 0 4px var(--rec);
+	}
+	.led[data-on='ok'] {
+		background-color: var(--ok);
+		box-shadow: 0 0 4px var(--ok);
+	}
+
+	/*
+		Fixed, static grain. A tiled bitmap rather than an `feTurbulence` data URI: the
+		noise is then a cached decoded image instead of an SVG filter that has to be
+		rasterised again for every composite pass. Still one static layer, no animation.
+	*/
+	.grain {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+		pointer-events: none;
+		opacity: var(--grain);
+		mix-blend-mode: overlay;
+		background-image: url('/images/grain.png');
+		background-repeat: repeat;
+	}
+
+	/*
+		Screen refresh texture, baked into every display module permanently and
+		separate from any CRT mode the PO-100 offers.
+	*/
+	.scanlines::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-image: repeating-linear-gradient(
+			to bottom,
+			transparent 0,
+			transparent 1px,
+			var(--hw-well-2) 1px,
+			var(--hw-well-2) 2px
+		);
+		opacity: var(--scan);
+	}
+}
+
+/* The highlight-link class is the one place a link may light up. */
 .highlight-link {
-	@apply font-bold underline decoration-1 underline-offset-4 transition-colors duration-150;
-	color: var(--accent-color);
+	font-weight: 700;
+	color: var(--ink);
+	text-decoration: underline;
+	text-decoration-thickness: var(--stroke);
+	text-underline-offset: 4px;
+	transition: color 120ms linear;
 }
 .highlight-link:hover {
-	background-color: var(--accent-color);
-	@apply text-white;
+	background-color: transparent;
+	color: var(--accent);
 }
 
 .blog-content {
-	@apply text-main font-sans;
+	color: var(--ink);
+	font-family: var(--font-body);
 }
 
 .blog-content h1 {
@@ -108,12 +510,14 @@ body {
 .blog-content h1,
 .blog-content h2,
 .blog-content h3 {
-	@apply text-main font-mono;
+	color: var(--ink);
+	font-family: var(--font-mono);
 }
 
 .blog-content p,
 .blog-content li {
-	@apply text-main font-sans;
+	color: var(--ink);
+	font-family: var(--font-body);
 }
 
 .blog-content p {
@@ -140,38 +544,58 @@ body {
 }
 
 .blog-content blockquote {
-	@apply border-l-4 border-border pl-4 italic my-6 text-muted leading-loose;
+	border-left: 4px solid var(--line);
+	color: var(--ink-dim);
+	@apply pl-4 italic my-6 leading-loose;
 }
 
 .blog-content img {
-	@apply rounded-none border border-border mx-auto my-6 block cursor-pointer transition-all duration-200 hover:opacity-90 hover:scale-[1.01];
+	@apply mx-auto my-6 block cursor-pointer;
+	border: var(--stroke) solid var(--line);
+	border-radius: var(--radius);
+	transition: border-color 120ms linear;
+}
+.blog-content img:hover {
+	border-color: var(--accent);
 }
 
 .blog-content video {
-	@apply rounded-none border border-border mx-auto my-6 block;
+	@apply mx-auto my-6 block;
+	border: var(--stroke) solid var(--line);
+	border-radius: var(--radius);
 }
 
 .blog-content pre {
-	@apply bg-background border border-border text-main p-4 rounded-none overflow-x-auto my-6 block;
+	background-color: var(--panel-sunk);
+	border: var(--stroke) solid var(--line);
+	color: var(--ink);
+	@apply p-4 overflow-x-auto my-6 block;
 }
 
 .blog-content table {
-	@apply w-full my-6 border-collapse text-left border border-border;
+	border: var(--stroke) solid var(--line);
+	@apply w-full my-6 border-collapse text-left;
 }
 
 .blog-content th {
-	@apply border border-border p-2 bg-card font-bold uppercase text-xs tracking-wider;
+	border: var(--stroke) solid var(--line);
+	background-color: var(--panel-sunk);
+	color: var(--ink);
+	@apply p-2 font-bold uppercase text-xs tracking-wider;
 }
 
 .blog-content td {
-	@apply border border-border p-2 text-sm leading-loose;
+	border: var(--stroke) solid var(--line);
+	color: var(--ink);
+	@apply p-2 text-sm leading-loose;
 }
 
 .blog-content a {
 	@apply highlight-link;
 }
+
 hr {
-	@apply !border-border;
+	border-color: var(--line) !important;
 }
 
 @keyframes marquee {
@@ -187,20 +611,106 @@ hr {
 	animation: marquee 1.5s linear forwards;
 }
 
-/* Stepped rather than eased, so a route change reads as a screen swap. */
-@keyframes screen-swap {
+/*
+	Route change = program change. The screen blinks in, stepped, never cross-faded.
+	`steps(3, end)` gives the 0 → dark → lit cadence of a display coming up.
+*/
+@keyframes screen-in {
 	0% {
 		opacity: 0;
-		transform: translateY(6px);
+	}
+	50% {
+		opacity: 0.25;
 	}
 	100% {
 		opacity: 1;
-		transform: none;
 	}
 }
 
-.screen-swap {
-	animation: screen-swap 200ms steps(6, end);
+.screen-in {
+	animation: screen-in 140ms steps(3, end) both;
+}
+
+/* The reverse: the current program drops out. */
+@keyframes screen-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+.screen-out {
+	animation: screen-out 90ms steps(3, end) both;
+}
+
+/*
+	Pre-paint hiding for the boot sequence and for modules waiting to seat.
+	`data-boot` and `data-motion` are only ever armed by the inline script in
+	hooks.server.js, which also clears them if the app never takes over — so a
+	reduced-motion or script-less visitor never sees a hidden page.
+*/
+:root[data-boot='armed'] [data-boot],
+:root[data-motion='on'] [data-seat]:not([data-seated]) {
+	opacity: 0;
+}
+
+/*
+	Frame draw. The panel's own border is the frame; while it is being stroked on by
+	the SVG rect it stands down, and takes over again the moment the rect is complete
+	(`data-drawn`). Both are the same 1px line in the same place, so nothing moves.
+	Without scripts the rect stays hidden and the border is simply always there.
+*/
+:root.js [data-draw]:not([data-drawn]) {
+	border-color: transparent;
+}
+:root.js [data-draw] > [data-panel-rect] rect {
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+}
+:root.js [data-draw][data-drawn] > [data-panel-rect] {
+	opacity: 0;
+}
+
+/* Faceplate switch: the device blinks, it does not cross-fade. */
+@keyframes plate-blink {
+	0% {
+		opacity: 1;
+	}
+	40% {
+		opacity: 0.35;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.plate-blink {
+	animation: plate-blink 140ms steps(3, end);
+}
+
+/*
+	A display striking up: instantly on, one flicker, settled. Used by the lightbox and
+	any other full-screen module. Never a fade — the thing has a switch, not a dimmer.
+*/
+@keyframes crt-on {
+	0% {
+		opacity: 0;
+	}
+	40% {
+		opacity: 1;
+	}
+	62% {
+		opacity: 0.3;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.crt-on {
+	animation: crt-on 130ms steps(3, end) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -211,15 +721,5 @@ hr {
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.001ms !important;
 		scroll-behavior: auto !important;
-	}
-}
-
-@layer components {
-	.section-label {
-		@apply absolute top-0 -translate-y-1/2 bg-card px-2 uppercase tracking-widest font-mono;
-	}
-
-	.btn-primary {
-		@apply px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-border text-main hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-border disabled:hover:text-main transition-all rounded-none uppercase text-xxs tracking-wider;
 	}
 }

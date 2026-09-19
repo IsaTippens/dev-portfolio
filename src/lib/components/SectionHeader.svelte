@@ -8,23 +8,29 @@
 </script>
 
 {#if href}
-	<a {href} class="block border-t border-b border-border py-3 my-4 group hover:border-accent transition-colors">
-		<div class="flex justify-between items-center">
+	<a
+		{href}
+		class="group my-4 block border-t border-b border-line py-3 transition-colors"
+		data-stagger
+	>
+		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-2">
-				<span class="inline-block w-2 h-2 bg-accent"></span>
-				<p class="text-xl font-bold uppercase tracking-tight text-main group-hover:text-accent transition-colors">{title}</p>
+				<span class="inline-block h-2 w-2 bg-ink"></span>
+				<p class="text-xl font-bold tracking-tight text-ink uppercase group-hover:text-accent">
+					{title}
+				</p>
 			</div>
-			<div class="flex items-center gap-1 text-xxs font-mono text-neutral-400 dark:text-neutral-500 uppercase">
+			<div class="flex items-center gap-1 font-mono text-xxs text-dim uppercase">
 				<span>{linkText}</span>
-				<RightArrow class="w-4 h-4 text-accent" />
+				<RightArrow class="h-4 w-4 text-accent" />
 			</div>
 		</div>
 	</a>
 {:else}
-	<div class="block border-t border-b border-border py-3 my-4">
+	<div class="my-4 block border-t border-b border-line py-3" data-stagger>
 		<div class="flex items-center gap-2">
-			<span class="inline-block w-2 h-2 bg-accent"></span>
-			<p class="text-xl font-bold uppercase tracking-tight text-main">{title}</p>
+			<span class="inline-block h-2 w-2 bg-ink"></span>
+			<p class="text-xl font-bold tracking-tight text-ink uppercase">{title}</p>
 		</div>
 	</div>
 {/if}

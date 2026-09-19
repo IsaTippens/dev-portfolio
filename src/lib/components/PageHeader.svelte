@@ -6,16 +6,18 @@
 	}>();
 </script>
 
-<div class="border-b border-border pb-3 mb-4 flex justify-between items-end">
+<div class="mb-4 flex items-end justify-between border-b border-line pb-3">
 	<div>
-		<div class="text-tiny uppercase tracking-widest font-mono text-accent">
-			[NAV: <a href="/" class="hover:underline">HOME</a> / {pathName}]
+		<!-- Breadcrumb: the trail is dim, the page you are on is the accent. -->
+		<div class="font-mono text-tiny tracking-widest text-dim uppercase">
+			[NAV: <a href="/" class="hover:text-accent">HOME</a> /
+			<span class="text-accent">{pathName}</span>]
 		</div>
-		<h1 class="text-2xl font-bold uppercase tracking-tight text-main mt-1">
+		<h1 class="mt-1 text-2xl font-bold tracking-tight text-ink uppercase">
 			{title}
 		</h1>
 	</div>
-	<div class="text-micro font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
+	<div class="font-mono text-micro tracking-widest text-dim uppercase">
 		{stats}
 	</div>
 </div>

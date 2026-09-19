@@ -1,18 +1,22 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+
 	import { THEMES, theme } from '$lib/stores/theme';
+	import { isCharging, batteryLevel, playLightning } from '$lib/stores/battery';
+	import { maybeBoot } from '$lib/motion/boot.js';
+	import { observeSeats, seatAllNow } from '$lib/motion/seat.js';
+	import { motionEnabled } from '$lib/motion';
 
 	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
+	import ModeDial from '$lib/components/ModeDial.svelte';
+	import Panel from '$lib/components/Panel.svelte';
+	import Readout from '$lib/components/Readout.svelte';
 	import '../app.css';
 	import '../prism.css';
 
 	let { children } = $props();
-
-	import { onMount } from 'svelte';
-
-	import { isCharging, batteryLevel, playLightning } from '$lib/stores/battery';
-	let fps = $state<number>(60);
 
 	const SHORTCUTS = [
 		{ key: 'F1', label: 'F1_BLOG', href: '/blog', blank: false },
@@ -21,13 +25,17 @@
 		{ key: 'F4', label: 'F4_GEAR', href: '/gear', blank: false }
 	];
 
+	let fps = $state(60);
+	let scroll_pc = $state(0);
 	let keys_open = $state(false);
+	let blackout = $state(false);
+	let plate_blink = $state(false);
+
+	/* ── Battery ─────────────────────────────────────────────────────────── */
 
 	function flashCharging() {
 		playLightning.set(true);
-		setTimeout(() => {
-			playLightning.set(false);
-		}, 1500);
+		setTimeout(() => playLightning.set(false), 1500);
 	}
 
 	function toggleCharging() {
@@ -36,6 +44,27 @@
 			return !v;
 		});
 	}
+
+	/* ── Program swap ────────────────────────────────────────────────────── */
+
+	// The screen drops out when a navigation starts and blinks back in when the new
+	// route renders. Navigation itself is never intercepted, so back/forward behave
+	// exactly like a link click. The timer guarantees a cancelled navigation can never
+	// leave the content area dark.
+	let swap_timer: ReturnType<typeof setTimeout> | undefined;
+
+	beforeNavigate(() => {
+		blackout = true;
+		clearTimeout(swap_timer);
+		swap_timer = setTimeout(() => (blackout = false), 700);
+	});
+
+	afterNavigate(() => {
+		clearTimeout(swap_timer);
+		blackout = false;
+	});
+
+	/* ── Keyboard ────────────────────────────────────────────────────────── */
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -70,6 +99,8 @@
 		}
 	}
 
+	/* ── Instrumentation: FPS and tape position ──────────────────────────── */
+
 	onMount(() => {
 		// Battery status API
 		if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
@@ -84,17 +115,14 @@
 						});
 						battery.addEventListener('chargingchange', () => {
 							const newCharging = battery.charging;
-							let currentIsCharging = false;
-							isCharging.subscribe((v) => (currentIsCharging = v))();
-
-							if (newCharging && !currentIsCharging) {
-								flashCharging();
-							}
+							let current = false;
+							isCharging.subscribe((v) => (current = v))();
+							if (newCharging && !current) flashCharging();
 							isCharging.set(newCharging);
 						});
 					})
 					.catch(() => {});
-			} catch (e) {
+			} catch {
 				// Ignored
 			}
 		}
@@ -102,7 +130,7 @@
 		// FPS counter. rAF is already parked by the browser in a hidden tab.
 		let lastTime: number | null = null;
 		let frameCount = 0;
-		let animationFrameId: number;
+		let raf = 0;
 
 		function updateFps(timestamp: number) {
 			if (lastTime === null) lastTime = timestamp;
@@ -112,89 +140,120 @@
 				frameCount = 0;
 				lastTime = timestamp;
 			}
-			animationFrameId = window.requestAnimationFrame(updateFps);
+			raf = window.requestAnimationFrame(updateFps);
 		}
+		raf = window.requestAnimationFrame(updateFps);
 
-		animationFrameId = window.requestAnimationFrame(updateFps);
+		// Tape counter: scroll position as a device readout, rAF-throttled.
+		let queued = false;
+		function readPosition() {
+			queued = false;
+			const max = document.documentElement.scrollHeight - window.innerHeight;
+			scroll_pc = max > 0 ? Math.min(100, Math.max(0, Math.round((window.scrollY / max) * 100))) : 0;
+		}
+		function onScroll() {
+			if (queued) return;
+			queued = true;
+			window.requestAnimationFrame(readPosition);
+		}
+		readPosition();
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onScroll);
 
 		return () => {
-			window.cancelAnimationFrame(animationFrameId);
+			window.cancelAnimationFrame(raf);
+			window.removeEventListener('scroll', onScroll);
+			window.removeEventListener('resize', onScroll);
 		};
 	});
 
-	// Close the key map and restart the screen-swap animation whenever the route changes.
+	/* ── Motion: boot once per session, then seat modules as they arrive ──── */
+
+	onMount(() => {
+		// The inline boot script drops its own safety net as soon as the app is alive.
+		(window as any).__motion_ready?.();
+		if (!motionEnabled()) {
+			seatAllNow(document);
+			document.documentElement.dataset.boot = 'done';
+			return;
+		}
+		maybeBoot(document);
+		return () => {};
+	});
+
+	// Re-arm the seating pass for whatever the router just rendered.
 	$effect(() => {
 		void page.url.pathname;
-		keys_open = false;
+		if (!motionEnabled()) {
+			seatAllNow(document);
+			return;
+		}
+		return observeSeats(document);
+	});
+
+	/* ── Faceplate ───────────────────────────────────────────────────────── */
+
+	// Program-change blink: the chassis blinks, the page behind it does not.
+	$effect(() => {
+		void $theme;
+		plate_blink = false;
+		const id = requestAnimationFrame(() => (plate_blink = true));
+		return () => cancelAnimationFrame(id);
 	});
 
 	$effect(() => {
 		const active = THEMES.find((t) => t.id === $theme);
 		if (!active) return;
-
-		const root = document.documentElement;
-		root.dataset.theme = active.id;
-		root.classList.toggle('dark', active.dark);
-
+		document.documentElement.dataset.theme = active.id;
 		const meta = document.querySelector('meta[name="theme-color"]');
 		if (meta) meta.setAttribute('content', active.color);
+	});
+
+	// Screen swap: the frame's content area drops out and blinks back in.
+	$effect(() => {
+		void page.url.pathname;
+		keys_open = false;
 	});
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
-<!--
-	I want a centered layout with a max-width of 1200px
-	Ideally mobile should be full width
-	Greater than mobile should be a centered column
-	not using tailwind, only css or carbon-components-svelte
-	All screen sizes should use full height
--->
-<div
-	class="flex flex-col items-center justify-center min-h-screen relative overflow-x-hidden p-2 sm:p-4"
->
+<!-- Static grain, above everything, never in the way. -->
+<div class="grain" aria-hidden="true"></div>
+
+<div class="relative flex min-h-screen flex-col items-center p-3 pb-14 sm:p-5 sm:pb-20">
 	<!-- Background grid -->
 	<div class="absolute inset-0 z-0"><NoisyGradient /></div>
 
-	<!-- TE Device Chassis -->
+	<!-- TE Device Chassis. Top-anchored on every route, same shadow everywhere. -->
 	<div
-		class="w-full max-w-[700px] bg-card border-2 border-border z-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] flex flex-col relative"
+		class="relative z-10 flex w-full max-w-[700px] flex-col border border-line bg-panel shadow-[4px_4px_0_var(--shadow)] {plate_blink
+			? 'plate-blink'
+			: ''}"
 	>
 		<!-- Top Technical Status Bar -->
 		<div
-			class="flex justify-between items-center gap-2 px-4 py-2 border-b border-border text-xxs uppercase tracking-widest font-mono text-muted relative overflow-hidden"
+			class="relative flex items-center justify-between gap-2 overflow-hidden border-b border-line px-4 py-2 font-mono text-xxs uppercase tracking-widest text-dim"
+			data-boot="1"
 		>
 			{#if $playLightning}
-				<div class="absolute inset-0 bg-accent/20 flex items-center z-20 pointer-events-none">
+				<div class="pointer-events-none absolute inset-0 z-20 flex items-center bg-accent-wash">
 					<div
-						class="animate-marquee whitespace-nowrap text-tiny font-bold text-accent font-mono flex items-center"
+						class="animate-marquee flex items-center whitespace-nowrap font-mono text-tiny font-bold text-accent"
 					>
 						⚡ CHARGER_CONNECTED // POWERING_UP // ⚡ ⚡ ⚡
 					</div>
 				</div>
 			{/if}
 			<span class="flex items-center gap-1">
-				<span class="inline-block w-2.5 h-2.5 bg-accent"></span>
-				<span class="font-bold text-main">DEV-PORTFOLIO</span>
+				<span class="led" data-on="ok" aria-hidden="true"></span>
+				<span class="font-bold text-ink">DEV-PORTFOLIO</span>
 			</span>
 			<span class="flex items-center gap-2">
-				<label
-					class="flex items-center gap-1 font-bold uppercase border border-neutral-300 dark:border-neutral-700 px-1.5 py-0.5 bg-neutral-200/50 dark:bg-neutral-800/50 text-tiny cursor-pointer"
-				>
-					MODE:
-					<select
-						bind:value={$theme}
-						aria-label="Colour theme"
-						class="bg-transparent text-main uppercase font-bold cursor-pointer hover:text-accent"
-					>
-						{#each THEMES as t (t.id)}
-							<option value={t.id}>{t.label}</option>
-						{/each}
-					</select>
-				</label>
+				<ModeDial />
 				<button
 					type="button"
-					class="border border-neutral-300 dark:border-neutral-700 px-1.5 py-0.5 bg-neutral-200/50 dark:bg-neutral-800/50 font-bold text-tiny hover:text-accent"
+					class="hbtn px-1.5 py-0.5 text-tiny"
 					aria-expanded={keys_open}
 					aria-controls="key-map"
 					onclick={() => (keys_open = !keys_open)}
@@ -204,22 +263,24 @@
 			</span>
 			<button
 				type="button"
-				class="flex items-center gap-1.5 hover:text-accent"
+				class="flex items-center gap-1.5 bg-transparent p-0 text-xxs uppercase tracking-widest hover:text-accent"
 				aria-pressed={$isCharging}
 				aria-label={`Battery ${$batteryLevel} percent${$isCharging ? ', charging' : ''}`}
 				onclick={toggleCharging}
 			>
-				<span>BAT: {$batteryLevel}%</span>
-				<span class="inline-block w-5 h-2.5 border border-muted p-[1px] relative">
-					<span class="block h-full bg-accent" style="width: {$batteryLevel}%"></span>
+				<span class="flex items-center gap-1">
+					BAT: <Readout value={$batteryLevel} />%
+				</span>
+				<span class="relative inline-block h-2.5 w-5 border border-line p-[1px]">
+					<span class="block h-full bg-accent transition-none" style="width: {$batteryLevel}%"></span>
 				</span>
 			</button>
 		</div>
 
-		<!-- Main viewport/content screen. Keyed on the route so a navigation reads as a screen swap. -->
-		<div class="p-4 sm:p-6 flex-auto">
+		<!-- Main viewport. Keyed on the route so a navigation reads as a program swap. -->
+		<div class="flex-auto p-4 sm:p-6 {blackout ? 'screen-out' : ''}">
 			{#key page.url.pathname}
-				<div class="screen-swap">
+				<div class="screen-in">
 					{@render children()}
 				</div>
 			{/key}
@@ -227,60 +288,67 @@
 
 		<!-- Bottom Technical Status Bar -->
 		<div
-			class="flex justify-between items-center px-4 py-2 border-t border-border text-xxs uppercase tracking-widest font-mono text-muted bg-neutral-200/20 dark:bg-neutral-800/20"
+			class="flex items-center justify-between border-t border-line bg-sunk px-4 py-2 font-mono text-xxs uppercase tracking-widest text-dim"
+			data-boot="7"
 		>
 			<span>SVELTE v5</span>
+			<span>POS: <Readout value={scroll_pc} pad={3} />%</span>
 			<span>{fps} FPS</span>
 			<span>REV: 2026.06</span>
 		</div>
 
 		{#if keys_open}
-			<!-- `fixed`, not `absolute`: the chassis is as tall as its content, so an absolute
-			     overlay would centre on the document instead of the screen. -->
+			<!-- `fixed`, not `absolute`: the chassis is as tall as its content, so an
+			     absolute overlay would centre on the document instead of the screen. -->
 			<div
 				id="key-map"
 				role="region"
 				aria-label="Keyboard shortcuts"
-				class="fixed inset-0 z-30 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4"
+				class="fixed inset-0 z-30 flex items-center justify-center bg-scrim p-4 backdrop-blur-[4px]"
 			>
-				<div
-					class="w-full max-w-sm border-2 border-border bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+				<Panel
+					tag="KEY_MAP"
+					screws={true}
+					class="w-full max-w-sm shadow-[4px_4px_0_var(--shadow)]"
+					role="dialog"
+					aria-modal="true"
+					aria-label="Keyboard map"
 				>
 					<div
-						class="flex justify-between items-center px-3 py-2 border-b border-border text-xxs uppercase tracking-widest text-muted"
+						class="flex items-center justify-between border-b border-line px-3 py-2 text-xxs uppercase tracking-widest text-dim"
 					>
-						<span class="font-bold text-main">[KEY_MAP]</span>
+						<span class="font-bold text-ink">[KEY_MAP]</span>
 						<button
 							type="button"
-							class="hover:text-accent font-bold"
+							class="bg-transparent p-0 font-bold hover:text-accent"
 							onclick={() => (keys_open = false)}
 						>
 							[ESC_CLOSE]
 						</button>
 					</div>
-					<ul class="p-3 grid gap-2">
+					<ul class="grid gap-2 p-3">
 						{#each SHORTCUTS as s (s.key)}
-							<li
-								class="flex items-center justify-between gap-3 text-tiny uppercase tracking-widest"
-							>
-								<span class="text-muted">{s.label}</span>
-								<kbd
-									class="border border-border bg-background px-1.5 py-0.5 font-mono font-bold text-main"
-								>
+							<li class="flex items-center justify-between gap-3 text-tiny uppercase tracking-widest">
+								<span class="text-dim">{s.label}</span>
+								<kbd class="border border-line bg-sunk px-1.5 py-0.5 font-mono font-bold text-ink">
 									{s.key}
 								</kbd>
 							</li>
 						{/each}
 						<li class="flex items-center justify-between gap-3 text-tiny uppercase tracking-widest">
-							<span class="text-muted">[?] TOGGLE_KEY_MAP</span>
-							<kbd
-								class="border border-border bg-background px-1.5 py-0.5 font-mono font-bold text-main"
-							>
+							<span class="text-dim">[J/K] MOVE_ROW_FOCUS</span>
+							<kbd class="border border-line bg-sunk px-1.5 py-0.5 font-mono font-bold text-ink">
+								J K
+							</kbd>
+						</li>
+						<li class="flex items-center justify-between gap-3 text-tiny uppercase tracking-widest">
+							<span class="text-dim">[?] TOGGLE_KEY_MAP</span>
+							<kbd class="border border-line bg-sunk px-1.5 py-0.5 font-mono font-bold text-ink">
 								?
 							</kbd>
 						</li>
 					</ul>
-				</div>
+				</Panel>
 			</div>
 		{/if}
 	</div>

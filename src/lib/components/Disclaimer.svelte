@@ -12,36 +12,34 @@
 	}>();
 </script>
 
-<div
-	class="my-6 border border-neutral-300 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900/90 p-4 transition-colors rounded-none"
->
+<!-- Amber means "warning" and nothing else. This is the only place it appears. -->
+<div class="my-6 border border-warn bg-sunk p-4">
 	{#if title}
-		<div class="flex items-center gap-2 mb-2 h-4 shrink-0">
-			<div class="text-amber-500 dark:text-amber-400 shrink-0 flex items-center justify-center w-4 h-4" aria-hidden="true">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="w-4 h-4 shrink-0 block"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-					<line x1="12" y1="9" x2="12" y2="13" />
-					<line x1="12" y1="17" x2="12.01" y2="17" />
-				</svg>
-			</div>
+		<div class="mb-2 flex h-4 shrink-0 items-center gap-2">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="block h-4 w-4 shrink-0 text-warn"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+				<line x1="12" y1="9" x2="12" y2="13" />
+				<line x1="12" y1="17" x2="12.01" y2="17" />
+			</svg>
 			<div
-				class="font-mono text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500 leading-4 h-4 flex items-center shrink-0"
+				class="flex h-4 shrink-0 items-center font-mono text-xs leading-4 font-bold tracking-widest text-warn uppercase"
 			>
 				[{title}]
 			</div>
 		</div>
 	{/if}
 
-	<div class="text-sm font-sans text-main leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0">
+	<div class="font-sans text-sm leading-relaxed text-ink [&>p:last-child]:mb-0 [&>p]:mb-2">
 		{#if children}
 			{@render children()}
 		{:else if text}

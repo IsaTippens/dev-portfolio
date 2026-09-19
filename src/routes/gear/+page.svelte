@@ -102,21 +102,21 @@
 		<GearItem
 			id="06 / OS_AND_KERNELS"
 			title="Windows 11:"
-			description={`Host OS on workstation. <br /> <span class="font-bold text-main uppercase">WSL2 (Ubuntu):</span> Primary Linux development shell. <br /> <span class="font-bold text-main uppercase">NixOS / PiOS:</span> Declarative and Debian-based lab node distributions.`}
+			description={`Host OS on workstation. <br /> <span class="font-bold text-ink uppercase">WSL2 (Ubuntu):</span> Primary Linux development shell. <br /> <span class="font-bold text-ink uppercase">NixOS / PiOS:</span> Declarative and Debian-based lab node distributions.`}
 		/>
 
 		<!-- Development Languages -->
 		<GearItem
 			id="07 / CODE_LANGUAGES"
 			title="Daily Stack:"
-			description={`Rust, Go (Golang), and Python (all 3 used daily for systems engineering and trading apps). <br /> <span class="font-bold text-main uppercase">Past Experience:</span> C#, C++, Flutter, React Native, TypeScript, and JavaScript.`}
+			description={`Rust, Go (Golang), and Python (all 3 used daily for systems engineering and trading apps). <br /> <span class="font-bold text-ink uppercase">Past Experience:</span> C#, C++, Flutter, React Native, TypeScript, and JavaScript.`}
 		/>
 
 		<!-- Apps -->
 		<GearItem
 			id="08 / APPLICATIONS"
 			title="Google Gemini:"
-			description={`AI pair programming and quick reasoning. <br /> <span class="font-bold text-main uppercase">Notion:</span> Structured task planning, logging, and notebook notes. <br /> <span class="font-bold text-main uppercase">Spotify:</span> Essential soundtrack generation for coding focus. <br /> <span class="font-bold text-main uppercase">VSCode:</span> Lightweight editor environment for web, Rust, and systems scripts. <br /> <span class="font-bold text-main uppercase">Tailscale:</span> Secure, zero-config mesh VPN connecting workstation, mobile, and lab nodes.`}
+			description={`AI pair programming and quick reasoning. <br /> <span class="font-bold text-ink uppercase">Notion:</span> Structured task planning, logging, and notebook notes. <br /> <span class="font-bold text-ink uppercase">Spotify:</span> Essential soundtrack generation for coding focus. <br /> <span class="font-bold text-ink uppercase">VSCode:</span> Lightweight editor environment for web, Rust, and systems scripts. <br /> <span class="font-bold text-ink uppercase">Tailscale:</span> Secure, zero-config mesh VPN connecting workstation, mobile, and lab nodes.`}
 		/>
 	</div>
 </div>

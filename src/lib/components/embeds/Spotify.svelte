@@ -10,7 +10,8 @@
 	}>();
 
 	let iframe_styles = $derived(`
-		border-radius: 0.8rem;
+		border-radius: var(--radius);
+		border: var(--stroke) solid var(--line);
 		height: ${height};
 		width: ${width};
 	`);
