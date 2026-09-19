@@ -97,12 +97,18 @@
 			height: 250vh;
 		}
 
+		/*
+			The bar is sticky, so the hero pins underneath it (`padding-top: --bar-h`,
+			measured by the layout) — pinning at `top: 0` hid the intro behind the bar.
+			The content is centred in the remaining viewport, because a top-anchored
+			hero leaves the area below it blank on a tall screen for the whole pin.
+		*/
 		.hero-stick {
 			position: sticky;
 			top: 0;
 			min-height: 100vh;
-			justify-content: flex-start;
-			padding-top: 1rem;
+			justify-content: center;
+			padding-top: var(--bar-h, 44px);
 		}
 	}
 

@@ -19,7 +19,7 @@
 	]);
 </script>
 
-<div class="flex flex-col gap-6 md:flex-row">
+<div class="flex flex-col gap-6 md:flex-row md:items-center">
 	<div class="flex flex-1 flex-col gap-6">
 		<Panel tag="BIO_DATA" class="p-3 pb-4" data-boot="2">
 			<dl class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 font-mono text-[12px] leading-relaxed">

@@ -143,6 +143,18 @@
 		}
 		raf = window.requestAnimationFrame(updateFps);
 
+		// The hero pins under this bar, so its height has to be a real number, not a
+		// guess. Published as `--bar-h` for the homepage's sticky hero.
+		const bar = document.querySelector('[data-status-bar]');
+		let bar_observer: ResizeObserver | undefined;
+		if (bar) {
+			const set_bar_h = () =>
+				document.documentElement.style.setProperty('--bar-h', `${bar.offsetHeight}px`);
+			set_bar_h();
+			bar_observer = new ResizeObserver(set_bar_h);
+			bar_observer.observe(bar);
+		}
+
 		// Tape counter: scroll position as a device readout, rAF-throttled.
 		let queued = false;
 		function readPosition() {
@@ -163,6 +175,7 @@
 			window.cancelAnimationFrame(raf);
 			window.removeEventListener('scroll', onScroll);
 			window.removeEventListener('resize', onScroll);
+			bar_observer?.disconnect();
 		};
 	});
 
