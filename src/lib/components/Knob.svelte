@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { animate, clamp, createSpring } from 'animejs';
+	import { animate, clamp, spring } from 'animejs';
 	import { reducedMotion } from '$lib/motion';
 
 	/**
@@ -52,7 +52,7 @@
 		settling = true;
 		settle_anim = animate(proxy, {
 			v: next,
-			ease: createSpring({ stiffness: 180, damping: 14 }),
+			ease: spring({ stiffness: 180, damping: 14 }),
 			onUpdate: () => (rotation = proxy.v),
 			onComplete: () => {
 				rotation = next;

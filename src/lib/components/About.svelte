@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ProfilePhoto from '$lib/components/ProfilePhoto.svelte';
+	import Po100 from '$lib/components/Po100.svelte';
 	import Cartography from '$lib/components/Cartography.svelte';
 	import Panel from '$lib/components/Panel.svelte';
 
@@ -37,6 +37,6 @@
 
 	<!-- Portrait engine -->
 	<div class="mx-auto flex w-full max-w-[220px] shrink-0 items-center justify-center md:w-48 md:max-w-none">
-		<ProfilePhoto {scroll_mode} />
+		<Po100 {scroll_mode} />
 	</div>
 </div>

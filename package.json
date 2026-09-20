@@ -19,6 +19,7 @@
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@tailwindcss/typography": "^0.5.13",
 		"@types/node": "^25.9.3",
+		"@types/three": "^0.186.0",
 		"@typescript-eslint/eslint-plugin": "^8.61.0",
 		"@typescript-eslint/parser": "^8.61.0",
 		"autoprefixer": "^10.4.19",
@@ -46,6 +47,7 @@
 		"@fontsource/noto-sans": "^5.0.22",
 		"animejs": "^4.5.0",
 		"dayjs": "^1.11.11",
-		"gsap": "^3.12.5"
+		"gsap": "^3.12.5",
+		"three": "^0.186.0"
 	}
 }
