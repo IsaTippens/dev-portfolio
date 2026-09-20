@@ -344,6 +344,92 @@
 	--hw-port: #0f380f;
 }
 
+/*
+	PS1 — grey console plastic, and the four symbols.
+
+	The plate is warm moulded grey: modules are the lighter plastic (`--panel`) laid
+	on the deeper body (`--bg`), which is why every semantic colour is tuned against
+	both — ink 11.5:1 / 8.7:1, dim 6.4:1 / 4.8:1, and accent, ok, rec and warn all
+	clear AA on the panel (≥6.0:1) and on the body (≥4.5:1).
+
+	The controller's symbol colours are hardware, not interface: they are spent on
+	the three knob caps (cross blue, triangle green, square pink) and nowhere else.
+	The screen is the boot screen — black, with the lid LED red beside it.
+*/
+:root[data-theme='ps1'] {
+	color-scheme: light;
+
+	--bg: #c8c2b4;
+	--panel: #e2ded4;
+	--panel-sunk: #d3cec2;
+	--hover: rgba(36, 36, 42, 0.055);
+
+	--ink: #24242a;
+	--ink-dim: #4f4c45;
+	--line: #a39b89;
+
+	--accent: #87310c;
+	--accent-ink: #ffffff;
+	--ok: #0c5540;
+	--rec: #9a1b35;
+	--warn: #6b4909;
+
+	--shadow: #3a352c;
+	--shadow-soft: rgba(58, 53, 44, 0.2);
+	--scrim: rgba(40, 37, 31, 0.26);
+	--screen-dark: rgba(10, 10, 14, 0.88);
+	--accent-wash: rgba(135, 49, 12, 0.1);
+
+	--grain: 0.05;
+	--scan: 0.06;
+
+	--code-bg: #dcd8cd;
+	--code-fg: #24242a;
+	--code-comment: #66625a;
+	--code-punct: #4a4740;
+	--code-namespace: #3a4f8a;
+	--code-deleted: #9a1b35;
+	--code-symbol: #3a4f8a;
+	--code-tag: #9a1b35;
+	--code-boolean: #3a4f8a;
+	--code-number: #87310c;
+	--code-constant: #3a4f8a;
+	--code-selector: #7a2f63;
+	--code-attr: #0c5540;
+	--code-string: #1f4477;
+	--code-class: #87310c;
+	--code-regex: #3a4f8a;
+	--code-selection: rgba(58, 79, 138, 0.2);
+
+	--hw-case: #cdc8bb;
+	--hw-case-2: #c2bcae;
+	--hw-case-line: #a29b8c;
+	--hw-well: #2a2a2e;
+	--hw-well-2: #17171a;
+	--hw-screw: #b5afa1;
+	--hw-key: #d9d4c9;
+	--hw-key-line: #b0a99a;
+	--hw-key-ink: #3c3c40;
+	--hw-key-shadow: #a79f90;
+	--hw-knob-edge: #2a2a2e;
+	--hw-knob-freq: linear-gradient(to top right, #3f4fb0, #7d8ce6);
+	--hw-knob-phase: linear-gradient(to top right, #14775a, #56c9a9);
+	--hw-knob-rgb: linear-gradient(to top right, #a13c7c, #e389c4);
+	--hw-screen: #101014;
+	--hw-screen-2: #06060a;
+	--hw-screen-ink: #e6e6ea;
+	--hw-screen-ink-2: #8fb7ff;
+	--hw-screen-line: #2a2a32;
+	--hw-screen-ink-dim: #9a9aa4;
+	--hw-screen-well: #0c0c10;
+	--hw-screen-cell: #16161c;
+	--hw-screen-cell-on: #dcdce2;
+	--hw-screen-seg-off: #23232a;
+	--hw-screen-grid: rgba(230, 230, 234, 0.05);
+	--hw-screen-glow: 0 0 2px rgba(143, 183, 255, 0.35);
+	--hw-port: #9a1b35;
+}
+
 @layer base {
 	:root {
 		--font-pixel: 'JetBrains Mono', ui-monospace, monospace;

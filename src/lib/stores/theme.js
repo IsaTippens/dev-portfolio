@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 /**
- * Face plate registry — the four plates the device ships with.
+ * Face plate registry — the plates the device ships with.
  *
  * `id` must match a `:root[data-theme='<id>']` block in `app.css`; `color` is that
  * plate's `--bg`, used for the <meta name="theme-color"> that paints the browser
@@ -35,6 +35,12 @@ export const THEMES = [
 		label: 'GAMEBOY',
 		color: '#306230',
 		note: 'four-tone DMG'
+	},
+	{
+		id: 'ps1',
+		label: 'PS1',
+		color: '#c8c2b4',
+		note: 'console grey + symbols'
 	}
 ];
 

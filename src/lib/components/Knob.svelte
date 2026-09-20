@@ -38,14 +38,18 @@
 	const quantize = (v: number) => clamp(Math.round(v / detent) * detent, -180, 180);
 	const readout = (v: number) => Math.round((v + 180) / detent);
 
-	/** Spring the cap into `target`'s detent and commit that as the value. */
+	/**
+	 * Spring the cap into `target`'s detent. The value is committed immediately — the
+	 * spring is how the cap looks getting there, not when the control takes effect, so
+	 * held arrow keys accumulate instead of cancelling each other's animation.
+	 */
 	function settle(target: number) {
 		settle_anim?.cancel();
 		const next = quantize(target);
+		value = next;
 		// Reduced motion: the cap lands on the detent, it does not spring onto it.
 		if (reducedMotion()) {
 			rotation = next;
-			value = next;
 			return;
 		}
 		const proxy = { v: rotation };
@@ -56,7 +60,6 @@
 			onUpdate: () => (rotation = proxy.v),
 			onComplete: () => {
 				rotation = next;
-				value = next;
 				settling = false;
 			}
 		});
