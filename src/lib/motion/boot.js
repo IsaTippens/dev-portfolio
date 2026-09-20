@@ -1,4 +1,4 @@
-import { animate, createTimeline, stagger } from 'animejs';
+import { animate, createTimeline, stagger, steps } from 'animejs';
 import { EASE_SNAP, MODULE_STAGGER, SNAP, STEPS_FLICKER, motionEnabled } from './index.js';
 
 /**
@@ -109,7 +109,7 @@ export function maybeBoot(root) {
 			const hold = order === last ? 140 : 0;
 			timeline.add(
 				screen,
-				{ opacity: [0, 1], duration: 160, ease: `steps(${STEPS_FLICKER})` },
+				{ opacity: [0, 1], duration: 160, ease: steps(STEPS_FLICKER) },
 				offset + hold
 			);
 		}
@@ -133,15 +133,15 @@ export function scrambleIn(node, duration = 400) {
 	if (!final_text) return;
 	node.setAttribute('aria-label', final_text);
 
-	const steps = Math.max(6, Math.round(duration / 50));
+	const frames = Math.max(6, Math.round(duration / 50));
 	const proxy = { frame: 0 };
 
 	animate(proxy, {
-		frame: steps,
+		frame: frames,
 		duration,
-		ease: `steps(${steps})`,
+		ease: steps(frames),
 		onUpdate: () => {
-			const revealed = Math.floor((proxy.frame / steps) * final_text.length);
+			const revealed = Math.floor((proxy.frame / frames) * final_text.length);
 			let out = '';
 			for (let i = 0; i < final_text.length; i++) {
 				if (final_text[i] === ' ') out += ' ';
