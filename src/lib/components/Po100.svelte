@@ -3,6 +3,7 @@
 	import ProfilePhoto from './ProfilePhoto.svelte';
 	import { motionEnabled, reducedMotion } from '$lib/motion';
 	import { po } from '$lib/stores/po100.svelte.js';
+	import { isCharging, batteryLevel } from '$lib/stores/battery';
 	import type { Po3dApi } from '$lib/three/po100';
 
 	/**
@@ -26,7 +27,8 @@
 	let ready = $state(false);
 	let focus_within = $state(false);
 
-	let api: Po3dApi | null = null;
+	// Reactive: the model may arrive after the state it has to catch up with.
+	let api: Po3dApi | null = $state(null);
 	let disposed = false;
 
 	/** Run `fn` after the boot sweep finishes, or when the browser goes idle — whichever first. */
@@ -141,6 +143,13 @@
 		const values = [po.freq, po.phase, po.rgb];
 		const hooks = api;
 		if (hooks) values.forEach((v, i) => hooks.setKnob(i, v));
+	});
+
+	/* The charging cable is the 2D module's easter egg; the model plugs in with it. */
+	$effect(() => {
+		const on = $isCharging;
+		const level = $batteryLevel;
+		api?.setCharging(on, level);
 	});
 
 	/** Cheap probe: without WebGL2, three is never downloaded and nothing is logged twice. */

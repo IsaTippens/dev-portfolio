@@ -1,6 +1,7 @@
 import {
 	BoxGeometry,
 	CanvasTexture,
+	CatmullRomCurve3,
 	CircleGeometry,
 	Color,
 	CylinderGeometry,
@@ -20,11 +21,13 @@ import {
 	SRGBColorSpace,
 	Scene,
 	TorusGeometry,
+	TubeGeometry,
+	Vector3,
 	WebGLRenderer
 } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import type { Texture } from 'three';
-import { animate, spring } from 'animejs';
+import { animate, cubicBezier, spring } from 'animejs';
 import type { PoMode } from '$lib/components/ProfilePhoto.svelte';
 
 /**
@@ -66,6 +69,8 @@ export interface PoLayout {
 export interface Po3dApi {
 	setMode: (mode: PoMode) => Promise<void>;
 	setKnob: (index: number, value: number) => void;
+	/** The charging cable: plugged in or not, and the level its LED reports. */
+	setCharging: (on: boolean, level: number | null) => void;
 	setContextLostHandler: (fn: () => void) => void;
 	dispose: () => void;
 }
@@ -94,6 +99,7 @@ interface Tokens {
 	dim: string;
 	panel: string;
 	rec: string;
+	ok: string;
 	knobs: string[];
 }
 
@@ -120,6 +126,7 @@ function readTokens(): Tokens {
 		dim: pick('--ink-dim'),
 		panel: pick('--panel'),
 		rec: pick('--rec'),
+		ok: pick('--ok'),
 		knobs: KNOB_TOKEN_KEYS.map(solid)
 	};
 }
@@ -393,6 +400,99 @@ export async function initPo3d(
 	port.position.set(px(layout.strip.cx) + W * 0.4, py(layout.strip.cy), F + 0.006);
 	device.add(port);
 
+	/*
+		The charging cable — the 2D module's easter egg, as an object.
+
+		Same anatomy as the 2D one: a collar in the port, the connector shell with its
+		LED (green at full, blinking red while it fills), a strain relief, and the lead
+		running out of frame. It hangs off the device, so it lives in `device` and tilts
+		with it, and it is only ever present while the machine reports charging.
+	*/
+	const portX = px(layout.strip.cx) + W * 0.4;
+	const portY = py(layout.strip.cy);
+
+	const plug = new Group();
+	plug.position.set(portX, portY, F);
+	plug.visible = false;
+	device.add(plug);
+
+	const cableMat = toon(tokens.screw);
+
+	const collar = new Mesh(track(new BoxGeometry(0.09, 0.028, 0.05)), cableMat);
+	collar.position.set(0, -0.02, 0.03);
+	plug.add(collar);
+
+	// The 2D shell is separated from the case by a dark border; in three that has to be
+	// geometry, so the housing sits a hair proud of a darker plate.
+	const shellRim = new Mesh(track(new BoxGeometry(0.215, 0.195, 0.09)), flat(tokens.well2));
+	shellRim.position.set(0, -0.12, 0.05);
+	plug.add(shellRim);
+
+	const shell = new Mesh(
+		track(new RoundedBoxGeometry(0.19, 0.17, 0.1, 2, 0.018)),
+		toon(tokens.case2)
+	);
+	shell.position.set(0, -0.12, 0.06);
+	plug.add(shell);
+
+	const plugLed = new Mesh(track(new CircleGeometry(0.03, 12)), ledOff);
+	plugLed.position.set(0, -0.12, 0.113);
+	plug.add(plugLed);
+
+	const relief = new Mesh(track(new BoxGeometry(0.07, 0.05, 0.07)), flat(tokens.well2));
+	relief.position.set(0, -0.23, 0.06);
+	plug.add(relief);
+
+	// One gentle fall away from the case: a cable is not a rod, but it is not a spline
+	// show either — four control points and a thin tube.
+	const lead = new Mesh(
+		track(
+			new TubeGeometry(
+				new CatmullRomCurve3([
+					new Vector3(0, -0.255, 0.06),
+					new Vector3(0.02, -0.42, 0.1),
+					new Vector3(-0.012, -0.68, 0.07),
+					new Vector3(0.008, -0.98, 0.03)
+				]),
+				14,
+				0.016,
+				6,
+				false
+			)
+		),
+		cableMat
+	);
+	plug.add(lead);
+
+	const ledCharged = flat('#000000');
+	let charging = false;
+	let chargeLevel: number | null = null;
+	let ledPhase = -1;
+	let plugAnim: { cancel: () => void } | null = null;
+	// Far enough under the chassis that the plug is off-frame before it is hidden.
+	const PLUG_TRAVEL = 0.6;
+
+	/** Plug in, or pull out: 220ms, the same curve panels move on. Never a bounce. */
+	function setPlug(on: boolean) {
+		if (on === charging) return;
+		charging = on;
+		plugAnim?.cancel();
+		if (on) plug.visible = true;
+		const proxy = { y: plug.position.y };
+		plugAnim = animate(proxy, {
+			y: on ? portY : portY - PLUG_TRAVEL,
+			duration: 220,
+			ease: cubicBezier(0.2, 0.9, 0.25, 1),
+			onUpdate: () => {
+				plug.position.y = proxy.y;
+			},
+			onComplete: () => {
+				if (!charging) plug.visible = false;
+			}
+		});
+	}
+	plug.position.y = portY - PLUG_TRAVEL;
+
 	/* ── Text plate: one canvas, one texture, one mesh ────────────────────── */
 
 	let textPlate: Mesh | null = null;
@@ -502,6 +602,9 @@ export async function initPo3d(
 		screws.forEach((s) => (s.material as MeshToonMaterial).color.set(t.screw));
 		ledOn.color.set(t.rec);
 		ledOff.color.set(t.well2);
+		cableMat.color.set(t.screw);
+		(shell.material as MeshToonMaterial).color.set(t.case2);
+		ledCharged.color.set(t.ok);
 	}
 	applyTheme(tokens);
 
@@ -574,6 +677,16 @@ export async function initPo3d(
 		tiltX += (tiltTargetX - tiltX) * 0.05;
 		tiltY += (tiltTargetY - tiltY) * 0.05;
 
+		// The charge LED: solid once full, otherwise a hard 1.6s blink. A diode does
+		// not interpolate, so this is a phase flip, not a fade.
+		if (plug.visible) {
+			const phase = chargeLevel !== null && chargeLevel >= 99 ? 2 : Math.floor(t / 0.8) % 2;
+			if (phase !== ledPhase) {
+				ledPhase = phase;
+				plugLed.material = phase === 2 ? ledCharged : phase === 0 ? ledOn : ledOff;
+			}
+		}
+
 		renderer.render(scene, camera);
 
 		if (inView && tabVisible) raf = requestAnimationFrame(frame);
@@ -640,6 +753,11 @@ export async function initPo3d(
 			if (index < 0 || index >= knobs.length) return;
 			springKnob(index, -MathUtils.degToRad((value / 180) * 135));
 		},
+		setCharging(on, level) {
+			chargeLevel = level;
+			ledPhase = -1;
+			setPlug(on);
+		},
 		setContextLostHandler(fn) {
 			onContextLost = fn;
 		},
@@ -668,6 +786,7 @@ export async function initPo3d(
 		slot.removeEventListener('pointermove', onMove);
 		slot.removeEventListener('pointerleave', onLeave);
 		for (const k of knobSprings) k?.cancel();
+		plugAnim?.cancel();
 		for (const d of disposables) d.dispose();
 		renderer.dispose();
 		renderer.forceContextLoss();
