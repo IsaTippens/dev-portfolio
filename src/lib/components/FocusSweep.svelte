@@ -1,14 +1,21 @@
 <script lang="ts">
-	import { EASE_SNAP, PANEL, SNAP, motionEnabled } from '$lib/motion';
+	import { EASE_SNAP, EASE_WASH, MAX_DURATION, TICK, motionEnabled } from '$lib/motion';
 
 	/**
 	 * Focus pull for route changes.
 	 *
 	 * `covered` is the navigation state: true from the moment a navigation starts, false
 	 * the moment the new program is mounted. On the rising edge the veil travels to a full
-	 * de-focus over SNAP; on the falling edge whatever is left of that travel is landed on
-	 * the spot — the swap is already in the DOM by then and must never be painted through a
-	 * half-travelled veil — and focus sweeps back in over PANEL.
+	 * de-focus; on the falling edge whatever is left of that travel is landed on the spot —
+	 * the swap is already in the DOM by then and must never be painted through a
+	 * half-travelled veil — and focus sweeps back in.
+	 *
+	 * Both legs run over MAX_DURATION, and the asymmetry between them is deliberate: going
+	 * out of focus is a reflex and has to beat the swap to the screen, coming back is the
+	 * part that gets watched, so it travels the same distance on EASE_WASH at a speed the
+	 * eye can follow. Between them the veil holds at full cover for a tick, so the defocus
+	 * lands as a state rather than as the frame the cover jumped on. A veil that snapped
+	 * shut and snapped open again reads as a blink.
 	 *
 	 * The veil itself (five staggered backdrop blurs, masked into one ramp) lives in
 	 * app.css under `.focus-sweep`, next to the rest of the display motion. Only the
@@ -30,6 +37,8 @@
 	let active = $state(false);
 
 	let sweep: Animation | undefined;
+	/** Timer for the beat at full cover, between the swap and the reveal. */
+	let hold: ReturnType<typeof setTimeout> | undefined;
 	let shown = false;
 
 	$effect(() => {
@@ -44,11 +53,17 @@
 			// A second navigation can arrive while the previous reveal is still running.
 			// Read where the curtain actually is before dropping the hold, and travel from
 			// there: restarting from `rest` would flash the screen sharp for a frame.
+			//
+			// EASE_SNAP here, not the wash: the cover only runs for as long as the load
+			// takes, and a route that lands early lands on whatever has been travelled. A
+			// front-loaded curve is already near full cover by then, so landing is not a
+			// visible jump; a wash curve would be caught at a light haze and snap.
 			const from = getComputedStyle(curtain).transform;
+			clearTimeout(hold);
 			sweep?.cancel();
 			active = true;
 			sweep = curtain.animate([{ transform: from }, { transform: COVER.hold }], {
-				duration: SNAP,
+				duration: MAX_DURATION,
 				easing: EASE_SNAP,
 				fill: 'forwards'
 			});
@@ -59,21 +74,32 @@
 		// through the part of the screen it has not reached yet.
 		if (sweep?.playState === 'running' || sweep?.playState === 'paused') sweep.finish();
 
-		const reveal = curtain.animate([{ transform: REVEAL.hold }, { transform: REVEAL.rest }], {
-			duration: PANEL,
-			easing: EASE_SNAP,
-			fill: 'forwards'
-		});
-		sweep = reveal;
-		reveal.addEventListener('finish', () => {
-			if (sweep !== reveal) return;
-			// Both rest states are off the screen, so dropping the hold is invisible — and
-			// it hands the curtain back to the stylesheet instead of leaving a finished
-			// animation (and its composited layer) behind.
-			reveal.cancel();
-			sweep = undefined;
-			active = false;
-		});
+		// A tick of hold at full cover first. A route that lands early would otherwise be
+		// surrounded by nothing but the single frame the cover jumped on, and the blur would
+		// never read as a state the machine was in.
+		clearTimeout(hold);
+		hold = setTimeout(() => {
+			if (!curtain) return;
+
+			// Same distance as the cover, at a speed you can follow: the front crosses the
+			// screen over roughly two thirds of the run rather than most of it in the first
+			// few frames.
+			const reveal = curtain.animate([{ transform: REVEAL.hold }, { transform: REVEAL.rest }], {
+				duration: MAX_DURATION,
+				easing: EASE_WASH,
+				fill: 'forwards'
+			});
+			sweep = reveal;
+			reveal.addEventListener('finish', () => {
+				if (sweep !== reveal) return;
+				// Both rest states are off the screen, so dropping the hold is invisible — and
+				// it hands the curtain back to the stylesheet instead of leaving a finished
+				// animation (and its composited layer) behind.
+				reveal.cancel();
+				sweep = undefined;
+				active = false;
+			});
+		}, TICK);
 	});
 </script>
 

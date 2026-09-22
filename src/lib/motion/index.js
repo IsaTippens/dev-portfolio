@@ -7,6 +7,9 @@ import { browser } from '$app/environment';
  * Rules this module exists to enforce:
  *   - LEDs and state changes are instantaneous or stepped (`steps()`), never eased.
  *   - Panels move with EASE_SNAP, under PANEL.
+ *   - Sustained passes across the screen — a wash, a focus pull — move with EASE_WASH,
+ *     over MAX_DURATION: they travel farther than a panel and their speed is the point,
+ *     so they ease in and out instead of snapping off the line.
  *   - Nothing bounces, nothing overshoots — the single exception is a physical knob
  *     settling into a detent, which is a spring because the object is a spring.
  *   - Scroll-scrubbed effects have no duration at all; they are position-mapped.
@@ -19,6 +22,13 @@ export const EASE_SNAP = 'cubic-bezier(0.2, 0.9, 0.25, 1)';
 
 /** Decisive state flips: almost a cut, with just enough shape to read as motion. */
 export const EASE_HARD = 'cubic-bezier(0.85, 0, 0.15, 1)';
+
+/**
+ * Sustained travel: a wave crossing the screen. Symmetrical and gentle out of the gate,
+ * so the front keeps a readable speed the whole way instead of arriving in the first
+ * few frames the way EASE_SNAP does.
+ */
+export const EASE_WASH = 'cubic-bezier(0.45, 0, 0.35, 1)';
 
 /** Durations, in ms. */
 export const TICK = 120;
