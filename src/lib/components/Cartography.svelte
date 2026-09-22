@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { animate } from 'animejs';
 	import Panel from '$lib/components/Panel.svelte';
 	import Readout from '$lib/components/Readout.svelte';
 	import { onScrollProgress } from '$lib/motion/scrub.js';
-	import { reducedMotion, EASE_SNAP } from '$lib/motion';
+	import { reducedMotion, EASE_SNAP, PANEL } from '$lib/motion';
 
 	/**
 	 * CARTOGRAPHY_CPT — Cape Peninsula survey.
@@ -18,6 +18,93 @@
 	let route: SVGPathElement | null = $state(null);
 	let head: SVGGElement | null = $state(null);
 	let route_pc = $state(0);
+
+	/**
+	 * Cursor parallax. The survey is a shallow stack of depth layers — grid at the
+	 * back, then terrain, then annotations, with the traced route nearest. Hovering
+	 * the plate zooms every layer by its own amount, and the cursor pulls them
+	 * sideways by that same depth, so the map reads as a stack rather than a print.
+	 *
+	 * Pointer-only and skipped under reduced motion: this is decoration, never
+	 * information. Zoom fades in and out with the panel curve; the cursor-driven
+	 * part has no duration at all, like the scroll scrub.
+	 */
+	const ZOOM = 0.14; // near-layer scale at full hover
+	const SHIFT = 14; // near-layer travel at the plate edge, in viewBox units
+
+	/**
+	 * Pivot for the zoom: the centre of `viewBox="0 -80 320 280"`, in user units.
+	 * Written into the transform itself — attribute transforms are plain user-space
+	 * matrices, so `transform-box` / `transform-origin` (whose reference box does
+	 * not honour a viewBox with a negative min-y) never enter into it.
+	 */
+	const PIVOT_X = 160;
+	const PIVOT_Y = 60;
+
+	let plate: HTMLDivElement | null = $state(null);
+	let grid_el: SVGGElement | null = $state(null);
+	let coast_el: SVGPathElement | null = $state(null);
+	let topo_el: SVGGElement | null = $state(null);
+	let water_el: SVGGElement | null = $state(null);
+	let marks_el: SVGGElement | null = $state(null);
+	let near_el: SVGGElement | null = $state(null);
+
+	/** Layer elements with their depth: 0 is the far plane, 1 the near plane. */
+	const layers = (): [SVGElement | null, number][] => [
+		[grid_el, 0.25],
+		[coast_el, 0.5],
+		[topo_el, 0.5],
+		[water_el, 0.75],
+		[marks_el, 0.75],
+		[near_el, 1]
+	];
+
+	const cursor = { zoom: 0, nx: 0, ny: 0 };
+	let hover: { cancel: () => void } | undefined;
+
+	function parallax() {
+		const { zoom, nx, ny } = cursor;
+		for (const [el, depth] of layers()) {
+			if (!el) continue;
+			const dx = -nx * SHIFT * depth * zoom;
+			const dy = -ny * SHIFT * depth * zoom;
+			const scale = 1 + zoom * ZOOM * depth;
+			// p ↦ pivot + shift + scale·(p − pivot): zoom about the map's centre,
+			// then pull the layer towards the cursor-opposite side by its depth.
+			el.setAttribute(
+				'transform',
+				`translate(${(PIVOT_X + dx).toFixed(2)} ${(PIVOT_Y + dy).toFixed(2)}) scale(${scale.toFixed(4)}) translate(${-PIVOT_X} ${-PIVOT_Y})`
+			);
+		}
+	}
+
+	const clamp_unit = (v: number) => Math.max(-1, Math.min(1, v));
+
+	function onMapEnter(event: PointerEvent) {
+		if (event.pointerType !== 'mouse' || reducedMotion()) return;
+		hover?.cancel();
+		hover = animate(cursor, { zoom: 1, duration: PANEL, ease: EASE_SNAP, onUpdate: parallax });
+	}
+
+	function onMapMove(event: PointerEvent) {
+		if (event.pointerType !== 'mouse' || !plate || reducedMotion()) return;
+		const rect = plate.getBoundingClientRect();
+		cursor.nx = clamp_unit(((event.clientX - rect.left) / rect.width) * 2 - 1);
+		cursor.ny = clamp_unit(((event.clientY - rect.top) / rect.height) * 2 - 1);
+		parallax();
+	}
+
+	function onMapLeave(event: PointerEvent) {
+		if (event.pointerType !== 'mouse') return;
+		hover?.cancel();
+		// Recentre as it un-zooms: the offsets are scaled by the zoom, so the
+		// layers drift home instead of snapping.
+		cursor.nx = 0;
+		cursor.ny = 0;
+		hover = animate(cursor, { zoom: 0, duration: PANEL, ease: EASE_SNAP, onUpdate: parallax });
+	}
+
+	onDestroy(() => hover?.cancel());
 
 	/** Fraction of the route drawn, 0 → 1. */
 	function paint(p: number) {
@@ -76,9 +163,15 @@
 
 <Panel tag="CARTOGRAPHY_CPT" tag_tone="dim" class="p-4" data-boot="3">
 	<div class="flex items-center gap-6">
-		<!-- Survey plate -->
+		<!-- Survey plate. The pointer handlers only drive decoration; the SVG inside
+		     carries the accessible name. -->
 		<div
+			bind:this={plate}
+			role="presentation"
 			class="relative flex h-48 w-2/3 items-center justify-center overflow-hidden border border-line bg-sunk p-2"
+			onpointerenter={onMapEnter}
+			onpointermove={onMapMove}
+			onpointerleave={onMapLeave}
 		>
 			<span class="absolute top-1 left-2 font-mono text-nano text-dim">33°54'00"S</span>
 			<span class="absolute right-2 bottom-1 font-mono text-nano text-dim">18°26'00"E</span>
@@ -91,7 +184,7 @@
 				aria-label="Route survey of the Cape Peninsula, Cape Town to Cape Point"
 			>
 				<!-- Grid -->
-				<g class="stroke-line" stroke-width="1" stroke-dasharray="2 4">
+				<g bind:this={grid_el} class="stroke-line" stroke-width="1" stroke-dasharray="2 4">
 					<line x1="80" y1="-80" x2="80" y2="200" />
 					<line x1="160" y1="-80" x2="160" y2="200" />
 					<line x1="240" y1="-80" x2="240" y2="200" />
@@ -104,6 +197,7 @@
 
 				<!-- Coastline and Robben Island -->
 				<path
+					bind:this={coast_el}
 					d="M 40,-70 C 50,-50 65,-30 85,0 C 88,10 90,20 95,25 C 105,30 115,35 105,42 C 100,45 98,48 95,53 C 90,60 92,70 95,78 C 95,85 85,100 85,115 C 85,140 95,160 102,180 C 106,192 112,190 114,180 C 116,160 118,140 125,125 C 130,115 145,108 160,105 C 180,102 195,108 200,115 C 205,125 200,165 208,185 C 212,195 220,185 225,180 C 235,170 250,168 265,165 C 275,162 285,165 295,175 C 305,185 315,190 320,195 M 80,25 C 83,23 85,26 83,28 C 80,29 77,27 80,25 Z M 35,-65 C 38,-67 40,-64 38,-62 C 35,-61 32,-63 35,-65 Z"
 					fill="none"
 					stroke="var(--ink-dim)"
@@ -113,7 +207,7 @@
 				/>
 
 				<!-- Topography: Table Mountain, Constantiaberg, Swartkop, Kogelberg -->
-				<g fill="none" stroke="var(--line)" stroke-width="1">
+				<g bind:this={topo_el} fill="none" stroke="var(--line)" stroke-width="1">
 					<path d="M 102,50 Q 112,48 118,52 Q 122,58 115,62 Q 108,65 102,60 Q 98,55 102,50 Z" />
 					<path d="M 106,53 Q 110,50 115,53 Q 118,56 115,60 Q 110,63 106,60 Q 103,56 106,53 Z" />
 					<path d="M 95,78 Q 102,75 108,80 Q 112,85 108,92 Q 102,95 95,90 Q 92,85 95,78 Z" />
@@ -121,37 +215,39 @@
 					<path d="M 215,125 Q 225,115 235,125 Q 240,135 230,145 Q 220,150 215,140 Q 210,130 215,125 Z" />
 				</g>
 
-				<!-- The traced route, scrubbed by scroll -->
-				<path
-					bind:this={route}
-					id="cpt-route"
-					d="M 110,43 C 106,70 100,95 99,120 C 98,145 101,166 102,178"
-					fill="none"
-					stroke="var(--accent)"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					pathLength="1"
-					stroke-dasharray="1"
-					stroke-dashoffset="1"
-				/>
-				<!-- Route head: crosshair sitting at the current end of the trace -->
-				<g bind:this={head} class="text-accent" fill="none" stroke="currentColor" stroke-width="1" opacity="0">
-					<line x1="-4" y1="0" x2="-1.5" y2="0" />
-					<line x1="1.5" y1="0" x2="4" y2="0" />
-					<line x1="0" y1="-4" x2="0" y2="-1.5" />
-					<line x1="0" y1="1.5" x2="0" y2="4" />
-					<circle cx="0" cy="0" r="1" fill="currentColor" stroke="none" />
+				<!-- The traced route (scrubbed by scroll) and its head, on the near plane -->
+				<g bind:this={near_el}>
+					<path
+						bind:this={route}
+						id="cpt-route"
+						d="M 110,43 C 106,70 100,95 99,120 C 98,145 101,166 102,178"
+						fill="none"
+						stroke="var(--accent)"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						pathLength="1"
+						stroke-dasharray="1"
+						stroke-dashoffset="1"
+					/>
+					<!-- Route head: crosshair sitting at the current end of the trace -->
+					<g bind:this={head} class="text-accent" fill="none" stroke="currentColor" stroke-width="1" opacity="0">
+						<line x1="-4" y1="0" x2="-1.5" y2="0" />
+						<line x1="1.5" y1="0" x2="4" y2="0" />
+						<line x1="0" y1="-4" x2="0" y2="-1.5" />
+						<line x1="0" y1="1.5" x2="0" y2="4" />
+						<circle cx="0" cy="0" r="1" fill="currentColor" stroke="none" />
+					</g>
 				</g>
 
 				<!-- Water -->
-				<g fill="var(--ink-dim)" font-family="var(--font-mono)" opacity="0.55">
+				<g bind:this={water_el} fill="var(--ink-dim)" font-family="var(--font-mono)" opacity="0.55">
 					<text x="35" y="120" font-size="7" letter-spacing="1.4" transform="rotate(-90 35 120)">ATLANTIC OCEAN</text>
 					<text x="140" y="150" font-size="7" letter-spacing="1.4">FALSE BAY</text>
 					<text x="120" y="25" font-size="6" letter-spacing="1">TABLE BAY</text>
 				</g>
 
 				<!-- Land marks -->
-				<g font-family="var(--font-mono)">
+				<g bind:this={marks_el} font-family="var(--font-mono)">
 					<text x="120" y="55" font-size="5" fill="var(--ink-dim)" letter-spacing="0.8">TABLE MT.</text>
 					<text x="120" y="60" font-size="4.5" fill="var(--ink-dim)">1086m</text>
 					<circle cx="110" cy="43" r="1.5" fill="var(--accent)" />
