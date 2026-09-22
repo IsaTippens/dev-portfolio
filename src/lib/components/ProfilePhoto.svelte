@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { cubicIn, cubicOut } from 'svelte/easing';
 	import Knob from '$lib/components/Knob.svelte';
 	import Readout from '$lib/components/Readout.svelte';
-	import { isCharging, batteryLevel } from '$lib/stores/battery';
+	import { isCharging, batteryLevel, setCharging } from '$lib/stores/battery';
 	import { reducedMotion } from '$lib/motion';
 
 	type PoMode = 'LCD' | 'CRT' | 'GAMEBOY' | 'DOT_MATRIX' | 'NORMAL';
@@ -56,11 +57,47 @@
 			return;
 		}
 		if (reducedMotion() || !screen) return;
+		screen.animate([{ opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }], {
+			duration: 130,
+			easing: 'steps(3, end)'
+		});
+	});
+
+	// Power in: the tube surges for a beat when the charger seats, the way a backlight
+	// jumps when the supply switches over.
+	let was_charging: boolean | null = null;
+	$effect(() => {
+		const now = $isCharging;
+		const plugged = was_charging === false && now;
+		was_charging = now;
+		if (!plugged || reducedMotion() || !screen) return;
 		screen.animate(
-			[{ opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }],
-			{ duration: 130, easing: 'steps(3, end)' }
+			[{ filter: 'brightness(1)' }, { filter: 'brightness(1.7)' }, { filter: 'brightness(1)' }],
+			{ duration: 260, delay: 300, easing: 'steps(3, end)' }
 		);
 	});
+
+	/** The plug travels along its own axis: straight up into the port, straight back out. */
+	function seat(_: Element, { out = false }: { out?: boolean } = {}) {
+		return {
+			duration: reducedMotion() ? 0 : out ? 180 : 340,
+			easing: out ? cubicIn : cubicOut,
+			css: (t: number) =>
+				`transform: translateY(${(1 - t) * 22}px); opacity: ${Math.min(1, t * 2.5)};`
+		};
+	}
+
+	// Glass catches the light where the pointer is. Mouse only: a finger is not a lamp.
+	let glare_x = $state(70);
+	let glare_y = $state(15);
+	let glare_on = $state(false);
+	function moveGlare(e: PointerEvent) {
+		if (e.pointerType !== 'mouse') return;
+		const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+		glare_x = ((e.clientX - r.left) / r.width) * 100;
+		glare_y = ((e.clientY - r.top) / r.height) * 100;
+		glare_on = true;
+	}
 
 	const filter_style = $derived(
 		mode === 'LCD'
@@ -79,16 +116,35 @@
 
 <!-- PO-100 · portrait engine. Chassis materials, not interface colours. -->
 <div
-	class="relative flex w-full flex-col gap-3.5 overflow-hidden border border-line bg-[var(--hw-case)] p-4 pt-5 pb-3 shadow-[3px_3px_0_var(--shadow)] select-none"
+	class="relative flex w-full flex-col gap-3.5 border border-line bg-[var(--hw-case)] p-4 pt-5 pb-3 shadow-[3px_3px_0_var(--shadow)] select-none"
 	data-boot="5"
 >
 	<div class="pointer-events-none absolute inset-0 opacity-40 dot-grid"></div>
 
 	{#each ['top-1.5 left-1.5', 'top-1.5 right-1.5', 'bottom-1.5 left-1.5', 'bottom-1.5 right-1.5'] as pos, i (pos)}
 		<span class="pointer-events-none absolute {pos} block h-2 w-2" aria-hidden="true">
-			<svg viewBox="0 0 8 8" class="block h-full w-full" style="transform: rotate({[45, -30, 60, 15][i]}deg)">
-				<circle cx="4" cy="4" r="3.5" fill="var(--hw-screw)" stroke="var(--hw-case-line)" stroke-width="1" />
-				<line x1="1.5" y1="4" x2="6.5" y2="4" stroke="var(--hw-well-2)" stroke-width="1" stroke-linecap="round" />
+			<svg
+				viewBox="0 0 8 8"
+				class="block h-full w-full"
+				style="transform: rotate({[45, -30, 60, 15][i]}deg)"
+			>
+				<circle
+					cx="4"
+					cy="4"
+					r="3.5"
+					fill="var(--hw-screw)"
+					stroke="var(--hw-case-line)"
+					stroke-width="1"
+				/>
+				<line
+					x1="1.5"
+					y1="4"
+					x2="6.5"
+					y2="4"
+					stroke="var(--hw-well-2)"
+					stroke-width="1"
+					stroke-linecap="round"
+				/>
 			</svg>
 		</span>
 	{/each}
@@ -111,6 +167,9 @@
 	<!-- Recessed screen -->
 	<div
 		class="relative z-10 flex aspect-square w-full items-center justify-center overflow-hidden border-2 border-[var(--hw-well-2)] bg-[var(--hw-well)] p-[2px] shadow-[inset_0_2px_5px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.1)]"
+		onpointermove={moveGlare}
+		onpointerleave={() => (glare_on = false)}
+		role="presentation"
 	>
 		<div
 			bind:this={screen}
@@ -130,7 +189,9 @@
 			{/if}
 			{#if mode === 'CRT'}
 				<div class="crt-overlay absolute inset-0 pointer-events-none"></div>
-				<div class="absolute inset-0 z-10 pointer-events-none shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"></div>
+				<div
+					class="absolute inset-0 z-10 pointer-events-none shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"
+				></div>
 			{/if}
 			{#if mode === 'GAMEBOY'}
 				<div class="gb-overlay absolute inset-0 pointer-events-none"></div>
@@ -139,9 +200,14 @@
 				<div class="dot-overlay absolute inset-0 pointer-events-none"></div>
 			{/if}
 
-			<!-- Glass -->
+			<!-- Glass: a fixed sheen, plus the glare of whatever the pointer is. -->
 			<div
 				class="pointer-events-none absolute inset-0 z-20 bg-gradient-to-tr from-transparent via-transparent to-[var(--hw-glass)]"
+			></div>
+			<div
+				class="glare pointer-events-none absolute inset-0 z-20"
+				class:on={glare_on}
+				style="--gx: {glare_x}%; --gy: {glare_y}%;"
 			></div>
 
 			<!-- HUD -->
@@ -154,7 +220,7 @@
 						{$isCharging ? 'PWR: CHG' : 'LNK: ON'}
 					</span>
 					<div class="flex items-center gap-1 bg-[var(--hw-chip)] px-1 py-0.5">
-						<span class="led" data-on="true"></span>
+						<span class="led rec-blink" data-on="true"></span>
 						<span class="text-[var(--hw-chip-ink)]">REC</span>
 					</div>
 				</div>
@@ -202,7 +268,9 @@
 	</div>
 
 	<!-- Parameter knobs -->
-	<div class="z-10 flex items-center justify-between border-t border-[var(--hw-case-line)] px-1 pt-2">
+	<div
+		class="z-10 flex items-center justify-between border-t border-[var(--hw-case-line)] px-1 pt-2"
+	>
 		<Knob
 			bind:value={freq}
 			label="FREQ"
@@ -234,7 +302,9 @@
 			<div
 				class="relative flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[var(--hw-case-line)] bg-[var(--hw-well-2)] shadow-inner"
 			>
-				<div class="h-2.5 w-2.5 rounded-full border border-[var(--hw-port)] bg-[var(--hw-well)]"></div>
+				<div
+					class="h-2.5 w-2.5 rounded-full border border-[var(--hw-port)] bg-[var(--hw-well)]"
+				></div>
 			</div>
 			<span>OUT</span>
 		</div>
@@ -243,32 +313,133 @@
 
 		<div class="flex items-center gap-1.5">
 			<span>PWR</span>
-			<div class="relative flex items-center justify-center">
-				<div
-					class="flex h-2 w-4 items-center justify-center rounded-[1px] border border-[var(--hw-case-line)] bg-[var(--hw-well-2)] shadow-inner"
-				>
-					<div class="h-0.5 w-2.5 rounded-full border border-[var(--hw-case-line)] bg-[var(--hw-well)]"></div>
-				</div>
-
-				{#if $isCharging}
-					<div class="usb-c-cable pointer-events-none absolute top-[1px] left-1/2 z-30 flex flex-col items-center">
-						<div class="h-0.5 w-2 border-x border-[var(--hw-case-line)] bg-[var(--hw-screw)]"></div>
-						<div
-							class="relative flex h-4 w-4 items-center justify-center rounded-[1px] border border-[var(--hw-well-2)] bg-[var(--hw-case-2)] shadow-md"
-						>
-							<div
-								class="indicator-dot h-1 w-1"
-								class:green={$batteryLevel !== null && $batteryLevel >= 99}
-								class:blink-red={$batteryLevel === null || $batteryLevel < 99}
-							></div>
-						</div>
-						<div class="h-1 w-1.5 rounded-b-[1px] bg-[var(--hw-well-2)]"></div>
-						<div class="h-16 w-0.5 bg-[var(--hw-screw)]"></div>
-					</div>
-				{/if}
-			</div>
+			<span
+				class="indicator-dot h-1 w-1"
+				class:green={$isCharging && $batteryLevel !== null && $batteryLevel >= 99}
+				class:blink-red={$isCharging && ($batteryLevel === null || $batteryLevel < 99)}
+				aria-hidden="true"
+			></span>
+			<span class="text-[var(--hw-key-ink)]" aria-hidden="true">&#8595;</span>
 		</div>
 	</div>
+
+	<!-- USB-C receptacle, cut into the bottom edge of the case under the PWR label. It is a
+	     real control: the plug goes in and comes out from here, same as the BAT key. -->
+	<button
+		type="button"
+		class="usb-port"
+		aria-pressed={$isCharging}
+		aria-label={$isCharging ? 'Unplug the charger' : 'Plug in the charger'}
+		onclick={() => setCharging(!$isCharging)}
+	>
+		<span class="usb-port-slot"></span>
+	</button>
+
+	{#if $isCharging}
+		<div class="usb-plug" in:seat out:seat={{ out: true }} aria-hidden="true">
+			<span class="usb-spark"></span>
+			<svg viewBox="0 0 40 84" width="40" height="84" overflow="visible">
+				<defs>
+					<linearGradient id="po-plug-metal" x1="0" x2="1" y1="0" y2="0">
+						<stop offset="0" stop-color="var(--hw-case-line)" />
+						<stop offset="0.3" stop-color="#ffffff" />
+						<stop offset="0.55" stop-color="var(--hw-screw)" />
+						<stop offset="1" stop-color="var(--hw-case-line)" />
+					</linearGradient>
+					<linearGradient id="po-plug-body" x1="0" x2="1" y1="0" y2="0">
+						<stop offset="0" stop-color="var(--hw-key-shadow)" />
+						<stop offset="0.28" stop-color="var(--hw-key)" />
+						<stop offset="0.6" stop-color="var(--hw-key)" />
+						<stop offset="1" stop-color="var(--hw-key-shadow)" />
+					</linearGradient>
+					<linearGradient
+						id="po-plug-fade"
+						x1="0"
+						x2="0"
+						y1="0"
+						y2="84"
+						gradientUnits="userSpaceOnUse"
+					>
+						<stop offset="0.45" stop-color="#fff" />
+						<stop offset="1" stop-color="#fff" stop-opacity="0" />
+					</linearGradient>
+					<mask
+						id="po-plug-cable-mask"
+						maskUnits="userSpaceOnUse"
+						x="-10"
+						y="0"
+						width="80"
+						height="90"
+					>
+						<rect x="-10" y="0" width="80" height="90" fill="url(#po-plug-fade)" />
+					</mask>
+				</defs>
+
+				<!-- Cable: a round jacket is a dark edge, a lit body and one specular line. -->
+				<g mask="url(#po-plug-cable-mask)" fill="none" stroke-linecap="round">
+					<path
+						d="M14 27 C14 42 15 52 24 60 S42 70 52 82"
+						stroke="var(--hw-key-line)"
+						stroke-width="5.5"
+					/>
+					<path
+						d="M14 27 C14 42 15 52 24 60 S42 70 52 82"
+						stroke="var(--hw-key)"
+						stroke-width="3.8"
+					/>
+					<path
+						d="M13 28 C13 42 14 52 23 60 S41 70 51 82"
+						stroke="#ffffff"
+						stroke-opacity="0.35"
+						stroke-width="0.9"
+					/>
+				</g>
+
+				<!-- Strain relief: tapered, ribbed boot. -->
+				<path
+					d="M9.5 19 H18.5 L17 28.5 H11 Z"
+					fill="url(#po-plug-body)"
+					stroke="var(--hw-key-line)"
+					stroke-width="0.6"
+				/>
+				<g stroke="var(--hw-key-shadow)" stroke-width="0.7">
+					<line x1="10.4" y1="22" x2="17.6" y2="22" />
+					<line x1="10.8" y1="24.5" x2="17.2" y2="24.5" />
+					<line x1="11.1" y1="27" x2="16.9" y2="27" />
+				</g>
+
+				<!-- Metal shell: the only part of the connector still outside the port. -->
+				<rect x="8.5" y="0" width="11" height="3.5" rx="1" fill="url(#po-plug-metal)" />
+				<line
+					x1="9"
+					y1="3.2"
+					x2="19"
+					y2="3.2"
+					stroke="var(--hw-well-2)"
+					stroke-opacity="0.35"
+					stroke-width="0.5"
+				/>
+
+				<!-- Overmould. -->
+				<rect
+					x="5"
+					y="3"
+					width="18"
+					height="17"
+					rx="3.5"
+					fill="url(#po-plug-body)"
+					stroke="var(--hw-key-line)"
+					stroke-width="0.75"
+				/>
+				<rect x="7" y="4.2" width="14" height="1.2" rx="0.6" fill="#ffffff" fill-opacity="0.35" />
+				<g stroke="var(--hw-key-shadow)" stroke-width="0.6" stroke-linecap="round">
+					<line x1="9" y1="13" x2="19" y2="13" />
+					<line x1="9" y1="15" x2="19" y2="15" />
+					<line x1="9" y1="17" x2="19" y2="17" />
+				</g>
+			</svg>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -291,8 +462,7 @@
 
 	/* CRT: warmer, saturated, aperture-grille stripes. */
 	.crt-overlay {
-		background:
-			linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
+		background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
 			linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
 		background-size:
 			100% 3px,
@@ -312,21 +482,119 @@
 		background-size: 3px 3px;
 	}
 
-	/* Plugging in is physical, but nothing on this site overshoots except a knob. */
-	@keyframes plug-in {
-		from {
-			transform: translate(-50%, 20px);
-			opacity: 0;
-		}
-		to {
-			transform: translate(-50%, 0);
-			opacity: 1;
-		}
+	/* Glare: a soft hotspot that follows the pointer across the glass. */
+	.glare {
+		background: radial-gradient(
+			circle at var(--gx) var(--gy),
+			rgba(255, 255, 255, 0.16),
+			rgba(255, 255, 255, 0.04) 28%,
+			transparent 55%
+		);
+		mix-blend-mode: screen;
+		opacity: 0;
+		transition: opacity 240ms linear;
 	}
-	.usb-c-cable {
-		animation: plug-in 220ms cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+	.glare.on {
+		opacity: 1;
 	}
 
+	/* The camcorder REC lamp: on, off, on. */
+	.rec-blink {
+		animation: rec-blink 1.2s steps(2, jump-none) infinite;
+	}
+	@keyframes rec-blink {
+		50% {
+			background-color: var(--hw-well-2);
+			box-shadow: none;
+		}
+	}
+
+	/* ── USB-C ─────────────────────────────────────────────────────────── */
+
+	/* Receptacle on the bottom edge, centred under the PWR label. */
+	.usb-port {
+		position: absolute;
+		right: 12px;
+		bottom: -6px;
+		z-index: 20;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 16px;
+		height: 12px;
+		padding: 0;
+		background: transparent;
+		cursor: pointer;
+	}
+	/* Plugged in, the whole connector is the handle to pull it back out by. */
+	.usb-port[aria-pressed='true'] {
+		height: 34px;
+		bottom: -28px;
+		align-items: flex-start;
+		padding-top: 5px;
+	}
+	.usb-port-slot {
+		display: block;
+		width: 12px;
+		height: 3px;
+		border-radius: 2px;
+		background-color: var(--hw-well-2);
+		box-shadow:
+			0 0 0 1px var(--hw-case-line),
+			inset 0 1px 1px rgba(0, 0, 0, 0.6);
+		transition: box-shadow 120ms linear;
+	}
+	.usb-port:hover .usb-port-slot,
+	.usb-port:focus-visible .usb-port-slot {
+		box-shadow:
+			0 0 0 1px var(--accent),
+			0 0 6px var(--accent);
+	}
+
+	.usb-plug {
+		position: absolute;
+		top: calc(100% - 1px);
+		right: -6px;
+		z-index: 30;
+		pointer-events: none;
+	}
+	.usb-plug svg {
+		display: block;
+		filter: drop-shadow(1px 2px 1.5px var(--shadow-soft));
+		transition: transform 120ms cubic-bezier(0.2, 0.9, 0.25, 1);
+	}
+	/* A hand on the plug: it gives a pixel, as if about to be pulled. */
+	.usb-port:hover ~ .usb-plug svg {
+		transform: translateY(1.5px);
+	}
+
+	/* The contact: one flash at the port as the connector seats. */
+	.usb-spark {
+		position: absolute;
+		top: -1px;
+		left: 14px;
+		width: 26px;
+		height: 10px;
+		border-radius: 50%;
+		background: radial-gradient(closest-side, var(--accent), transparent);
+		transform: translate(-50%, -50%) scale(0.2);
+		opacity: 0;
+		animation: usb-spark 420ms 300ms steps(4, end) both;
+	}
+	@keyframes usb-spark {
+		40% {
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1);
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-50%, -50%) scale(1.6);
+		}
+	}
+
+	.indicator-dot {
+		background-color: var(--hw-well-2);
+	}
 	.indicator-dot.green {
 		background-color: var(--ok);
 		box-shadow: 0 0 2px var(--ok);

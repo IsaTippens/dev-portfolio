@@ -22,5 +22,7 @@ export async function load_entries(dir) {
 
 	const visible = dev ? entries : entries.filter((entry) => entry.meta?.published);
 
-	return visible.sort((a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime());
+	// Undated drafts sort last (as the epoch); a NaN comparator would scramble the list.
+	const time = (/** @type {any} */ entry) => new Date(entry.meta?.date).getTime() || 0;
+	return visible.sort((a, b) => time(b) - time(a));
 }

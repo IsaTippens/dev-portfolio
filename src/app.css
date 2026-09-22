@@ -801,19 +801,6 @@ hr {
 	border-color: var(--line) !important;
 }
 
-@keyframes marquee {
-	0% {
-		transform: translateX(-100%);
-	}
-	100% {
-		transform: translateX(100%);
-	}
-}
-
-.animate-marquee {
-	animation: marquee 1.5s linear forwards;
-}
-
 /*
 	Route change = program change. Never a cut, never a cross-fade: the display loses
 	focus, the new program seats itself behind the blur, and focus comes back in.

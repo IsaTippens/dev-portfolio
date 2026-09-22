@@ -23,7 +23,7 @@
 	];
 </script>
 
-<div class="grid gap-6">
+<div class="mt-2 grid gap-6">
 	{#each ENTRIES as entry (entry.tag)}
 		<Panel tag={entry.tag} tag_side="left" class="p-4 pb-5">
 			<p class="mt-1 text-[13px] leading-relaxed text-ink">

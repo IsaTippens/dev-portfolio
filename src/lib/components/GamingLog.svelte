@@ -15,29 +15,34 @@
 	const HEADINGS = ['Game Title', 'Stats / Mode', 'Platform'];
 </script>
 
-<Panel tag="GAMING_LOG" class="overflow-x-auto">
-	<table class="w-full border-collapse text-left font-mono text-xs">
-		<thead>
-			<tr class="border-b border-line bg-sunk">
-				{#each HEADINGS as heading, i (heading)}
-					<th
-						class="p-2 text-xxs font-bold tracking-wider text-ink uppercase {i < HEADINGS.length - 1
-							? 'border-r border-line'
-							: ''}"
-					>
-						{heading}
-					</th>
-				{/each}
-			</tr>
-		</thead>
-		<tbody>
-			{#each ROWS as row (row.game)}
-				<tr class="border-b border-line last:border-b-0 hover:bg-hover">
-					<td class="border-r border-line p-2 font-bold text-ink uppercase">{row.game}</td>
-					<td class="border-r border-line p-2 text-dim">{row.stat}</td>
-					<td class="p-2 text-dim">{row.platform}</td>
+<!-- The scroller is inside the panel, not the panel itself: an overflow box would clip
+     the module tag that sits across the top edge. -->
+<Panel tag="GAMING_LOG">
+	<div class="overflow-x-auto">
+		<table class="w-full border-collapse text-left font-mono text-xs">
+			<thead>
+				<tr class="border-b border-line bg-sunk">
+					{#each HEADINGS as heading, i (heading)}
+						<th
+							class="p-2 text-xxs font-bold tracking-wider text-ink uppercase {i <
+							HEADINGS.length - 1
+								? 'border-r border-line'
+								: ''}"
+						>
+							{heading}
+						</th>
+					{/each}
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each ROWS as row (row.game)}
+					<tr class="border-b border-line last:border-b-0 hover:bg-hover">
+						<td class="border-r border-line p-2 font-bold text-ink uppercase">{row.game}</td>
+						<td class="border-r border-line p-2 text-dim">{row.stat}</td>
+						<td class="whitespace-nowrap p-2 text-dim">{row.platform}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </Panel>
