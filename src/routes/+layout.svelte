@@ -208,7 +208,7 @@
 <!-- Static grain, above everything, never in the way. -->
 <div class="grain" aria-hidden="true"></div>
 
-<div class="relative flex min-h-screen flex-col items-center p-3 pb-14 sm:p-5 sm:pb-20">
+<div class="relative flex min-h-screen flex-col items-center justify-center p-3 sm:p-5">
 	<!-- Background grid -->
 	<div class="absolute inset-0 z-0"><NoisyGradient /></div>
 
