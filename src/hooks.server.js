@@ -1,4 +1,4 @@
-import { THEMES, THEME_IDS, OS_PLATES } from '$lib/stores/theme';
+import { THEMES, THEME_IDS, OS_PLATES, PLATE_KEY } from '$lib/stores/theme';
 
 const colors = Object.fromEntries(THEMES.map((t) => [t.id, t.color]));
 
@@ -26,7 +26,7 @@ function theme_boot() {
 
 				let stored = null;
 				try {
-					stored = localStorage.getItem('theme');
+					stored = localStorage.getItem(${JSON.stringify(PLATE_KEY)});
 				} catch (e) {}
 				const os_dark = matchMedia('(prefers-color-scheme: dark)').matches;
 				const id = ids.includes(stored) ? stored : os_dark ? ${JSON.stringify(

@@ -53,7 +53,24 @@ export const THEME_IDS = THEMES.map((t) => t.id);
  */
 export const OS_PLATES = { light: 'ps1', dark: 'dark' };
 
-const stored = browser ? localStorage.getItem('theme') : null;
+/**
+ * Where a manual MODE dial pick is stored. Deliberately not the legacy `theme` key:
+ * the old store wrote that one on every visit with the auto-detected value, so any
+ * browser that visited before this store existed carries a stored plate that was
+ * never an operator pick — and honouring those would freeze the plate forever.
+ */
+export const PLATE_KEY = 'plate';
+
+if (browser) {
+	// Drop the legacy key: every value it holds was written by the store, not a pick.
+	try {
+		localStorage.removeItem('theme');
+	} catch {
+		/* private mode: nothing was stored anyway */
+	}
+}
+
+const stored = browser ? localStorage.getItem(PLATE_KEY) : null;
 const manual_pick = typeof stored === 'string' && THEME_IDS.includes(stored) ? stored : null;
 
 /** The OS plate right now: ps1 under a light scheme, dark under a dark one. */
@@ -81,7 +98,7 @@ export const theme = {
 	set(id) {
 		manual = true;
 		try {
-			localStorage.setItem('theme', id);
+			localStorage.setItem(PLATE_KEY, id);
 		} catch {
 			/* private mode: the plate just won't persist */
 		}
