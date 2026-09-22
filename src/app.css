@@ -816,24 +816,33 @@ hr {
 
 /*
 	Route change = program change. Never a cut, never a cross-fade: the display loses
-	focus, the new program seats itself behind the blur, and focus sweeps back in.
+	focus, the new program seats itself behind the blur, and focus comes back in.
 
 	One `backdrop-filter` is a band with a visible edge. Five, each masked to its own
-	vertical ramp and staggered, composite into a gradient running from sharp to
-	unreadable — at full cover the stack is sqrt(1 + 4 + 16 + 49 + 144) ≈ 15px of
-	defocus, well past legible, which is what lets the program swap behind it unseen.
+	ramp and staggered, composite into a gradient running from sharp to unreadable — at
+	full cover the stack is sqrt(1 + 4 + 16 + 49 + 144) ≈ 15px of defocus, well past
+	legible, which is what lets the program swap behind it unseen.
 
-	The stack rides on `.focus-sweep-curtain`, two windows tall, and only ever travels
-	downward. In its own coordinates (`transform` is driven by FocusSweep.svelte):
+	The wave is radial: it rings out from the point that started the navigation
+	(`--fs-x`/`--fs-y`, the click) and only ever travels outward. The ring is a band
+	`--fs-b` wide — twice the distance from the origin to the farthest corner of the
+	screen — and `--fs-p` is the position of its leading edge, in band widths
+	(driven by FocusSweep.svelte):
 
-	  -100%  parked above the screen
-	   -25%  the screen sits inside the fully opaque band: uniform cover, swap happens
-	    50%  parked below the screen
+	     0     the ring has not left the origin
+	  0.75     the screen sits inside the fully opaque band: uniform cover, swap happens
+	   1.5     the trailing edge has passed the farthest corner
 
-	Both rest states are off the screen, so the veil is in play only mid-navigation. Mask
-	stops are percentages of the curtain, mirrored top and bottom: the ramp that wipes the
-	screen in is the ramp that wipes it back out.
+	Both rest states leave the screen sharp, so the veil is in play only mid-navigation.
+	Ramp stops are fractions of the band, mirrored front and back: the ramp that washes
+	the screen out is the ramp that washes it back in.
 */
+@property --fs-p {
+	syntax: '<number>';
+	inherits: true;
+	initial-value: 0;
+}
+
 .focus-sweep {
 	position: absolute;
 	inset: 0;
@@ -843,7 +852,7 @@ hr {
 
 /*
 	One screen tall, not one page tall: the window sticks to the scrollport and is clamped
-	to the screen, so a long page sweeps the same visible band a short one does and the
+	to the screen, so a long page rings out across the same visible area a short one does and the
 	blur layers never grow past a viewport. `overflow: hidden` lives here rather than on
 	the shell — an overflow ancestor is a scroll container, and a sticky element inside one
 	sticks to it instead of to the page.
@@ -858,54 +867,55 @@ hr {
 }
 
 .focus-sweep-curtain {
+	--fs-x: 50%;
+	--fs-y: 50%;
+	--fs-b: 200vmax;
 	position: absolute;
-	inset: 0 0 auto;
-	height: 200%;
-	transform: translateY(-100%);
+	inset: 0;
 }
 
 .focus-sweep-curtain > div {
 	position: absolute;
 	inset: 0;
 	backdrop-filter: blur(var(--fs-blur));
-	mask-image: linear-gradient(
-		180deg,
-		transparent var(--fs-in),
-		#000 var(--fs-lock),
-		#000 calc(100% - var(--fs-lock)),
-		transparent calc(100% - var(--fs-in))
+	mask-image: radial-gradient(
+		circle at var(--fs-x) var(--fs-y),
+		transparent calc((var(--fs-p) - 1 + var(--fs-in)) * var(--fs-b)),
+		#000 calc((var(--fs-p) - 1 + var(--fs-lock)) * var(--fs-b)),
+		#000 calc((var(--fs-p) - var(--fs-lock)) * var(--fs-b)),
+		transparent calc((var(--fs-p) - var(--fs-in)) * var(--fs-b))
 	);
 }
 
-/* Weakest stop first: it arrives under the others and clears ahead of them on the way out. */
+/* Weakest stop first: it arrives ahead of the others and clears ahead of them on the way out. */
 .focus-sweep-curtain > div:nth-child(1) {
 	--fs-blur: 1px;
-	--fs-in: 4%;
-	--fs-lock: 14%;
+	--fs-in: 0.04;
+	--fs-lock: 0.14;
 }
 
 .focus-sweep-curtain > div:nth-child(2) {
 	--fs-blur: 2px;
-	--fs-in: 5%;
-	--fs-lock: 17%;
+	--fs-in: 0.05;
+	--fs-lock: 0.17;
 }
 
 .focus-sweep-curtain > div:nth-child(3) {
 	--fs-blur: 4px;
-	--fs-in: 6%;
-	--fs-lock: 20%;
+	--fs-in: 0.06;
+	--fs-lock: 0.2;
 }
 
 .focus-sweep-curtain > div:nth-child(4) {
 	--fs-blur: 7px;
-	--fs-in: 7%;
-	--fs-lock: 23%;
+	--fs-in: 0.07;
+	--fs-lock: 0.23;
 }
 
 .focus-sweep-curtain > div:nth-child(5) {
 	--fs-blur: 12px;
-	--fs-in: 7%;
-	--fs-lock: 25%;
+	--fs-in: 0.07;
+	--fs-lock: 0.25;
 }
 
 /*

@@ -10,8 +10,8 @@
 	} from '$lib/motion';
 
 	/**
-	 * Focus pull for route changes: one wave, top to bottom, with the route swap hidden
-	 * at its crest.
+	 * Focus pull for route changes: one wave, ringing out from the click that started
+	 * the navigation, with the route swap hidden at its crest.
 	 *
 	 * `covered` is the navigation state, true from the moment a navigation starts. Its
 	 * rising edge sends the veil in, so a slow load is answered on the next frame. The
@@ -25,22 +25,26 @@
 	 * restart from rest. Only a slow load, where the veil has already parked and waited,
 	 * refocuses from standstill, on EASE_WASH.
 	 *
-	 * The veil itself (five staggered backdrop blurs, masked into one ramp) lives in
-	 * app.css under `.focus-sweep`, next to the rest of the display motion. Only the
-	 * timing is here.
+	 * The veil itself (five staggered backdrop blurs, masked into one radial ramp) lives
+	 * in app.css under `.focus-sweep`, next to the rest of the display motion. Only the
+	 * timing and the origin are here.
 	 */
 	let { covered = false }: { covered?: boolean } = $props();
 
 	/*
-		Two rest states, both off the screen. The curtain is two screens tall and the
-		visible screen sits inside its fully opaque band at -25%, so the veil only ever
-		moves downward and the whole transition reads as one pass of a focus wave.
+		Positions of the ring's leading edge, in band widths (see app.css). The screen
+		sits inside the fully opaque band at 0.75; both rest states leave it sharp, so the
+		ring only ever travels outward and the transition reads as one pass of a wave.
 	*/
-	const FULL_COVER = 'translateY(-25%)';
-	const REST_BELOW = 'translateY(50%)';
+	const REST_ORIGIN = 0;
+	const FULL_COVER = 0.75;
+	const REST_BEYOND = 1.5;
 
 	/** Parked at full cover for longer than this, the veil has stopped, not paused. */
 	const PARKED_AFTER = 50;
+
+	/** A click older than this did not start the navigation now beginning. */
+	const CLICK_FRESH = 1000;
 
 	let curtain: HTMLDivElement | null = $state(null);
 
@@ -54,10 +58,46 @@
 	let landedAt: number | null = null;
 	/** Navigations holding their swap until the veil lands. */
 	let waiting: Array<() => void> = [];
+	/** The last click, in viewport coordinates: the likely source of the next navigation. */
+	let lastClick: { x: number; y: number; at: number } | null = null;
 
 	function release() {
 		for (const resolve of waiting) resolve();
 		waiting = [];
+	}
+
+	// Capture phase, so the point is recorded before the router acts on the click.
+	function recordClick(event: MouseEvent) {
+		let { clientX: x, clientY: y } = event;
+		// Keyboard activation synthesises a click at 0,0: ring out from the element instead.
+		if (event.detail === 0 && event.target instanceof Element) {
+			const box = event.target.getBoundingClientRect();
+			x = box.left + box.width / 2;
+			y = box.top + box.height / 2;
+		}
+		lastClick = { x, y, at: performance.now() };
+	}
+
+	/**
+	 * Aim the ring at the click that started this navigation, clamped into the visible
+	 * screen: a link outside the panel rings in from the nearest edge. Back/forward and
+	 * programmatic navigations have no click, so they ring out from the centre.
+	 */
+	function aim(target: HTMLDivElement) {
+		const box = target.getBoundingClientRect();
+		const click = lastClick && performance.now() - lastClick.at < CLICK_FRESH ? lastClick : null;
+		lastClick = null;
+		const x = click ? Math.min(Math.max(click.x - box.left, 0), box.width) : box.width / 2;
+		const y = click ? Math.min(Math.max(click.y - box.top, 0), box.height) : box.height / 2;
+		const reach = Math.hypot(Math.max(x, box.width - x), Math.max(y, box.height - y));
+		target.style.setProperty('--fs-x', `${x}px`);
+		target.style.setProperty('--fs-y', `${y}px`);
+		target.style.setProperty('--fs-b', `${2 * reach}px`);
+	}
+
+	/** Where the ring actually is, mid-animation or at rest. */
+	function position(target: HTMLDivElement) {
+		return parseFloat(getComputedStyle(target).getPropertyValue('--fs-p')) || REST_ORIGIN;
 	}
 
 	function defocus() {
@@ -66,13 +106,14 @@
 		if (defocusing) return;
 		defocusing = true;
 
-		// A navigation can arrive while the previous refocus is still running. Travel
-		// from where the curtain actually is: restarting from rest would flash the screen
-		// sharp for a frame.
-		const from = getComputedStyle(curtain).transform;
+		// A navigation can arrive while the previous refocus is still running. Keep that
+		// ring's origin and travel from where it actually is: re-aiming or restarting from
+		// rest would flash the screen sharp for a frame.
+		if (!active) aim(curtain);
+		const from = position(curtain);
 		sweep?.cancel();
 		active = true;
-		const cover = curtain.animate([{ transform: from }, { transform: FULL_COVER }], {
+		const cover = curtain.animate([{ '--fs-p': from }, { '--fs-p': FULL_COVER }], {
 			duration: DEFOCUS,
 			easing: EASE_DEFOCUS,
 			fill: 'forwards'
@@ -92,13 +133,13 @@
 		// the defocus has only just landed, or the navigation was dropped mid-cover
 		// before any swap. Either way the veil is moving, so carry that speed on.
 		const parked = landedAt !== null && performance.now() - landedAt > PARKED_AFTER;
-		const from = getComputedStyle(curtain).transform;
+		const from = position(curtain);
 		landedAt = null;
 		defocusing = false;
 		sweep?.cancel();
 		release();
 
-		const reveal = curtain.animate([{ transform: from }, { transform: REST_BELOW }], {
+		const reveal = curtain.animate([{ '--fs-p': from }, { '--fs-p': REST_BEYOND }], {
 			duration: REFOCUS,
 			easing: parked ? EASE_WASH : EASE_REFOCUS,
 			fill: 'forwards'
@@ -106,9 +147,9 @@
 		sweep = reveal;
 		reveal.addEventListener('finish', () => {
 			if (sweep !== reveal) return;
-			// Both rest states are off the screen, so dropping the hold is invisible — and
-			// it hands the curtain back to the stylesheet instead of leaving a finished
-			// animation (and its composited layer) behind.
+			// Both rest states leave the screen sharp, so dropping the hold is invisible —
+			// and it hands the curtain back to the stylesheet instead of leaving a finished
+			// animation (and its repainting mask) behind.
 			reveal.cancel();
 			sweep = undefined;
 			active = false;
@@ -140,6 +181,8 @@
 
 	$effect(() => release);
 </script>
+
+<svelte:window onclickcapture={recordClick} />
 
 <div class="focus-sweep" aria-hidden="true" style="visibility: {active ? 'visible' : 'hidden'}">
 	<div class="focus-sweep-window">
