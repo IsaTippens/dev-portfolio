@@ -18,7 +18,8 @@
 	 * swap itself waits in `onNavigate` until the veil has landed at full cover. That is
 	 * what keeps the wave whole: without the wait a prefetched route lands a few frames
 	 * in and the cover has to jump the rest of the way, which reads as a cut to blur.
-	 * The falling edge, once the new program is mounted, sends focus back in.
+	 * The falling edge, once the new program is mounted and has stopped shifting
+	 * (`settle`), sends focus back in.
 	 *
 	 * The defocus accelerates into cover and the refocus takes over at the same speed,
 	 * so the two legs read as a single pass. There is no pause at full cover and no
@@ -46,6 +47,11 @@
 	/** A click older than this did not start the navigation now beginning. */
 	const CLICK_FRESH = 1000;
 
+	/** Longest the veil holds for the new program to settle: a stalled image must not strand it. */
+	const SETTLE_MAX = 1500;
+	/** Consecutive frames without a resize before the layout counts as placed. */
+	const SETTLE_FRAMES = 3;
+
 	let curtain: HTMLDivElement | null = $state(null);
 
 	/** The stack is painted only while it has something to do. */
@@ -60,6 +66,8 @@
 	let waiting: Array<() => void> = [];
 	/** The last click, in viewport coordinates: the likely source of the next navigation. */
 	let lastClick: { x: number; y: number; at: number } | null = null;
+	/** Bumped on every navigation edge, so a settle that finishes late knows it is stale. */
+	let pass = 0;
 
 	function release() {
 		for (const resolve of waiting) resolve();
@@ -156,6 +164,47 @@
 		});
 	}
 
+	/**
+	 * Resolves once the new program has stopped moving: fonts loaded, on-screen images
+	 * decoded (the ones that push things around when they arrive), and then no element
+	 * in the viewport resizing for a few frames, which catches components that measure
+	 * and re-space themselves on mount. Capped, so a stalled request cannot hold the
+	 * screen out of focus.
+	 */
+	function settle(root: Element): Promise<void> {
+		return new Promise((resolve) => {
+			let observer: ResizeObserver | undefined;
+			let frame = 0;
+			const cap = setTimeout(done, SETTLE_MAX);
+			function done() {
+				clearTimeout(cap);
+				cancelAnimationFrame(frame);
+				observer?.disconnect();
+				resolve();
+			}
+
+			const onScreen = (el: Element) => {
+				const box = el.getBoundingClientRect();
+				return box.bottom >= 0 && box.top <= innerHeight;
+			};
+			const images = [...root.querySelectorAll('img')]
+				.filter((img) => !img.complete && onScreen(img))
+				.map((img) => img.decode().catch(() => {}));
+
+			Promise.all([document.fonts.ready, ...images]).then(() => {
+				let quiet = 0;
+				observer = new ResizeObserver(() => (quiet = 0));
+				observer.observe(root);
+				for (const el of root.querySelectorAll('*')) if (onScreen(el)) observer.observe(el);
+				const tick = () => {
+					if (++quiet >= SETTLE_FRAMES) return done();
+					frame = requestAnimationFrame(tick);
+				};
+				frame = requestAnimationFrame(tick);
+			});
+		});
+	}
+
 	// The swap waits for full cover. Never rejects: a navigation must not fail because
 	// a veil was interrupted, and `refocus` releases anyone still waiting.
 	onNavigate(() => {
@@ -171,9 +220,17 @@
 	$effect(() => {
 		if (covered === shown) return;
 		shown = covered;
+		const current = ++pass;
 		// A veil already out always comes back, even if motion was switched off under it.
+		// It holds at cover until the new program has finished placing itself, so the
+		// jolt of images and late layout lands behind the blur, not in front of the reader.
 		if (!covered) {
-			if (active) refocus();
+			if (!active) return;
+			const root = curtain?.closest('.focus-sweep')?.parentElement;
+			const ready = root && motionEnabled() ? settle(root) : Promise.resolve();
+			ready.then(() => {
+				if (current === pass) refocus();
+			});
 			return;
 		}
 		if (curtain && motionEnabled()) defocus();
