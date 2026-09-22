@@ -1,21 +1,29 @@
 <script lang="ts">
-	import { EASE_SNAP, EASE_WASH, MAX_DURATION, TICK, motionEnabled } from '$lib/motion';
+	import { onNavigate } from '$app/navigation';
+	import {
+		DEFOCUS,
+		EASE_DEFOCUS,
+		EASE_REFOCUS,
+		EASE_WASH,
+		REFOCUS,
+		motionEnabled
+	} from '$lib/motion';
 
 	/**
-	 * Focus pull for route changes.
+	 * Focus pull for route changes: one wave, top to bottom, with the route swap hidden
+	 * at its crest.
 	 *
-	 * `covered` is the navigation state: true from the moment a navigation starts, false
-	 * the moment the new program is mounted. On the rising edge the veil travels to a full
-	 * de-focus; on the falling edge whatever is left of that travel is landed on the spot —
-	 * the swap is already in the DOM by then and must never be painted through a
-	 * half-travelled veil — and focus sweeps back in.
+	 * `covered` is the navigation state, true from the moment a navigation starts. Its
+	 * rising edge sends the veil in, so a slow load is answered on the next frame. The
+	 * swap itself waits in `onNavigate` until the veil has landed at full cover. That is
+	 * what keeps the wave whole: without the wait a prefetched route lands a few frames
+	 * in and the cover has to jump the rest of the way, which reads as a cut to blur.
+	 * The falling edge, once the new program is mounted, sends focus back in.
 	 *
-	 * Both legs run over MAX_DURATION, and the asymmetry between them is deliberate: going
-	 * out of focus is a reflex and has to beat the swap to the screen, coming back is the
-	 * part that gets watched, so it travels the same distance on EASE_WASH at a speed the
-	 * eye can follow. Between them the veil holds at full cover for a tick, so the defocus
-	 * lands as a state rather than as the frame the cover jumped on. A veil that snapped
-	 * shut and snapped open again reads as a blink.
+	 * The defocus accelerates into cover and the refocus takes over at the same speed,
+	 * so the two legs read as a single pass. There is no pause at full cover and no
+	 * restart from rest. Only a slow load, where the veil has already parked and waited,
+	 * refocuses from standstill, on EASE_WASH.
 	 *
 	 * The veil itself (five staggered backdrop blurs, masked into one ramp) lives in
 	 * app.css under `.focus-sweep`, next to the rest of the display motion. Only the
@@ -28,8 +36,11 @@
 		visible screen sits inside its fully opaque band at -25%, so the veil only ever
 		moves downward and the whole transition reads as one pass of a focus wave.
 	*/
-	const COVER = { rest: 'translateY(-100%)', hold: 'translateY(-25%)' };
-	const REVEAL = { hold: 'translateY(-25%)', rest: 'translateY(50%)' };
+	const FULL_COVER = 'translateY(-25%)';
+	const REST_BELOW = 'translateY(50%)';
+
+	/** Parked at full cover for longer than this, the veil has stopped, not paused. */
+	const PARKED_AFTER = 50;
 
 	let curtain: HTMLDivElement | null = $state(null);
 
@@ -37,70 +48,97 @@
 	let active = $state(false);
 
 	let sweep: Animation | undefined;
-	/** Timer for the beat at full cover, between the swap and the reveal. */
-	let hold: ReturnType<typeof setTimeout> | undefined;
-	let shown = false;
+	/** True from the moment the veil heads for cover until focus starts coming back. */
+	let defocusing = false;
+	/** When the veil last reached full cover, or null while it is not there. */
+	let landedAt: number | null = null;
+	/** Navigations holding their swap until the veil lands. */
+	let waiting: Array<() => void> = [];
 
-	$effect(() => {
-		if (covered === shown) return;
-		shown = covered;
+	function release() {
+		for (const resolve of waiting) resolve();
+		waiting = [];
+	}
 
+	function defocus() {
+		if (!curtain) return;
+		// Already covering or covered: a second trigger for the same navigation.
+		if (defocusing) return;
+		defocusing = true;
+
+		// A navigation can arrive while the previous refocus is still running. Travel
+		// from where the curtain actually is: restarting from rest would flash the screen
+		// sharp for a frame.
+		const from = getComputedStyle(curtain).transform;
+		sweep?.cancel();
+		active = true;
+		const cover = curtain.animate([{ transform: from }, { transform: FULL_COVER }], {
+			duration: DEFOCUS,
+			easing: EASE_DEFOCUS,
+			fill: 'forwards'
+		});
+		sweep = cover;
+		cover.addEventListener('finish', () => {
+			if (sweep !== cover) return;
+			landedAt = performance.now();
+			release();
+		});
+	}
+
+	function refocus() {
+		if (!curtain) return;
+
+		// Parked at full cover through a slow load: pull focus from standstill. Otherwise
+		// the defocus has only just landed, or the navigation was dropped mid-cover
+		// before any swap. Either way the veil is moving, so carry that speed on.
+		const parked = landedAt !== null && performance.now() - landedAt > PARKED_AFTER;
+		const from = getComputedStyle(curtain).transform;
+		landedAt = null;
+		defocusing = false;
+		sweep?.cancel();
+		release();
+
+		const reveal = curtain.animate([{ transform: from }, { transform: REST_BELOW }], {
+			duration: REFOCUS,
+			easing: parked ? EASE_WASH : EASE_REFOCUS,
+			fill: 'forwards'
+		});
+		sweep = reveal;
+		reveal.addEventListener('finish', () => {
+			if (sweep !== reveal) return;
+			// Both rest states are off the screen, so dropping the hold is invisible — and
+			// it hands the curtain back to the stylesheet instead of leaving a finished
+			// animation (and its composited layer) behind.
+			reveal.cancel();
+			sweep = undefined;
+			active = false;
+		});
+	}
+
+	// The swap waits for full cover. Never rejects: a navigation must not fail because
+	// a veil was interrupted, and `refocus` releases anyone still waiting.
+	onNavigate(() => {
 		// No script, reduced motion, or `data-motion="off"`: the program changes, the
 		// screen does not.
 		if (!curtain || !motionEnabled()) return;
+		defocus();
+		if (landedAt !== null) return;
+		return new Promise<void>((resolve) => waiting.push(resolve));
+	});
 
-		if (covered) {
-			// A second navigation can arrive while the previous reveal is still running.
-			// Read where the curtain actually is before dropping the hold, and travel from
-			// there: restarting from `rest` would flash the screen sharp for a frame.
-			//
-			// EASE_SNAP here, not the wash: the cover only runs for as long as the load
-			// takes, and a route that lands early lands on whatever has been travelled. A
-			// front-loaded curve is already near full cover by then, so landing is not a
-			// visible jump; a wash curve would be caught at a light haze and snap.
-			const from = getComputedStyle(curtain).transform;
-			clearTimeout(hold);
-			sweep?.cancel();
-			active = true;
-			sweep = curtain.animate([{ transform: from }, { transform: COVER.hold }], {
-				duration: MAX_DURATION,
-				easing: EASE_SNAP,
-				fill: 'forwards'
-			});
+	let shown = false;
+	$effect(() => {
+		if (covered === shown) return;
+		shown = covered;
+		// A veil already out always comes back, even if motion was switched off under it.
+		if (!covered) {
+			if (active) refocus();
 			return;
 		}
-
-		// Land the cover before revealing: a veil still on its way in would show the swap
-		// through the part of the screen it has not reached yet.
-		if (sweep?.playState === 'running' || sweep?.playState === 'paused') sweep.finish();
-
-		// A tick of hold at full cover first. A route that lands early would otherwise be
-		// surrounded by nothing but the single frame the cover jumped on, and the blur would
-		// never read as a state the machine was in.
-		clearTimeout(hold);
-		hold = setTimeout(() => {
-			if (!curtain) return;
-
-			// Same distance as the cover, at a speed you can follow: the front crosses the
-			// screen over roughly two thirds of the run rather than most of it in the first
-			// few frames.
-			const reveal = curtain.animate([{ transform: REVEAL.hold }, { transform: REVEAL.rest }], {
-				duration: MAX_DURATION,
-				easing: EASE_WASH,
-				fill: 'forwards'
-			});
-			sweep = reveal;
-			reveal.addEventListener('finish', () => {
-				if (sweep !== reveal) return;
-				// Both rest states are off the screen, so dropping the hold is invisible — and
-				// it hands the curtain back to the stylesheet instead of leaving a finished
-				// animation (and its composited layer) behind.
-				reveal.cancel();
-				sweep = undefined;
-				active = false;
-			});
-		}, TICK);
+		if (curtain && motionEnabled()) defocus();
 	});
+
+	$effect(() => release);
 </script>
 
 <div class="focus-sweep" aria-hidden="true" style="visibility: {active ? 'visible' : 'hidden'}">
