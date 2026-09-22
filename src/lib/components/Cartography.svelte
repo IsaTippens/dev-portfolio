@@ -7,25 +7,65 @@
 	import { reducedMotion, EASE_SNAP, PANEL } from '$lib/motion';
 
 	/**
-	 * CARTOGRAPHY_CPT — route survey, Cape Town to Cape Point.
+	 * CARTOGRAPHY_CPT — road survey radiating out of Cape Town.
 	 *
 	 * Coastline is Natural Earth 1:10m land, projected equirectangular about 34°S
 	 * (x = Δlon·cos 34°·380, y = −Δlat·380, origin 18.20°E 33.68°S), so the plate
 	 * reads as the real peninsula and the scale bar is honest.
 	 *
-	 * The route line is scrubbed by scroll position, not played on a clock: it draws as
-	 * the module crosses the viewport and un-draws when the visitor scrolls back up.
-	 * During the power-on sequence the same line is drawn at a fixed duration, so the
-	 * map comes up already on the table.
+	 * The road network is scrubbed by scroll position, not played on a clock: it grows
+	 * out of the city as the module crosses the viewport and pulls back in when the
+	 * visitor scrolls up. During the power-on sequence the same growth runs at a fixed
+	 * duration, so the map comes up already on the table.
 	 */
 	let map: SVGSVGElement | null = $state(null);
-	let route: SVGPathElement | null = $state(null);
-	let head: SVGGElement | null = $state(null);
-	let route_pc = $state(0);
+	let net_km = $state(0);
+
+	/**
+	 * Main routes out of the city, waypoints hand-placed from the real alignments.
+	 * `from` names the road this one branches off at its far end; roots start in
+	 * the CBD. Growth is by network distance, so every road front advances at the
+	 * same speed and branches only start once their parent reaches the junction.
+	 */
+	type Road = { name: string; major: boolean; from: string | null; d: string };
+	const ROADS: Road[] = [
+		{ name: 'N1', major: true, from: null, d: 'M 70.9,92 C 73.2,90.9 80.6,87.3 85.1,85.5 C 89.5,83.7 92.9,81.7 97.7,80.9 C 102.4,80.2 107.1,80.6 113.4,80.9 C 119.7,81.3 128.1,84.4 135.5,82.8 C 142.8,81.3 149.6,75.4 157.5,71.4 C 165.4,67.5 174.3,62.6 182.7,58.9 C 191.1,55.2 200,54.2 207.9,49.4 C 215.8,44.7 223.1,36.1 230,30.4 C 236.8,24.7 241,19.6 248.9,15.2 C 256.8,10.8 268.3,7.6 277.2,3.8 C 286.2,-0 298.2,-5.7 302.4,-7.6' },
+		{ name: 'N2', major: true, from: null, d: 'M 70.9,92 C 73.2,93.1 79.5,96.7 85.1,98.8 C 90.6,100.9 97.1,102.3 104,104.5 C 110.8,106.7 118.1,108.6 126,112.1 C 133.9,115.6 142.8,121 151.2,125.4 C 159.6,129.8 168.5,134.9 176.4,138.7 C 184.3,142.5 191.1,144.1 198.5,148.2 C 205.8,152.3 214.7,159 220.5,163.4 C 226.3,167.8 226.8,172 233.1,174.8 C 239.4,177.7 248.9,177.3 258.3,180.5 C 267.8,183.7 279.9,189 289.8,193.8 C 299.8,198.5 306.1,204.6 318.2,209 C 330.3,213.4 354.9,218.5 362.3,220.4' },
+		{ name: 'N7', major: true, from: null, d: 'M 75.6,88.2 C 78.2,86.4 86.6,81.5 91.4,77.9 C 96.1,74.3 100.3,71.9 104,66.5 C 107.6,61.1 110.3,52.9 113.4,45.6 C 116.6,38.3 119.7,31.7 122.9,22.8 C 126,13.9 130.7,-2.5 132.3,-7.6' },
+		{ name: 'M3', major: false, from: null, d: 'M 69.3,95 C 70.9,96.6 76.6,100.7 78.8,104.5 C 81,108.3 81.9,111.8 82.5,117.8 C 83.2,123.8 82.4,133.6 82.5,140.6 C 82.7,147.6 83.3,156.4 83.5,159.6' },
+		{ name: 'M6', major: false, from: null, d: 'M 67.7,93.1 C 65.9,94.7 59.9,98.5 56.7,102.6 C 53.6,106.7 49.6,112.7 48.8,117.8 C 48,122.9 50.9,129.2 52,133 C 53,136.8 55.1,137.1 55.1,140.6 C 55.1,144.1 52.2,149.8 52,153.9 C 51.7,158 50.1,162.1 53.6,165.3 C 57,168.5 69.3,171.6 72.5,172.9' },
+		{ name: 'R27', major: false, from: null, d: 'M 80.3,89.3 C 82.7,86.4 92.3,77.6 94.5,72.2 C 96.7,66.8 94.8,62.7 93.6,57 C 92.4,51.3 89.5,44.3 87.3,38 C 85.1,31.7 82.3,26.6 80.3,19 C 78.4,11.4 76.4,-3.2 75.6,-7.6' },
+		{ name: 'M4', major: false, from: 'M3', d: 'M 83.5,159.6 C 81.6,161.8 74,167.2 72.5,172.9 C 70.9,178.6 72.7,186.5 74,193.8 C 75.3,201.1 79.3,209.6 80.3,216.6 C 81.4,223.6 78.9,229.6 80.3,235.6 C 81.8,241.6 87.4,249.8 88.8,252.7' },
+		{ name: 'R310', major: false, from: 'M3', d: 'M 83.5,159.6 C 85.8,158 92.7,152.4 97.7,150.1 C 102.6,147.8 106.1,146.5 113.4,145.5 C 120.8,144.6 132.3,144.1 141.8,144.4 C 151.2,144.7 162.2,145.9 170.1,147.4 C 178,149 184.8,151.6 189,153.9 C 193.2,156.2 194.3,160.2 195.3,161.5' },
+		{ name: 'R44', major: false, from: 'R310', d: 'M 195.3,161.5 C 197.7,164.7 207.9,173.9 209.5,180.5 C 211.1,187.2 206.6,192.9 204.8,201.4 C 202.9,210 197.4,223.2 198.5,231.8 C 199.5,240.3 203.7,249.8 211.1,252.7 C 218.4,255.5 233.7,250.2 242.6,248.9 C 251.5,247.6 261,245.7 264.6,245.1' },
+		{ name: 'R43', major: false, from: 'N2', d: 'M 318.2,209 C 317.1,215.3 314,237.2 311.9,247 C 309.8,256.8 303.2,262.7 305.6,267.9 C 307.9,273.1 322.6,276.4 326.1,278.2' },
+	];
+
+	/** Kilometres per viewBox unit: 1° of latitude is 380 units. */
+	const KM_PER_UNIT = 111.32 / 380;
+
+	const road_els: SVGPathElement[] = [];
+	/** Per road: network distance at which it starts, and its own length. */
+	let spans: { start: number; length: number }[] = [];
+	let net_length = 0;
+
+	function measure() {
+		const by_name = new Map<string, { start: number; length: number }>();
+		spans = ROADS.map((road, i) => {
+			const parent = road.from ? by_name.get(road.from) : undefined;
+			const span = {
+				start: parent ? parent.start + parent.length : 0,
+				length: road_els[i].getTotalLength()
+			};
+			by_name.set(road.name, span);
+			return span;
+		});
+		net_length = Math.max(...spans.map((s) => s.start + s.length));
+	}
 
 	/**
 	 * Cursor parallax. The survey is a shallow stack of depth layers — grid at the
-	 * back, then terrain, then annotations, with the traced route nearest. Hovering
+	 * back, then terrain, then annotations, with the road network nearest. Hovering
 	 * the plate zooms every layer by its own amount, and the cursor pulls them
 	 * sideways by that same depth, so the map reads as a stack rather than a print.
 	 *
@@ -109,53 +149,67 @@
 
 	onDestroy(() => hover?.cancel());
 
-	/** Fraction of the route drawn, 0 → 1. */
+	/** Grow the network to fraction `p` of its full reach, 0 → 1. */
 	function paint(p: number) {
-		if (!route) return;
-		const value = Math.max(0, Math.min(1, p));
-		route.style.strokeDashoffset = String(1 - value);
-		route_pc = Math.round(value * 100);
-
-		if (head) {
-			const total = route.getTotalLength();
-			const point = route.getPointAtLength(value * total);
-			head.setAttribute('transform', `translate(${point.x} ${point.y})`);
-			head.style.opacity = value > 0.001 && value < 0.999 ? '1' : '0';
-		}
+		const reach = Math.max(0, Math.min(1, p)) * net_length;
+		let drawn = 0;
+		spans.forEach(({ start, length }, i) => {
+			const d = Math.max(0, Math.min(length, reach - start));
+			road_els[i].style.strokeDashoffset = String(1 - d / length);
+			drawn += d;
+		});
+		net_km = Math.round(drawn * KM_PER_UNIT);
 	}
 
 	onMount(() => {
-		if (!route || !map) return;
+		if (!map) return;
+		measure();
 
 		if (reducedMotion()) {
 			paint(1);
 			return;
 		}
 
-		// The hero no longer pins, so there is no larger track to read: the scroll
-		// position comes from the map's own travel through the viewport.
+		/**
+		 * Growth follows the map's own travel: from where it first sits in view
+		 * (its load position, or the bottom edge if it loads below the fold) up to
+		 * 10% from the top of the viewport. The plate sits high on the page, so the
+		 * generic viewport-crossing progress is already past half at load and left
+		 * almost nothing to scrub. `REST` keeps the inner-city roads on the plate at
+		 * the top of the page.
+		 */
+		const REST = 0.2;
 		const source = map;
+		const reach = () => {
+			const vh = window.innerHeight;
+			const top = source.getBoundingClientRect().top;
+			const from = Math.min(top + window.scrollY, vh);
+			const to = vh * 0.1;
+			const travel = from > to ? (from - top) / (from - to) : 1;
+			return REST + (1 - REST) * Math.max(0, Math.min(1, travel));
+		};
 		const booting = document.documentElement.dataset.boot === 'armed';
 
-		// Fixed draw during power-on; the scroll listener takes over on first movement.
+		// Grow from the city to the scroll position's reach during power-on; the
+		// scroll listener takes over on first movement.
 		const proxy = { p: 0 };
 		const intro = animate(proxy, {
-			p: 1,
-			duration: 520,
+			p: reach(),
+			duration: 900,
 			delay: booting ? 240 : 0,
 			ease: EASE_SNAP,
 			onUpdate: () => paint(proxy.p)
 		});
 
-		let scrubbed = false;
-		const stop = onScrollProgress(source, (p) => {
-			if (!scrubbed) {
-				// The first real scroll read cancels the boot draw and takes over.
-				intro.cancel();
-				scrubbed = true;
-			}
-			paint((p - 0.1) / 0.55);
+		// `onScrollProgress` reports once synchronously on subscribe; only reads
+		// after that are real movement.
+		let live = false;
+		const stop = onScrollProgress(source, () => {
+			if (!live) return;
+			intro.cancel();
+			paint(reach());
 		});
+		live = true;
 
 		return () => {
 			stop();
@@ -184,7 +238,7 @@
 			preserveAspectRatio="xMidYMid meet"
 			class="absolute inset-0 h-full w-full"
 			role="img"
-			aria-label="Route survey of the Cape Peninsula, Cape Town to Cape Point"
+			aria-label="Survey of the Cape Peninsula and the main roads out of Cape Town"
 		>
 			<defs>
 				<pattern id="cpt-hatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -298,28 +352,19 @@
 				<path d="M 142.7,66.9 C 142.4,66.5 142.1,66.2 141.8,65.9 C 141.4,65.6 141.1,65.3 140.6,65.1 C 140.2,64.9 139.7,64.8 139.1,64.8 C 138.6,64.7 138,64.7 137.4,64.7 C 136.8,64.8 136,64.8 135.4,65.1 C 134.8,65.4 134.3,65.9 133.9,66.4 C 133.6,66.9 133.6,67.5 133.4,68 C 133.3,68.5 133.2,69 133.1,69.5 C 133,70 132.9,70.5 133.1,71 C 133.2,71.4 133.6,71.8 134.1,72.1 C 134.5,72.3 135,72.5 135.5,72.6 C 136,72.8 136.5,73 137.1,73 C 137.6,73 138.2,73 138.8,72.8 C 139.4,72.7 139.9,72.4 140.4,72.1 C 141,71.8 141.6,71.5 142.1,71.2 C 142.6,70.8 143.3,70.3 143.5,69.8 C 143.8,69.3 143.8,68.6 143.7,68.1 C 143.5,67.6 143,67.3 142.7,66.9 Z" />
 			</g>
 
-			<!-- The traced route (scrubbed by scroll) and its head, on the near plane -->
-			<g bind:this={near_el}>
-				<path
-					bind:this={route}
-					id="cpt-route"
-					d="M 70.6,93.1 C 72.7,95.6 81.2,101.6 83.5,108.3 C 85.8,115 84.6,124.8 84.4,133 C 84.3,141.2 84.1,151 82.5,157.7 C 81,164.3 75.9,166.9 75,172.9 C 74.1,178.9 76.1,186.8 77.2,193.8 C 78.2,200.8 80.8,207.7 81.3,214.7 C 81.8,221.7 79.1,229.3 80.3,235.6 C 81.6,241.9 87.4,249.8 88.8,252.7"
-					fill="none"
-					stroke="var(--accent)"
-					stroke-width="1.75"
-					stroke-linecap="round"
-					pathLength="1"
-					stroke-dasharray="1"
-					stroke-dashoffset="1"
-				/>
-				<!-- Route head: crosshair sitting at the current end of the trace -->
-				<g bind:this={head} class="text-accent" fill="none" stroke="currentColor" stroke-width="1" opacity="0">
-					<line x1="-5" y1="0" x2="-2" y2="0" />
-					<line x1="2" y1="0" x2="5" y2="0" />
-					<line x1="0" y1="-5" x2="0" y2="-2" />
-					<line x1="0" y1="2" x2="0" y2="5" />
-					<circle cx="0" cy="0" r="1.2" fill="currentColor" stroke="none" />
-				</g>
+			<!-- The road network (scrubbed by scroll), on the near plane -->
+			<g bind:this={near_el} fill="none" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round">
+				{#each ROADS as road, i (road.name)}
+					<path
+						bind:this={road_els[i]}
+						d={road.d}
+						stroke-width={road.major ? 1.75 : 1}
+						opacity={road.major ? 1 : 0.8}
+						pathLength="1"
+						stroke-dasharray="1"
+						stroke-dashoffset="1"
+					/>
+				{/each}
 			</g>
 
 			<!-- Water -->
@@ -352,6 +397,9 @@
 
 				<circle cx="88.8" cy="252.7" r="1.8" />
 				<text x="93.8" y="255.7">CAPE POINT</text>
+
+				<circle cx="134.8" cy="96.1" r="1.8" />
+				<text x="139.3" y="102.1">UWC</text>
 
 				<circle cx="326.1" cy="278.2" r="1.8" />
 				<text x="322.1" y="274.2" text-anchor="end">HERMANUS</text>
@@ -388,7 +436,7 @@
 		>
 			<dt>LAT/LON</dt><dd class="text-ink">33.9249°S 18.4241°E</dd>
 			<dt>DATUM</dt><dd class="text-ink">WGS84 · TM</dd>
-			<dt>TRACE</dt><dd class="text-ink"><Readout value={route_pc} pad={3} suffix="%" /></dd>
+			<dt>ROADS</dt><dd class="text-ink"><Readout value={net_km} pad={3} suffix=" KM" /></dd>
 		</dl>
 	</div>
 </Panel>
