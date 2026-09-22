@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
-	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
+	import { page, navigating } from '$app/state';
 	import { onMount } from 'svelte';
 
 	import { THEMES, theme } from '$lib/stores/theme';
@@ -9,6 +9,7 @@
 	import { motionEnabled } from '$lib/motion';
 
 	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
+	import FocusSweep from '$lib/components/FocusSweep.svelte';
 	import ModeDial from '$lib/components/ModeDial.svelte';
 	import Panel from '$lib/components/Panel.svelte';
 	import Readout from '$lib/components/Readout.svelte';
@@ -27,7 +28,6 @@
 	let fps = $state(60);
 	let scroll_pc = $state(0);
 	let keys_open = $state(false);
-	let blackout = $state(false);
 	let plate_blink = $state(false);
 
 	/* ── Battery ─────────────────────────────────────────────────────────── */
@@ -46,22 +46,10 @@
 
 	/* ── Program swap ────────────────────────────────────────────────────── */
 
-	// The screen drops out when a navigation starts and blinks back in when the new
-	// route renders. Navigation itself is never intercepted, so back/forward behave
-	// exactly like a link click. The timer guarantees a cancelled navigation can never
-	// leave the content area dark.
-	let swap_timer: ReturnType<typeof setTimeout> | undefined;
-
-	beforeNavigate(() => {
-		blackout = true;
-		clearTimeout(swap_timer);
-		swap_timer = setTimeout(() => (blackout = false), 700);
-	});
-
-	afterNavigate(() => {
-		clearTimeout(swap_timer);
-		blackout = false;
-	});
+	// The screen goes out of focus for the length of the navigation and refocuses on the
+	// new program. Navigation itself is never intercepted, so back/forward behave exactly
+	// like a link click, and the release is keyed off the router's own state rather than a
+	// timer: a cancelled navigation clears it, so the sweep can never be left mid-travel.
 
 	/* ── Keyboard ────────────────────────────────────────────────────────── */
 
@@ -276,13 +264,17 @@
 			</button>
 		</div>
 
-		<!-- Main viewport. Keyed on the route so a navigation reads as a program swap. -->
-		<div class="flex-auto p-4 sm:p-6 {blackout ? 'screen-out' : ''}">
+		<!-- Main viewport. Keyed on the route so a navigation reads as a program swap, and
+		     isolated so the modules inside it own their z-indexes: the focus veil has to
+		     paint over the content, not fight it. -->
+		<div class="relative flex-auto p-4 sm:p-6">
 			{#key page.url.pathname}
-				<div class="screen-in">
+				<div class="isolate">
 					{@render children()}
 				</div>
 			{/key}
+			<!-- `navigating` is a bag of getters, not a nullable object: `.to` is the live one. -->
+			<FocusSweep covered={navigating.to !== null} />
 		</div>
 
 		<!-- Bottom Technical Status Bar -->

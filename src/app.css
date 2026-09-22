@@ -815,37 +815,97 @@ hr {
 }
 
 /*
-	Route change = program change. The screen blinks in, stepped, never cross-faded.
-	`steps(3, end)` gives the 0 → dark → lit cadence of a display coming up.
+	Route change = program change. Never a cut, never a cross-fade: the display loses
+	focus, the new program seats itself behind the blur, and focus sweeps back in.
+
+	One `backdrop-filter` is a band with a visible edge. Five, each masked to its own
+	vertical ramp and staggered, composite into a gradient running from sharp to
+	unreadable — at full cover the stack is sqrt(1 + 4 + 16 + 49 + 144) ≈ 15px of
+	defocus, well past legible, which is what lets the program swap behind it unseen.
+
+	The stack rides on `.focus-sweep-curtain`, two windows tall, and only ever travels
+	downward. In its own coordinates (`transform` is driven by FocusSweep.svelte):
+
+	  -100%  parked above the screen
+	   -25%  the screen sits inside the fully opaque band: uniform cover, swap happens
+	    50%  parked below the screen
+
+	Both rest states are off the screen, so the veil is in play only mid-navigation. Mask
+	stops are percentages of the curtain, mirrored top and bottom: the ramp that wipes the
+	screen in is the ramp that wipes it back out.
 */
-@keyframes screen-in {
-	0% {
-		opacity: 0;
-	}
-	50% {
-		opacity: 0.25;
-	}
-	100% {
-		opacity: 1;
-	}
+.focus-sweep {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
 }
 
-.screen-in {
-	animation: screen-in 140ms steps(3, end) both;
+/*
+	One screen tall, not one page tall: the window sticks to the scrollport and is clamped
+	to the screen, so a long page sweeps the same visible band a short one does and the
+	blur layers never grow past a viewport. `overflow: hidden` lives here rather than on
+	the shell — an overflow ancestor is a scroll container, and a sticky element inside one
+	sticks to it instead of to the page.
+*/
+.focus-sweep-window {
+	position: sticky;
+	top: 0;
+	height: 100vh;
+	height: 100dvh;
+	max-height: 100%;
+	overflow: hidden;
 }
 
-/* The reverse: the current program drops out. */
-@keyframes screen-out {
-	from {
-		opacity: 1;
-	}
-	to {
-		opacity: 0;
-	}
+.focus-sweep-curtain {
+	position: absolute;
+	inset: 0 0 auto;
+	height: 200%;
+	transform: translateY(-100%);
 }
 
-.screen-out {
-	animation: screen-out 90ms steps(3, end) both;
+.focus-sweep-curtain > div {
+	position: absolute;
+	inset: 0;
+	backdrop-filter: blur(var(--fs-blur));
+	mask-image: linear-gradient(
+		180deg,
+		transparent var(--fs-in),
+		#000 var(--fs-lock),
+		#000 calc(100% - var(--fs-lock)),
+		transparent calc(100% - var(--fs-in))
+	);
+}
+
+/* Weakest stop first: it arrives under the others and clears ahead of them on the way out. */
+.focus-sweep-curtain > div:nth-child(1) {
+	--fs-blur: 1px;
+	--fs-in: 4%;
+	--fs-lock: 14%;
+}
+
+.focus-sweep-curtain > div:nth-child(2) {
+	--fs-blur: 2px;
+	--fs-in: 5%;
+	--fs-lock: 17%;
+}
+
+.focus-sweep-curtain > div:nth-child(3) {
+	--fs-blur: 4px;
+	--fs-in: 6%;
+	--fs-lock: 20%;
+}
+
+.focus-sweep-curtain > div:nth-child(4) {
+	--fs-blur: 7px;
+	--fs-in: 7%;
+	--fs-lock: 23%;
+}
+
+.focus-sweep-curtain > div:nth-child(5) {
+	--fs-blur: 12px;
+	--fs-in: 7%;
+	--fs-lock: 25%;
 }
 
 /*
