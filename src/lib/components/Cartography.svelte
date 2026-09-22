@@ -42,10 +42,9 @@
 			return;
 		}
 
-		// Inside the pinned hero the map never enters or leaves the viewport, so the
-		// scroll reading comes from the hero track it sits in; standalone, it is the
-		// map's own travel that counts.
-		const source = map.closest('[data-pin-track]') ?? map;
+		// The hero no longer pins, so there is no larger track to read: the scroll
+		// position comes from the map's own travel through the viewport.
+		const source = map;
 		const booting = document.documentElement.dataset.boot === 'armed';
 
 		// Fixed draw during power-on; the scroll listener takes over on first movement.

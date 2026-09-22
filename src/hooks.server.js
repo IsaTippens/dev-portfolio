@@ -1,8 +1,6 @@
-import { THEMES, THEME_IDS } from '$lib/stores/theme';
+import { THEMES, THEME_IDS, OS_PLATES } from '$lib/stores/theme';
 
 const colors = Object.fromEntries(THEMES.map((t) => [t.id, t.color]));
-const default_light = 'light';
-const default_dark = 'dark';
 
 /**
  * Expands `%theme_boot%` in app.html into the plate's <meta name="theme-color"> plus an
@@ -18,7 +16,7 @@ const default_dark = 'dark';
  * `js` marks that scripts are alive, which is also what the panel border draw keys off.
  */
 function theme_boot() {
-	return `<meta name="theme-color" content="${colors[default_light]}" />
+	return `<meta name="theme-color" content="${colors[OS_PLATES.light]}" />
 		<script>
 			(() => {
 				const ids = ${JSON.stringify(THEME_IDS)};
@@ -32,8 +30,8 @@ function theme_boot() {
 				} catch (e) {}
 				const os_dark = matchMedia('(prefers-color-scheme: dark)').matches;
 				const id = ids.includes(stored) ? stored : os_dark ? ${JSON.stringify(
-					default_dark
-				)} : ${JSON.stringify(default_light)};
+					OS_PLATES.dark
+				)} : ${JSON.stringify(OS_PLATES.light)};
 
 				root.dataset.theme = id;
 				root.classList.add('js');

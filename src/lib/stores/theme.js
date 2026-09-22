@@ -46,30 +46,52 @@ export const THEMES = [
 
 export const THEME_IDS = THEMES.map((t) => t.id);
 
-const OS_LIGHT = 'light';
-const OS_DARK = 'dark';
-
-/** Plates that should track a dark OS preference. */
-const OS_PREFERENCE = { [OS_LIGHT]: 'light', [OS_DARK]: 'dark' };
+/**
+ * Plates the OS preference maps to until the operator picks one: a light OS gets
+ * the PS1 plate, a dark OS gets DARK. Exported so the pre-paint boot script in
+ * `hooks.server.js` reads the same mapping.
+ */
+export const OS_PLATES = { light: 'ps1', dark: 'dark' };
 
 const stored = browser ? localStorage.getItem('theme') : null;
-const prefers_dark =
-	browser && typeof window.matchMedia === 'function'
-		? window.matchMedia('(prefers-color-scheme: dark)').matches
-		: false;
+const manual_pick = typeof stored === 'string' && THEME_IDS.includes(stored) ? stored : null;
 
-const initial =
-	(typeof stored === 'string' && THEME_IDS.includes(stored) ? stored : null) ?? OS_PREFERENCE[prefers_dark ? OS_DARK : OS_LIGHT];
+/** The OS plate right now: ps1 under a light scheme, dark under a dark one. */
+const os_plate = () =>
+	browser &&
+	typeof window.matchMedia === 'function' &&
+	window.matchMedia('(prefers-color-scheme: dark)').matches
+		? OS_PLATES.dark
+		: OS_PLATES.light;
 
-/** Current face plate id. Persisted; defaults to the OS preference on first visit. */
-export const theme = writable(initial);
+let manual = manual_pick !== null;
 
-if (browser) {
-	theme.subscribe((id) => {
+const { subscribe, set } = writable(manual_pick ?? os_plate());
+
+/**
+ * Current face plate id. Follows the OS scheme — at boot and live, on
+ * `prefers-color-scheme` change — until the operator turns the MODE dial. A dial
+ * pick is persisted and ends OS following (clearing localStorage returns the
+ * device to automatic).
+ */
+export const theme = {
+	subscribe,
+	/** Operator pick: persist it and stop following the OS. */
+	/** @param {string} id */
+	set(id) {
+		manual = true;
 		try {
 			localStorage.setItem('theme', id);
 		} catch {
 			/* private mode: the plate just won't persist */
 		}
+		set(id);
+	}
+};
+
+if (browser && typeof window.matchMedia === 'function') {
+	const scheme = window.matchMedia('(prefers-color-scheme: dark)');
+	scheme.addEventListener('change', () => {
+		if (!manual) set(os_plate());
 	});
 }

@@ -1,15 +1,13 @@
 <script lang="ts">
-	import Po100 from '$lib/components/Po100.svelte';
+	import ProfilePhoto from '$lib/components/ProfilePhoto.svelte';
 	import Cartography from '$lib/components/Cartography.svelte';
 	import Panel from '$lib/components/Panel.svelte';
 
 	/**
-	 * The hero row: identity, survey plate and the portrait engine.
-	 *
-	 * This is the device's front panel — it is the module the homepage pins while the
-	 * PO-100 walks through its display modes.
+	 * The hero row: identity, survey plate and the portrait engine — the device's
+	 * front panel.
 	 */
-	let { data, scroll_mode = null } = $props<{ data: any; scroll_mode?: any }>();
+	let { data } = $props<{ data: any }>();
 
 	const FIELDS = $derived([
 		{ label: 'LOCATION', value: 'Cape Town, South Africa' },
@@ -37,6 +35,6 @@
 
 	<!-- Portrait engine -->
 	<div class="mx-auto flex w-full max-w-[220px] shrink-0 items-center justify-center md:w-48 md:max-w-none">
-		<Po100 {scroll_mode} />
+		<ProfilePhoto />
 	</div>
 </div>

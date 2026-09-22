@@ -7,10 +7,10 @@ import { clamp } from 'animejs';
  * desirable: a tape counter counts down.
  *
  * All reads happen inside one rAF-throttled scroll/resize listener shared by every
- * subscriber, so N scrubbed modules cost one pass per frame, not N listeners. Two
- * modules may watch the same element (the homepage's mode cycle and the cartography
- * plate both read the hero track), so subscriptions are keyed by callback, not by
- * element — keying by element meant the second subscriber silently replaced the first.
+ * subscriber, so N scrubbed modules cost one pass per frame, not N listeners.
+ * Subscriptions are keyed by callback, not by element — two modules may watch the
+ * same element, and keying by element meant the second subscriber silently
+ * replaced the first.
  */
 
 /** @type {Map<(p: number) => void, Element>} */

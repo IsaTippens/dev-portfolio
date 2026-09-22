@@ -3,46 +3,54 @@
 	import Readout from '$lib/components/Readout.svelte';
 	import { isCharging, batteryLevel } from '$lib/stores/battery';
 	import { reducedMotion } from '$lib/motion';
-	import {
-		PO_MODES,
-		po,
-		poApply,
-		poResetKnob,
-		poScrollMode
-	} from '$lib/stores/po100.svelte.js';
 
-	export type PoMode = 'LCD' | 'CRT' | 'GAMEBOY' | 'DOT_MATRIX' | 'NORMAL';
-	const MODES = PO_MODES;
+	type PoMode = 'LCD' | 'CRT' | 'GAMEBOY' | 'DOT_MATRIX' | 'NORMAL';
 
 	/**
-	 * The 2D control panel. The device state lives in `$lib/stores/po100.svelte.js`,
-	 * shared with the 3D view that can take this slot over — this module is the
-	 * interface, the 3D model is the object being controlled.
-	 *
-	 * `scroll_mode` is driven by the hero's pinned scroll (Task 4.5). A manual button
-	 * press wins for the rest of the visit: once the operator has touched the panel the
-	 * scroll no longer drives it, because a machine that fights its operator is broken.
+	 * The display's own phosphor colours. These are the tube, not the interface, so they
+	 * are deliberately faceplate-independent — the case around them changes with the
+	 * theme, the phosphor inside does not, exactly like real hardware.
 	 */
-	let {
-		scroll_mode = null,
-		covered = false
-	}: { scroll_mode?: PoMode | null; covered?: boolean } = $props();
+	const MODES: { id: PoMode; key: string; hud: string; preset: [number, number, number] }[] = [
+		{ id: 'LCD', key: 'LCD', hud: '#00ff66', preset: [43.2, -28.8, 90] },
+		{ id: 'CRT', key: 'CRT', hud: '#33ccff', preset: [-90, 57.6, -43.2] },
+		{ id: 'GAMEBOY', key: 'GB', hud: '#8bac0f', preset: [180, 118.8, 28.8] },
+		{ id: 'DOT_MATRIX', key: 'DM', hud: '#ff5500', preset: [-28.8, -90, 118.8] },
+		{ id: 'NORMAL', key: 'NOR', hud: '#ffffff', preset: [0, 0, 0] }
+	];
+
+	const NORMAL = MODES.find((m) => m.id === 'NORMAL')!;
+
+	// The panel boots on the untouched photo; modes change only from the keys.
+	let mode = $state<PoMode>('NORMAL');
+	let freq = $state(NORMAL.preset[0]);
+	let phase = $state(NORMAL.preset[1]);
+	let rgb = $state(NORMAL.preset[2]);
 
 	let screen: HTMLDivElement | null = $state(null);
 
-	const active = $derived(MODES.find((m) => m.id === po.mode) ?? MODES[0]);
+	const active = $derived(MODES.find((m) => m.id === mode) ?? MODES[0]);
 	const readout = (v: number) => Math.round((v + 180) / 3.6);
 
-	// Scroll-driven mode cycling, unless the operator has taken the panel.
-	$effect(() => {
-		poScrollMode(scroll_mode);
-	});
+	function apply(id: PoMode) {
+		if (id === mode) return;
+		mode = id;
+		const preset = MODES.find((m) => m.id === id)?.preset;
+		if (preset) [freq, phase, rgb] = preset;
+	}
+
+	function reset(knob: 'freq' | 'phase' | 'rgb') {
+		const [f, p, r] = active.preset;
+		if (knob === 'freq') freq = f;
+		else if (knob === 'phase') phase = p;
+		else rgb = r;
+	}
 
 	// A mode change is a switch, not a fade: the tube blinks for a frame and comes back
 	// on the new setting.
 	let first_run = true;
 	$effect(() => {
-		void po.mode;
+		void mode;
 		if (first_run) {
 			first_run = false;
 			return;
@@ -55,15 +63,15 @@
 	});
 
 	const filter_style = $derived(
-		po.mode === 'LCD'
-			? `grayscale(100%) contrast(${150 + po.phase}%) brightness(0.8) sepia(100%) hue-rotate(${80 + po.freq}deg) saturate(${200 + po.rgb}%)`
-			: po.mode === 'CRT'
-				? `contrast(${120 + po.freq * 0.5}%) brightness(${1.1 + po.phase * 0.002}) saturate(${130 + po.rgb * 0.5}%) sepia(20%)`
-				: po.mode === 'GAMEBOY'
-					? `grayscale(100%) contrast(${200 + po.phase * 0.5}%) brightness(0.9) sepia(100%) hue-rotate(${50 + po.freq}deg) saturate(${300 + po.rgb}%)`
-					: po.mode === 'DOT_MATRIX'
-						? `grayscale(100%) contrast(${400 + po.phase * 1.5}%) sepia(100%) hue-rotate(${-25 + po.freq}deg) saturate(400%) brightness(${0.7 + po.rgb * 0.002})`
-						: `grayscale(${Math.max(0, Math.min(100, 50 - po.freq / 3.6))}%) contrast(${100 + po.phase * 0.5}%) opacity(${Math.max(0.2, Math.min(1, 0.8 + po.rgb * 0.001))})`
+		mode === 'LCD'
+			? `grayscale(100%) contrast(${150 + phase}%) brightness(0.8) sepia(100%) hue-rotate(${80 + freq}deg) saturate(${200 + rgb}%)`
+			: mode === 'CRT'
+				? `contrast(${120 + freq * 0.5}%) brightness(${1.1 + phase * 0.002}) saturate(${130 + rgb * 0.5}%) sepia(20%)`
+				: mode === 'GAMEBOY'
+					? `grayscale(100%) contrast(${200 + phase * 0.5}%) brightness(0.9) sepia(100%) hue-rotate(${50 + freq}deg) saturate(${300 + rgb}%)`
+					: mode === 'DOT_MATRIX'
+						? `grayscale(100%) contrast(${400 + phase * 1.5}%) sepia(100%) hue-rotate(${-25 + freq}deg) saturate(400%) brightness(${0.7 + rgb * 0.002})`
+						: `grayscale(${Math.max(0, Math.min(100, 50 - freq / 3.6))}%) contrast(${100 + phase * 0.5}%) opacity(${Math.max(0.2, Math.min(1, 0.8 + rgb * 0.001))})`
 	);
 
 	const bar = (v: number) => Math.max(0.12, (v + 180) / 360);
@@ -71,9 +79,7 @@
 
 <!-- PO-100 · portrait engine. Chassis materials, not interface colours. -->
 <div
-	class="relative flex w-full flex-col gap-3.5 overflow-hidden border bg-[var(--hw-case)] p-4 pt-5 pb-3 select-none {covered
-		? 'border-transparent shadow-none'
-		: 'border-line shadow-[3px_3px_0_var(--shadow)]'}"
+	class="relative flex w-full flex-col gap-3.5 overflow-hidden border border-line bg-[var(--hw-case)] p-4 pt-5 pb-3 shadow-[3px_3px_0_var(--shadow)] select-none"
 	data-boot="5"
 >
 	<div class="pointer-events-none absolute inset-0 opacity-40 dot-grid"></div>
@@ -88,14 +94,14 @@
 	{/each}
 
 	<!-- Device header -->
-	<div class="z-10 flex items-center justify-between px-1" data-hw="header">
+	<div class="z-10 flex items-center justify-between px-1">
 		<div class="flex flex-col">
 			<span class="font-mono text-micro font-bold tracking-wider text-ink">PO-100 / ID-PHOTO</span>
 			<span class="font-mono text-pico tracking-widest text-dim uppercase">TE_PORTRAIT_ENGINE</span>
 		</div>
 
 		<!-- Speaker grill -->
-		<div class="grid grid-cols-4 gap-0.5 opacity-60" aria-hidden="true" data-hw="grill">
+		<div class="grid grid-cols-4 gap-0.5 opacity-60" aria-hidden="true">
 			{#each Array(12) as _}
 				<div class="h-0.5 w-0.5 rounded-full bg-[var(--hw-key-ink)]"></div>
 			{/each}
@@ -119,17 +125,17 @@
 				style="filter: {filter_style};"
 			/>
 
-			{#if po.mode === 'LCD'}
+			{#if mode === 'LCD'}
 				<div class="lcd-overlay absolute inset-0 pointer-events-none"></div>
 			{/if}
-			{#if po.mode === 'CRT'}
+			{#if mode === 'CRT'}
 				<div class="crt-overlay absolute inset-0 pointer-events-none"></div>
 				<div class="absolute inset-0 z-10 pointer-events-none shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"></div>
 			{/if}
-			{#if po.mode === 'GAMEBOY'}
+			{#if mode === 'GAMEBOY'}
 				<div class="gb-overlay absolute inset-0 pointer-events-none"></div>
 			{/if}
-			{#if po.mode === 'DOT_MATRIX'}
+			{#if mode === 'DOT_MATRIX'}
 				<div class="dot-overlay absolute inset-0 pointer-events-none"></div>
 			{/if}
 
@@ -157,15 +163,15 @@
 					<div class="flex flex-col bg-[var(--hw-chip)] px-1 py-0.5 leading-tight">
 						<span>MODE: {active.key}</span>
 						<span
-							>VAL: <Readout value={readout(po.freq)} pad={3} />
-							<Readout value={readout(po.phase)} pad={3} />
-							<Readout value={readout(po.rgb)} pad={3} /></span
+							>VAL: <Readout value={readout(freq)} pad={3} />
+							<Readout value={readout(phase)} pad={3} />
+							<Readout value={readout(rgb)} pad={3} /></span
 						>
 					</div>
 
 					<!-- Meter bars: scaled, never resized -->
 					<div class="flex h-[18px] items-end gap-0.5 bg-[var(--hw-chip)] p-0.5">
-						{#each [po.freq, po.phase, po.rgb] as v, i (i)}
+						{#each [freq, phase, rgb] as v, i (i)}
 							<div
 								class="h-full w-1 origin-bottom"
 								style="background-color: {active.hud}; transform: scaleY({bar(v)});"
@@ -184,13 +190,13 @@
 				<button
 					type="button"
 					class="hbtn h-7 w-7 rounded-full text-nano"
-					aria-pressed={po.mode === m.id}
+					aria-pressed={mode === m.id}
 					aria-label={`Display mode ${m.id.replace('_', ' ')}`}
-					onclick={() => poApply(m.id)}
+					onclick={() => apply(m.id)}
 				>
 					{m.key}
 				</button>
-				<span class="led" data-on={po.mode === m.id ? 'true' : 'false'} aria-hidden="true"></span>
+				<span class="led" data-on={mode === m.id ? 'true' : 'false'} aria-hidden="true"></span>
 			</div>
 		{/each}
 	</div>
@@ -198,32 +204,31 @@
 	<!-- Parameter knobs -->
 	<div class="z-10 flex items-center justify-between border-t border-[var(--hw-case-line)] px-1 pt-2">
 		<Knob
-			bind:value={po.freq}
+			bind:value={freq}
 			label="FREQ"
 			cap="var(--hw-knob-freq)"
 			aria_label="Filter frequency"
-			onreset={() => poResetKnob('freq')}
+			onreset={() => reset('freq')}
 		/>
 		<Knob
-			bind:value={po.phase}
+			bind:value={phase}
 			label="PHAS"
 			cap="var(--hw-knob-phase)"
 			aria_label="Filter phase"
-			onreset={() => poResetKnob('phase')}
+			onreset={() => reset('phase')}
 		/>
 		<Knob
-			bind:value={po.rgb}
+			bind:value={rgb}
 			label="RGB"
 			cap="var(--hw-knob-rgb)"
 			aria_label="Filter colour balance"
-			onreset={() => poResetKnob('rgb')}
+			onreset={() => reset('rgb')}
 		/>
 	</div>
 
 	<!-- Bottom hardware -->
 	<div
 		class="z-10 mt-2.5 flex items-center justify-between border-t border-dashed border-[var(--hw-case-line)] pt-2 font-mono text-femto tracking-widest text-dim uppercase"
-		data-hw="strip"
 	>
 		<div class="flex items-center gap-1.5">
 			<div
