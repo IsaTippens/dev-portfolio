@@ -430,6 +430,91 @@
 	--hw-port: #9a1b35;
 }
 
+/*
+	Charcoal Black — the SCPH-3000x moulding. A blue-leaning charcoal case on a
+	deep blue-black page, with the PS2 wordmark blue carrying the interactive
+	chrome. ink 14.2:1 and 16.3:1, dim 6.7:1 and 7.7:1, and accent, ok, rec and
+	warn all clear AA on the panel and on the body.
+
+	The controller's symbol colours are hardware, not interface: they are spent on
+	the three knob caps (cross blue, triangle green, square pink) and nowhere else.
+	The screen is the boot screen — near-black with a blue crystal glow — and the
+	lid LED is the console's blue power light.
+*/
+:root[data-theme='ps2'] {
+	color-scheme: dark;
+
+	--bg: #0d0f14;
+	--panel: #1a1e27;
+	--panel-sunk: #12151c;
+	--hover: rgba(255, 255, 255, 0.055);
+
+	--ink: #e9edf4;
+	--ink-dim: #9aa5b5;
+	--line: #333a47;
+
+	--accent: #4d9fff;
+	--accent-ink: #08111f;
+	--ok: #35d07c;
+	--rec: #ff5b5b;
+	--warn: #ffb454;
+
+	--shadow: #05070a;
+	--shadow-soft: rgba(0, 0, 0, 0.5);
+	--scrim: rgba(0, 0, 0, 0.34);
+	--screen-dark: rgba(3, 5, 9, 0.88);
+	--accent-wash: rgba(77, 159, 255, 0.12);
+
+	--grain: 0.035;
+	--scan: 0.06;
+
+	--code-bg: #141a24;
+	--code-fg: #d6deeb;
+	--code-comment: #78898a;
+	--code-punct: rgb(199, 146, 234);
+	--code-namespace: rgb(178, 204, 214);
+	--code-deleted: rgba(239, 83, 80, 0.56);
+	--code-symbol: rgb(128, 203, 196);
+	--code-tag: rgb(127, 219, 202);
+	--code-boolean: rgb(255, 88, 116);
+	--code-number: rgb(247, 140, 108);
+	--code-constant: rgb(130, 170, 255);
+	--code-selector: rgb(199, 146, 234);
+	--code-attr: rgb(173, 219, 103);
+	--code-string: rgb(173, 219, 103);
+	--code-class: rgb(255, 203, 139);
+	--code-regex: rgb(214, 222, 235);
+	--code-selection: rgba(29, 59, 83, 0.99);
+
+	--hw-case: #191d25;
+	--hw-case-2: #161a21;
+	--hw-case-line: #262c36;
+	--hw-well: #05070a;
+	--hw-well-2: #030405;
+	--hw-screw: #333a46;
+	--hw-key: #232833;
+	--hw-key-line: #3b4250;
+	--hw-key-ink: #a9b3c2;
+	--hw-key-shadow: #0b0d11;
+	--hw-knob-edge: #05070a;
+	--hw-knob-freq: linear-gradient(to top right, #2a63c8, #6fa8ff);
+	--hw-knob-phase: linear-gradient(to top right, #11915e, #4fd6a0);
+	--hw-knob-rgb: linear-gradient(to top right, #a8407c, #ea7fba);
+	--hw-screen: #080b12;
+	--hw-screen-2: #04060a;
+	--hw-screen-ink: #eaeffb;
+	--hw-screen-ink-2: #6fa8ff;
+	--hw-screen-line: #232a3a;
+	--hw-screen-ink-dim: #93a0b8;
+	--hw-screen-well: #05070c;
+	--hw-screen-cell: #0c1220;
+	--hw-screen-cell-on: #dbe4f5;
+	--hw-screen-seg-off: #1a2130;
+	--hw-screen-grid: rgba(234, 239, 251, 0.05);
+	--hw-screen-glow: 0 0 2px rgba(111, 168, 255, 0.4);
+	--hw-port: #3d8bfd;
+}
+
 @layer base {
 	:root {
 		--font-pixel: 'JetBrains Mono', ui-monospace, monospace;

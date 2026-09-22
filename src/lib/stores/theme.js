@@ -41,6 +41,12 @@ export const THEMES = [
 		label: 'PS1',
 		color: '#c8c2b4',
 		note: 'console grey + symbols'
+	},
+	{
+		id: 'ps2',
+		label: 'PS2',
+		color: '#0d0f14',
+		note: 'charcoal black + wordmark blue'
 	}
 ];
 
@@ -48,10 +54,10 @@ export const THEME_IDS = THEMES.map((t) => t.id);
 
 /**
  * Plates the OS preference maps to until the operator picks one: a light OS gets
- * the PS1 plate, a dark OS gets DARK. Exported so the pre-paint boot script in
+ * the PS1 plate, a dark OS gets PS2. Exported so the pre-paint boot script in
  * `hooks.server.js` reads the same mapping.
  */
-export const OS_PLATES = { light: 'ps1', dark: 'dark' };
+export const OS_PLATES = { light: 'ps1', dark: 'ps2' };
 
 /**
  * Where a manual MODE dial pick is stored. Deliberately not the legacy `theme` key:
