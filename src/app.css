@@ -28,7 +28,10 @@
 	  --rec     recording / live capture only
 	  --warn    warnings only (the AI-disclaimer box models this)
 	  --hw-*    physical components (PO-100 knobs, TE-S10 keys). Hardware may be
-	            coloured; interface may not.
+	            coloured; interface may not. `--hw-knob-1…4` are the knob-cap colours
+	            in slot order (PO-100 uses 1–3, TE-S10 all four); `--hw-metal*` is the
+	            polished skirt a cap sits in, and `--hw-sheen` is what that metal and
+	            the caps reflect.
 
 	The `--code-*` values are the syntax palette consumed by prism.css.
 */
@@ -93,9 +96,14 @@
 	--hw-key-ink: #4b4b50;
 	--hw-key-shadow: #b5b5b8;
 	--hw-knob-edge: #111111;
-	--hw-knob-freq: linear-gradient(to top right, #0066cc, #33a3ff);
-	--hw-knob-phase: linear-gradient(to top right, #00994d, #33ff99);
-	--hw-knob-rgb: linear-gradient(to top right, #cc4400, #ff7733);
+	--hw-knob-1: #0a84ff;
+	--hw-knob-2: #00b25a;
+	--hw-knob-3: #ff5a14;
+	--hw-knob-4: #ffc400;
+	--hw-metal-hi: #ffffff;
+	--hw-metal: #c4c4c8;
+	--hw-metal-lo: #77777d;
+	--hw-sheen: #ffffff;
 	--hw-screen: #8ba67e;
 	--hw-screen-2: #071308;
 	--hw-screen-ink: #132a10;
@@ -170,9 +178,14 @@
 	--hw-key-ink: #a1a1aa;
 	--hw-key-shadow: #111111;
 	--hw-knob-edge: #000000;
-	--hw-knob-freq: linear-gradient(to top right, #004a99, #1f7fd0);
-	--hw-knob-phase: linear-gradient(to top right, #007a3d, #22cc7a);
-	--hw-knob-rgb: linear-gradient(to top right, #993300, #cc5c22);
+	--hw-knob-1: #1f7fd0;
+	--hw-knob-2: #1fb86c;
+	--hw-knob-3: #e8581a;
+	--hw-knob-4: #e6b400;
+	--hw-metal-hi: #e4e4ea;
+	--hw-metal: #7a7a82;
+	--hw-metal-lo: #1e1e22;
+	--hw-sheen: #ffffff;
 	--hw-screen: #071308;
 	--hw-screen-2: #040c05;
 	--hw-screen-ink: #13a846;
@@ -244,9 +257,14 @@
 	--hw-key-ink: #35c463;
 	--hw-key-shadow: #000000;
 	--hw-knob-edge: #000000;
-	--hw-knob-freq: linear-gradient(to top right, #0a5c2c, #33ff66);
-	--hw-knob-phase: linear-gradient(to top right, #0a5c2c, #33ff66);
-	--hw-knob-rgb: linear-gradient(to top right, #0a5c2c, #33ff66);
+	--hw-knob-1: #33ff66;
+	--hw-knob-2: #1fcc4f;
+	--hw-knob-3: #6bff92;
+	--hw-knob-4: #14993a;
+	--hw-metal-hi: #6bff92;
+	--hw-metal: #16452a;
+	--hw-metal-lo: #010402;
+	--hw-sheen: #b6ffc4;
 	--hw-screen: #04170c;
 	--hw-screen-2: #010502;
 	--hw-screen-ink: #33ff66;
@@ -326,9 +344,14 @@
 	--hw-key-ink: #0f380f;
 	--hw-key-shadow: #0f380f;
 	--hw-knob-edge: #0f380f;
-	--hw-knob-freq: linear-gradient(to top right, #0f380f, #8bac0f);
-	--hw-knob-phase: linear-gradient(to top right, #0f380f, #8bac0f);
-	--hw-knob-rgb: linear-gradient(to top right, #0f380f, #8bac0f);
+	--hw-knob-1: #8bac0f;
+	--hw-knob-2: #9bbc0f;
+	--hw-knob-3: #306230;
+	--hw-knob-4: #8bac0f;
+	--hw-metal-hi: #9bbc0f;
+	--hw-metal: #306230;
+	--hw-metal-lo: #0f380f;
+	--hw-sheen: #9bbc0f;
 	--hw-screen: #8bac0f;
 	--hw-screen-2: #0f380f;
 	--hw-screen-ink: #0f380f;
@@ -353,7 +376,7 @@
 	clear AA on the panel (≥6.0:1) and on the body (≥4.5:1).
 
 	The controller's symbol colours are hardware, not interface: they are spent on
-	the three knob caps (cross blue, triangle green, square pink) and nowhere else.
+	the knob caps (cross blue, triangle green, square pink, circle red) and nowhere else.
 	The screen is the boot screen — black, with the lid LED red beside it.
 */
 :root[data-theme='ps1'] {
@@ -412,9 +435,14 @@
 	--hw-key-ink: #3c3c40;
 	--hw-key-shadow: #a79f90;
 	--hw-knob-edge: #2a2a2e;
-	--hw-knob-freq: linear-gradient(to top right, #3f4fb0, #7d8ce6);
-	--hw-knob-phase: linear-gradient(to top right, #14775a, #56c9a9);
-	--hw-knob-rgb: linear-gradient(to top right, #a13c7c, #e389c4);
+	--hw-knob-1: #6f86d6;
+	--hw-knob-2: #2fae88;
+	--hw-knob-3: #d86fb2;
+	--hw-knob-4: #e0484e;
+	--hw-metal-hi: #fbf8f1;
+	--hw-metal: #b5afa1;
+	--hw-metal-lo: #6a655a;
+	--hw-sheen: #ffffff;
 	--hw-screen: #101014;
 	--hw-screen-2: #06060a;
 	--hw-screen-ink: #e6e6ea;
@@ -437,7 +465,7 @@
 	warn all clear AA on the panel and on the body.
 
 	The controller's symbol colours are hardware, not interface: they are spent on
-	the three knob caps (cross blue, triangle green, square pink) and nowhere else.
+	the knob caps (cross blue, triangle green, square pink, circle red) and nowhere else.
 	The screen is the boot screen — near-black with a blue crystal glow — and the
 	lid LED is the console's blue power light.
 */
@@ -497,9 +525,14 @@
 	--hw-key-ink: #a9b3c2;
 	--hw-key-shadow: #0b0d11;
 	--hw-knob-edge: #05070a;
-	--hw-knob-freq: linear-gradient(to top right, #2a63c8, #6fa8ff);
-	--hw-knob-phase: linear-gradient(to top right, #11915e, #4fd6a0);
-	--hw-knob-rgb: linear-gradient(to top right, #a8407c, #ea7fba);
+	--hw-knob-1: #5f93f0;
+	--hw-knob-2: #3cc98f;
+	--hw-knob-3: #e27ab6;
+	--hw-knob-4: #ff5a5f;
+	--hw-metal-hi: #d3dbe8;
+	--hw-metal: #5b6474;
+	--hw-metal-lo: #12151b;
+	--hw-sheen: #ffffff;
 	--hw-screen: #080b12;
 	--hw-screen-2: #04060a;
 	--hw-screen-ink: #eaeffb;
@@ -641,6 +674,83 @@
 	.led[data-on='ok'] {
 		background-color: var(--ok);
 		box-shadow: 0 0 4px var(--ok);
+	}
+
+	/*
+		Machine screw: a polished pan head with its slot, lit from the top-left like the
+		knobs. Rotate the slot with `--angle`; screws are never all set the same way.
+	*/
+	.hw-screw {
+		position: absolute;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		pointer-events: none;
+		background: radial-gradient(
+			circle at 35% 30%,
+			var(--hw-metal-hi),
+			var(--hw-metal) 48%,
+			var(--hw-metal-lo) 100%
+		);
+		box-shadow:
+			0 0 0 1px color-mix(in srgb, var(--hw-well-2) 30%, transparent),
+			0 1px 1px var(--shadow-soft);
+	}
+	.hw-screw::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 16%;
+		right: 16%;
+		height: 1.5px;
+		margin-top: -0.75px;
+		border-radius: 1px;
+		background: var(--hw-metal-lo);
+		box-shadow: 0 0.5px 0 color-mix(in srgb, var(--hw-sheen) 55%, transparent);
+		transform: rotate(var(--angle, 0deg));
+	}
+
+	/*
+		Round key cap, shared by the PO-100 and the TE-S10: a domed top, a skirt you
+		can see the edge of, and 2px of travel that swallows the skirt when pressed.
+	*/
+	.hw-key {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 9999px;
+		border: 1px solid var(--hw-key-line);
+		background: radial-gradient(
+			circle at 50% 30%,
+			color-mix(in srgb, var(--hw-key) 70%, var(--hw-sheen)),
+			var(--hw-key) 55%,
+			color-mix(in srgb, var(--hw-key) 80%, var(--hw-key-shadow))
+		);
+		color: var(--hw-key-ink);
+		font-family: var(--font-mono);
+		font-weight: 700;
+		cursor: pointer;
+		box-shadow:
+			inset 0 1px 0 color-mix(in srgb, var(--hw-sheen) 45%, transparent),
+			0 2px 0 var(--hw-key-shadow),
+			0 3px 6px var(--shadow-soft);
+		transition:
+			transform 80ms cubic-bezier(0.2, 0.9, 0.25, 1),
+			box-shadow 80ms cubic-bezier(0.2, 0.9, 0.25, 1),
+			border-color 120ms linear,
+			color 120ms linear;
+	}
+	.hw-key:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	.hw-key:active,
+	.hw-key[aria-pressed='true'] {
+		transform: translateY(2px);
+		box-shadow:
+			inset 0 1px 2px var(--shadow-soft),
+			0 0 0 var(--hw-key-shadow),
+			0 1px 1px var(--shadow-soft);
 	}
 
 	/*

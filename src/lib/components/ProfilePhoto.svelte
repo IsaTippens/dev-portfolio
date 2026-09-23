@@ -114,39 +114,17 @@
 	const bar = (v: number) => Math.max(0.12, (v + 180) / 360);
 </script>
 
-<!-- PO-100 · portrait engine. Chassis materials, not interface colours. -->
+<!-- PO-100 · portrait engine. Chassis materials, not interface colours. Built to the
+     TE-S10's spec: rounded moulding, inset modules, machined knobs and screws. -->
 <div
-	class="relative flex w-full flex-col gap-3.5 border border-line bg-[var(--hw-case)] p-4 pt-5 pb-3 shadow-[3px_3px_0_var(--shadow)] select-none"
+	class="relative flex w-full flex-col gap-3.5 rounded-2xl border-2 border-[var(--hw-case-line)] bg-[var(--hw-case-2)] px-4 pt-5 pb-5 shadow-2xl select-none"
 	data-boot="5"
 >
-	<div class="pointer-events-none absolute inset-0 opacity-40 dot-grid"></div>
+	<div class="dot-grid pointer-events-none absolute inset-0 rounded-[inherit] opacity-40"></div>
 
-	{#each ['top-1.5 left-1.5', 'top-1.5 right-1.5', 'bottom-1.5 left-1.5', 'bottom-1.5 right-1.5'] as pos, i (pos)}
-		<span class="pointer-events-none absolute {pos} block h-2 w-2" aria-hidden="true">
-			<svg
-				viewBox="0 0 8 8"
-				class="block h-full w-full"
-				style="transform: rotate({[45, -30, 60, 15][i]}deg)"
-			>
-				<circle
-					cx="4"
-					cy="4"
-					r="3.5"
-					fill="var(--hw-screw)"
-					stroke="var(--hw-case-line)"
-					stroke-width="1"
-				/>
-				<line
-					x1="1.5"
-					y1="4"
-					x2="6.5"
-					y2="4"
-					stroke="var(--hw-well-2)"
-					stroke-width="1"
-					stroke-linecap="round"
-				/>
-			</svg>
-		</span>
+	{#each ['top-2 left-2', 'top-2 right-2', 'bottom-2 left-2', 'bottom-2 right-2'] as pos, i (pos)}
+		<span class="hw-screw {pos}" style="--angle: {[45, -30, 60, 15][i]}deg" aria-hidden="true"
+		></span>
 	{/each}
 
 	<!-- Device header -->
@@ -166,14 +144,14 @@
 
 	<!-- Recessed screen -->
 	<div
-		class="relative z-10 flex aspect-square w-full items-center justify-center overflow-hidden border-2 border-[var(--hw-well-2)] bg-[var(--hw-well)] p-[2px] shadow-[inset_0_2px_5px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.1)]"
+		class="relative z-10 flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl border-2 border-[var(--hw-well-2)] bg-[var(--hw-well)] p-[3px] shadow-[inset_0_2px_5px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.1)]"
 		onpointermove={moveGlare}
 		onpointerleave={() => (glare_on = false)}
 		role="presentation"
 	>
 		<div
 			bind:this={screen}
-			class="scanlines relative h-full w-full overflow-hidden"
+			class="scanlines relative h-full w-full overflow-hidden rounded-lg"
 			data-boot="5"
 			data-boot-screen
 		>
@@ -252,10 +230,10 @@
 	<!-- Mode keys -->
 	<div class="z-10 mt-0.5 grid grid-cols-5 gap-1">
 		{#each MODES as m (m.id)}
-			<div class="flex flex-col items-center gap-1">
+			<div class="flex flex-col items-center gap-1.5">
 				<button
 					type="button"
-					class="hbtn h-7 w-7 rounded-full text-nano"
+					class="hw-key h-7 w-7 text-nano"
 					aria-pressed={mode === m.id}
 					aria-label={`Display mode ${m.id.replace('_', ' ')}`}
 					onclick={() => apply(m.id)}
@@ -267,28 +245,28 @@
 		{/each}
 	</div>
 
-	<!-- Parameter knobs -->
+	<!-- Parameter knobs: their own inset module, as on the TE-S10. -->
 	<div
-		class="z-10 flex items-center justify-between border-t border-[var(--hw-case-line)] px-1 pt-2"
+		class="z-10 flex items-center justify-around rounded-xl border border-[var(--hw-case-line)] bg-[var(--hw-case)] px-1 pt-2.5 pb-2 shadow-inner"
 	>
 		<Knob
 			bind:value={freq}
 			label="FREQ"
-			cap="var(--hw-knob-freq)"
+			cap="var(--hw-knob-1)"
 			aria_label="Filter frequency"
 			onreset={() => reset('freq')}
 		/>
 		<Knob
 			bind:value={phase}
 			label="PHAS"
-			cap="var(--hw-knob-phase)"
+			cap="var(--hw-knob-2)"
 			aria_label="Filter phase"
 			onreset={() => reset('phase')}
 		/>
 		<Knob
 			bind:value={rgb}
 			label="RGB"
-			cap="var(--hw-knob-rgb)"
+			cap="var(--hw-knob-3)"
 			aria_label="Filter colour balance"
 			onreset={() => reset('rgb')}
 		/>
@@ -296,7 +274,7 @@
 
 	<!-- Bottom hardware -->
 	<div
-		class="z-10 mt-2.5 flex items-center justify-between border-t border-dashed border-[var(--hw-case-line)] pt-2 font-mono text-femto tracking-widest text-dim uppercase"
+		class="z-10 mt-1 flex items-center justify-between border-t border-dashed border-[var(--hw-case-line)] px-1 pt-2 font-mono text-femto tracking-widest text-dim uppercase"
 	>
 		<div class="flex items-center gap-1.5">
 			<div
@@ -514,8 +492,8 @@
 	/* Receptacle on the bottom edge, centred under the PWR label. */
 	.usb-port {
 		position: absolute;
-		right: 12px;
-		bottom: -6px;
+		right: 14px;
+		bottom: -7px;
 		z-index: 20;
 		display: flex;
 		align-items: center;
@@ -529,7 +507,7 @@
 	/* Plugged in, the whole connector is the handle to pull it back out by. */
 	.usb-port[aria-pressed='true'] {
 		height: 34px;
-		bottom: -28px;
+		bottom: -29px;
 		align-items: flex-start;
 		padding-top: 5px;
 	}
@@ -553,8 +531,8 @@
 
 	.usb-plug {
 		position: absolute;
-		top: calc(100% - 1px);
-		right: -6px;
+		top: 100%;
+		right: -4px;
 		z-index: 30;
 		pointer-events: none;
 	}

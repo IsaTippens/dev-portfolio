@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { animate, clamp, spring } from 'animejs';
 	import { reducedMotion } from '$lib/motion';
+	import KnobCap from '$lib/components/KnobCap.svelte';
 
 	/**
 	 * A physical knob.
@@ -16,7 +17,7 @@
 	let {
 		value = $bindable(0),
 		label,
-		cap = 'var(--hw-knob-freq)',
+		cap = 'var(--hw-knob-1)',
 		detent = 3.6,
 		aria_label,
 		onreset
@@ -132,11 +133,11 @@
 	}
 </script>
 
-<div class="flex flex-col items-center gap-1">
-	<div class="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--hw-case-line)] bg-[var(--hw-case-2)] shadow-[inset_1px_1px_3px_var(--shadow-soft)]">
+<div class="flex flex-col items-center gap-1.5">
+	<!-- Collar: a recessed seat with a printed scale, the cap turns inside it. -->
+	<div class="knob-collar flex h-10 w-10 items-center justify-center rounded-full">
 		<div
-			class="relative flex h-7 w-7 cursor-ns-resize touch-none items-center justify-center rounded-full border border-[var(--hw-knob-edge)] shadow-md select-none active:cursor-grabbing"
-			style="background: {cap}; transform: rotate({rotation}deg);"
+			class="cursor-ns-resize touch-none rounded-full select-none focus-visible:outline-offset-4 active:cursor-grabbing"
 			onpointerdown={on_pointerdown}
 			onkeydown={on_keydown}
 			ondblclick={() => {
@@ -152,10 +153,36 @@
 			tabindex="0"
 			title="Drag vertically, or use the arrow keys. Double-click to reset."
 		>
-			<div class="absolute top-0.5 h-3 w-0.5 rounded-b-[1px] bg-[var(--hw-well-2)]"></div>
+			<KnobCap {cap} {rotation} size={28} />
 		</div>
 	</div>
-	<div class="flex flex-col items-center leading-none">
-		<span class="font-mono text-nano font-bold tracking-wider text-ink">{label}</span>
-	</div>
+	<span class="font-mono text-nano font-bold tracking-wider text-ink leading-none">{label}</span>
 </div>
+
+<style>
+	.knob-collar {
+		position: relative;
+		background: var(--hw-case-2);
+		box-shadow:
+			inset 0 1px 3px var(--shadow-soft),
+			0 1px 0 color-mix(in srgb, var(--hw-sheen) 25%, transparent);
+	}
+	/* Scale: twelve printed ticks round the seat. */
+	.knob-collar::before {
+		content: '';
+		position: absolute;
+		inset: 1px;
+		border-radius: 50%;
+		background: repeating-conic-gradient(var(--hw-key-ink) 0 1.6deg, transparent 1.6deg 30deg);
+		-webkit-mask-image: radial-gradient(
+			closest-side,
+			transparent 84%,
+			#000 86%,
+			#000 97%,
+			transparent 99%
+		);
+		mask-image: radial-gradient(closest-side, transparent 84%, #000 86%, #000 97%, transparent 99%);
+		opacity: 0.55;
+		transform: rotate(-0.8deg);
+	}
+</style>

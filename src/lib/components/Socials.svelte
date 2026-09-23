@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import KnobCap from '$lib/components/KnobCap.svelte';
 	import X from 'virtual:icons/carbon/logo-x.svelte';
 	import YouTube from 'virtual:icons/carbon/logo-youtube.svelte';
 	import Github from 'virtual:icons/carbon/logo-github.svelte';
@@ -58,11 +59,17 @@
 		{ a: 90, b: 45, c: -120, d: -180 } // ML
 	];
 
-	// Derived knob rotation values based on active channel
-	let knobA = $derived(activeChannel !== null ? knobPresets[activeChannel].a : 0);
-	let knobB = $derived(activeChannel !== null ? knobPresets[activeChannel].b : 0);
-	let knobC = $derived(activeChannel !== null ? knobPresets[activeChannel].c : 0);
-	let knobD = $derived(activeChannel !== null ? knobPresets[activeChannel].d : 0);
+	const knobs = [
+		{ key: 'a', label: 'A-VOL', cap: 'var(--hw-knob-1)' },
+		{ key: 'b', label: 'B-FREQ', cap: 'var(--hw-knob-2)' },
+		{ key: 'c', label: 'C-RES', cap: 'var(--hw-knob-3)' },
+		{ key: 'd', label: 'D-MIX', cap: 'var(--hw-knob-4)' }
+	];
+
+	/** Knob positions follow the hovered channel's preset, and park at 12 o'clock. */
+	const knobAngles = $derived(
+		activeChannel !== null ? knobPresets[activeChannel] : { a: 0, b: 0, c: 0, d: 0 }
+	);
 
 	onMount(() => {
 		// The reel and level meters are decoration, so leave them parked on a still frame.
@@ -112,10 +119,10 @@
 	class="w-full max-w-3xl mx-auto bg-[var(--hw-case-2)] border-2 border-[var(--hw-case-line)] rounded-3xl p-4 sm:p-6 shadow-2xl relative font-mono text-dim select-none transition-colors duration-200"
 >
 	<!-- Corner Screws -->
-	<div class="chassis-screw top-2.5 left-2.5">+</div>
-	<div class="chassis-screw top-2.5 right-2.5">+</div>
-	<div class="chassis-screw bottom-2.5 left-2.5">+</div>
-	<div class="chassis-screw bottom-2.5 right-2.5">+</div>
+	<span class="hw-screw top-2.5 left-2.5" style="--angle: 40deg" aria-hidden="true"></span>
+	<span class="hw-screw top-2.5 right-2.5" style="--angle: -25deg" aria-hidden="true"></span>
+	<span class="hw-screw bottom-2.5 left-2.5" style="--angle: 70deg" aria-hidden="true"></span>
+	<span class="hw-screw bottom-2.5 right-2.5" style="--angle: 10deg" aria-hidden="true"></span>
 
 	<!-- Chassis Top Labels -->
 	<div
@@ -155,11 +162,7 @@
 							? 'bg-rec animate-pulse'
 							: 'bg-[var(--hw-screen-seg-off)]'}"
 					></span>
-					<span
-						class="transition-colors {activeChannel !== null
-							? 'text-rec'
-							: ''}"
-					>
+					<span class="transition-colors {activeChannel !== null ? 'text-rec' : ''}">
 						{activeChannel !== null ? '● REC' : '▶ PLAY'}
 					</span>
 				</div>
@@ -310,58 +313,20 @@
 			<div
 				class="grid grid-cols-4 md:grid-cols-2 gap-4 md:gap-y-6 items-center justify-items-center w-full py-2"
 			>
-				<!-- Knob 1 -->
-				<div class="flex flex-col items-center">
-					<div
-						class="w-7 h-7 rounded-full border border-[var(--hw-knob-edge)] shadow-md relative flex items-center justify-center bg-[#0088ff] cursor-ew-resize transition-transform duration-75"
-						style="transform: rotate({knobA}deg);"
-					>
-						<div class="w-1 h-3.5 bg-[var(--hw-well-2)] absolute top-0 rounded-b-sm"></div>
+				{#each knobs as knob (knob.key)}
+					<div class="flex flex-col items-center">
+						<div class="knob-seat">
+							<KnobCap
+								cap={knob.cap}
+								rotation={knobAngles[/** @type {'a' | 'b' | 'c' | 'd'} */ (knob.key)]}
+								size={30}
+							/>
+						</div>
+						<span class="text-micro mt-1.5 text-dim font-bold tracking-wider font-mono"
+							>{knob.label}</span
+						>
 					</div>
-					<span
-						class="text-micro mt-1 text-dim font-bold tracking-wider font-mono"
-						>A-VOL</span
-					>
-				</div>
-				<!-- Knob 2 -->
-				<div class="flex flex-col items-center">
-					<div
-						class="w-7 h-7 rounded-full border border-[var(--hw-knob-edge)] shadow-md relative flex items-center justify-center bg-[#00cc66] cursor-ew-resize transition-transform duration-75"
-						style="transform: rotate({knobB}deg);"
-					>
-						<div class="w-1 h-3.5 bg-[var(--hw-well-2)] absolute top-0 rounded-b-sm"></div>
-					</div>
-					<span
-						class="text-micro mt-1 text-dim font-bold tracking-wider font-mono"
-						>B-FREQ</span
-					>
-				</div>
-				<!-- Knob 3 -->
-				<div class="flex flex-col items-center">
-					<div
-						class="w-7 h-7 rounded-full border border-[var(--hw-knob-edge)] shadow-md relative flex items-center justify-center bg-[#ff5500] cursor-ew-resize transition-transform duration-75"
-						style="transform: rotate({knobC}deg);"
-					>
-						<div class="w-1 h-3.5 bg-[var(--hw-well-2)] absolute top-0 rounded-b-sm"></div>
-					</div>
-					<span
-						class="text-micro mt-1 text-dim font-bold tracking-wider font-mono"
-						>C-RES</span
-					>
-				</div>
-				<!-- Knob 4 -->
-				<div class="flex flex-col items-center">
-					<div
-						class="w-7 h-7 rounded-full border border-[var(--hw-knob-edge)] shadow-md relative flex items-center justify-center bg-[#ffcc00] cursor-ew-resize transition-transform duration-75"
-						style="transform: rotate({knobD}deg);"
-					>
-						<div class="w-1 h-3.5 bg-[var(--hw-well-2)] absolute top-0 rounded-b-sm"></div>
-					</div>
-					<span
-						class="text-micro mt-1 text-dim font-bold tracking-wider font-mono"
-						>D-MIX</span
-					>
-				</div>
+				{/each}
 			</div>
 
 			<!-- Mechanical Spec label on chassis -->
@@ -384,8 +349,8 @@
 					href={ch.url}
 					target="_blank"
 					rel="noopener"
-					class="knob-btn {hovered
-						? 'bg-[var(--hw-key)] border-[var(--hw-screen-ink)] text-[var(--hw-screen-ink)] shadow-[0_0_8px_var(--shadow-soft)]'
+					class="hw-key h-10 w-10 sm:h-12 sm:w-12 {hovered
+						? 'border-[var(--hw-screen-ink)] text-[var(--hw-screen-ink)]'
 						: ''}"
 					onmouseenter={() => (activeChannel = i)}
 					onmouseleave={() => (activeChannel = null)}
@@ -394,9 +359,7 @@
 				>
 					{i + 1}
 				</a>
-				<span class="text-micro mt-1.5 text-dim font-bold font-mono"
-					>{ch.abbr}</span
-				>
+				<span class="text-micro mt-1.5 text-dim font-bold font-mono">{ch.abbr}</span>
 			</div>
 		{/each}
 	</div>
@@ -413,10 +376,8 @@
 		text-shadow: var(--hw-screen-glow);
 	}
 
-	.chassis-screw {
-		@apply absolute w-3 h-3 rounded-full border border-[var(--hw-case-line)] bg-[var(--hw-case)] flex items-center justify-center text-micro text-dim font-bold;
-	}
-	.knob-btn {
-		@apply w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--hw-key)] border border-[var(--hw-key-line)] text-[var(--hw-key-ink)] font-bold flex items-center justify-center shadow-lg transition-all duration-150 active:translate-y-0.5 active:shadow-md cursor-pointer;
+	/* The cap turns to a preset the way a motorised fader seeks: quick, and settled. */
+	.knob-seat :global(.knob > span:first-child) {
+		transition: transform 260ms cubic-bezier(0.2, 0.9, 0.25, 1);
 	}
 </style>
