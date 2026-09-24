@@ -1,12 +1,73 @@
 <script>
 	import Meta from '$lib/components/Meta.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Panel from '$lib/components/Panel.svelte';
 	import GearItem from '$lib/components/GearItem.svelte';
 	import Laptop from '$lib/components/gear/Laptop.svelte';
 	import NothingPhone2 from '$lib/components/gear/NothingPhone2.svelte';
 	import Tablet from '$lib/components/gear/Tablet.svelte';
 	import RaspberryPi5 from '$lib/components/gear/RaspberryPi5.svelte';
 	import RaspberryPi4 from '$lib/components/gear/RaspberryPi4.svelte';
+
+	/** The model families oh-my-pi drives, and the lab behind each. */
+	const MODELS = [
+		{ name: 'Gemini', lab: 'Google' },
+		{ name: 'Claude', lab: 'Anthropic' },
+		{ name: 'Kimi', lab: 'Moonshot AI' },
+		{ name: 'DeepSeek', lab: 'DeepSeek' }
+	];
+
+	/**
+	 * Dev environment: one spec sheet per module, each row a tool and what it is for. A row
+	 * whose value is a list is racked as slots (the model families) instead of written out.
+	 */
+	const STACK = [
+		{
+			id: '06 / AGENT_WORKFLOW',
+			rows: [
+				{
+					label: 'Harness',
+					value:
+						'oh-my-pi, a terminal coding agent with the IDE wired in: LSP, debugger, and parallel subagents.'
+				},
+				{ label: 'Models', value: MODELS }
+			]
+		},
+		{
+			id: '07 / CODE_LANGUAGES',
+			rows: [
+				{
+					label: 'Daily',
+					value: 'Rust, Go, and Python, for systems engineering and trading apps.'
+				},
+				{
+					label: 'Previously',
+					value: 'C#, C++, Flutter, React Native, TypeScript, and JavaScript.'
+				}
+			]
+		},
+		{
+			id: '08 / OPERATING_SYSTEMS',
+			rows: [
+				{ label: 'Windows 11', value: 'Host OS on the workstation.' },
+				{ label: 'WSL2 (Ubuntu)', value: 'Primary Linux development shell.' },
+				{ label: 'PiOS', value: 'Debian-based Raspberry Pi OS on Lab Node A.' },
+				{ label: 'NixOS', value: 'Declarative config on Lab Node B, for funsies.' }
+			]
+		},
+		{
+			id: '09 / APPLICATIONS',
+			rows: [
+				{ label: 'VS Code', value: 'Lightweight editor for web, Rust, and systems scripts.' },
+				{
+					label: 'Tailscale',
+					value: 'Zero-config mesh VPN linking the workstation, phone, and lab nodes.'
+				},
+				{ label: 'Notion', value: 'Task planning, work logs, and notes.' },
+				{ label: 'Spotify', value: 'Soundtrack for focused coding sessions.' }
+			]
+		}
+	];
 </script>
 
 <Meta title="Gear" description="Hardware and Software I use daily" path="/gear" />
@@ -113,25 +174,38 @@
 			</div>
 		</div>
 
-		<!-- Operating Systems & Shells -->
-		<GearItem
-			id="06 / OS_AND_KERNELS"
-			title="Windows 11:"
-			description={`Host OS on workstation. <br /> <span class="font-bold text-ink uppercase">WSL2 (Ubuntu):</span> Primary Linux development shell. <br /> <span class="font-bold text-ink uppercase">NixOS / PiOS:</span> Declarative and Debian-based lab node distributions.`}
-		/>
-
-		<!-- Development Languages -->
-		<GearItem
-			id="07 / CODE_LANGUAGES"
-			title="Daily Stack:"
-			description={`Rust, Go (Golang), and Python (all 3 used daily for systems engineering and trading apps). <br /> <span class="font-bold text-ink uppercase">Past Experience:</span> C#, C++, Flutter, React Native, TypeScript, and JavaScript.`}
-		/>
-
-		<!-- Apps -->
-		<GearItem
-			id="08 / APPLICATIONS"
-			title="Google Gemini:"
-			description={`AI pair programming and quick reasoning. <br /> <span class="font-bold text-ink uppercase">Notion:</span> Structured task planning, logging, and notebook notes. <br /> <span class="font-bold text-ink uppercase">Spotify:</span> Essential soundtrack generation for coding focus. <br /> <span class="font-bold text-ink uppercase">VSCode:</span> Lightweight editor environment for web, Rust, and systems scripts. <br /> <span class="font-bold text-ink uppercase">Tailscale:</span> Secure, zero-config mesh VPN connecting workstation, mobile, and lab nodes.`}
-		/>
+		{#each STACK as entry (entry.id)}
+			<Panel tag={entry.id} tag_side="left" class="p-4 pb-5">
+				<dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-xs leading-relaxed">
+					{#each entry.rows as row (row.label)}
+						<!-- A racked row's label drops to the slots' first line. -->
+						<dt class="text-dim uppercase {typeof row.value === 'string' ? '' : 'pt-1'}">
+							{row.label}:
+						</dt>
+						<dd class="text-ink">
+							{#if typeof row.value === 'string'}
+								{row.value}
+							{:else}
+								<ul
+									class="grid grid-cols-2 gap-[var(--stroke)] border border-line bg-line sm:grid-cols-4"
+								>
+									{#each row.value as model (model.name)}
+										<li class="flex items-center gap-2 bg-sunk px-2 py-1.5">
+											<span class="led shrink-0" data-on="ok" aria-hidden="true"></span>
+											<span class="leading-tight">
+												<span class="block font-bold uppercase">{model.name}</span>
+												<span class="block text-tiny tracking-wider text-dim uppercase">
+													{model.lab}
+												</span>
+											</span>
+										</li>
+									{/each}
+								</ul>
+							{/if}
+						</dd>
+					{/each}
+				</dl>
+			</Panel>
+		{/each}
 	</div>
 </div>
