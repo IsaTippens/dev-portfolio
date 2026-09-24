@@ -421,11 +421,6 @@
 </div>
 
 <style>
-	.dot-grid {
-		background-image: radial-gradient(var(--line) 1px, transparent 1px);
-		background-size: 8px 8px;
-	}
-
 	/* LCD: high-contrast monochrome green with a hard scan structure. */
 	.lcd-overlay {
 		background: repeating-linear-gradient(

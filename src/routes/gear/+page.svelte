@@ -2,6 +2,11 @@
 	import Meta from '$lib/components/Meta.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GearItem from '$lib/components/GearItem.svelte';
+	import Laptop from '$lib/components/gear/Laptop.svelte';
+	import NothingPhone2 from '$lib/components/gear/NothingPhone2.svelte';
+	import Tablet from '$lib/components/gear/Tablet.svelte';
+	import RaspberryPi5 from '$lib/components/gear/RaspberryPi5.svelte';
+	import RaspberryPi4 from '$lib/components/gear/RaspberryPi4.svelte';
 </script>
 
 <Meta title="Gear" description="Hardware and Software I use daily" path="/gear" />
@@ -44,37 +49,47 @@
 		<!-- Wootbook -->
 		<GearItem
 			id="01 / WOOTBOOK_ULTRA_X16"
-			title="Workstation Laptop:"
+			title="Workstation Laptop"
 			description={`Tongfang-based barebone customizable chassis. Configured with an Intel Core i9-13900HX (24 Cores / 32 Threads), NVIDIA GeForce RTX 4060 Laptop GPU, 16" WQXGA 240Hz display, 32GB DDR5 RAM, and 1TB NVMe Gen4 SSD.`}
-		/>
+		>
+			<Laptop />
+		</GearItem>
 
 		<!-- Nothing Phone -->
 		<GearItem
 			id="02 / NOTHING_PHONE_2"
-			title="Primary Phone:"
+			title="Primary Phone"
 			description={`Snapdragon 8+ Gen 1, 6.7" 120Hz LTPO OLED display, 12GB RAM, 512GB storage. Features the signature translucent design and programmable Glyph Interface.`}
-		/>
+		>
+			<NothingPhone2 />
+		</GearItem>
 
 		<!-- Samsung Tab S9 -->
 		<GearItem
 			id="03 / GALAXY_TAB_S9"
-			title="Tablet / Slate:"
+			title="Tablet / Slate"
 			description={`Snapdragon 8 Gen 2, 11" 120Hz Dynamic AMOLED 2X display, 12GB RAM. Used with S-Pen for architecture planning, writing notes, and reading papers. Additionally serves as a on-the-go dev machine.`}
-		/>
+		>
+			<Tablet />
+		</GearItem>
 
 		<!-- Raspberry Pi 5 -->
 		<GearItem
 			id="04 / RASPBERRY_PI_5_8GB"
-			title="Lab Node A:"
+			title="Lab Node A"
 			description={`Broadcom BCM2712 Quad-core ARM Cortex-A76 processor @ 2.4GHz, 8GB LPDDR4X. Powered by Raspberry Pi OS (PiOS). Handles local API prototypes, container testing, script automations and Tailscale Exit Node.`}
-		/>
+		>
+			<RaspberryPi5 />
+		</GearItem>
 
 		<!-- Raspberry Pi 4 -->
 		<GearItem
 			id="05 / RASPBERRY_PI_4_4GB"
-			title="Lab Node B:"
+			title="Lab Node B"
 			description={`Broadcom BCM2711 Quad-core ARM Cortex-A72 processor @ 1.5GHz, 4GB LPDDR4. Configured with NixOS for funsies.`}
-		/>
+		>
+			<RaspberryPi4 />
+		</GearItem>
 	</div>
 
 	<!-- Section 2: Software / Environment -->

@@ -787,6 +787,25 @@
 		);
 		opacity: var(--scan);
 	}
+
+	/*
+		Drafting dots: the 8px mat the PO-100 case and the gear plates sit on. The host
+		element sets how strongly it shows (`opacity-40` everywhere today).
+	*/
+	.dot-grid {
+		background-image: radial-gradient(var(--line) 1px, transparent 1px);
+		background-size: 8px 8px;
+	}
+
+	/*
+		Line drawings (the gear page's device plates) are drawn in millimetres and scaled to
+		fit their well; every stroke stays `--stroke` wide on screen regardless, so a drawing
+		meets the chassis at the same weight as every panel border.
+	*/
+	.line-art * {
+		vector-effect: non-scaling-stroke;
+		stroke-width: var(--stroke);
+	}
 }
 
 /* The highlight-link class is the one place a link may light up. */
