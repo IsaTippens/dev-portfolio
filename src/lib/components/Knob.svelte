@@ -7,7 +7,7 @@
 	 * A physical knob.
 	 *
 	 * Vertical drag (1px = 1 detent worth of travel), keyboard for the same job with
-	 * arrows and Home/End, double-click to return to the module's preset. The cap rotates
+	 * arrows and Home/End, double-tap or double-click to return to the module's preset.
 	 * freely under the pointer and settles into the nearest detent on release with a
 	 * spring — the only spring on the site, because a knob is a spring.
 	 *
@@ -72,6 +72,9 @@
 		if (!dragging && !settling) rotation = external;
 	});
 
+	/** A tap is a press that barely moved; two within a third of a second reset the knob. */
+	let last_tap = 0;
+
 	function on_pointerdown(event: PointerEvent) {
 		event.preventDefault();
 		const el = event.currentTarget as HTMLElement;
@@ -80,9 +83,12 @@
 		settle_anim?.cancel();
 
 		const start_y = event.clientY;
+		const start_x = event.clientX;
+		let travel = 0;
 		const start_value = rotation;
 
 		const on_move = (move: PointerEvent) => {
+			travel = Math.max(travel, Math.hypot(move.clientX - start_x, move.clientY - start_y));
 			// 0.42 degrees per pixel: the full 360° sweep is about one screen height.
 			rotation = clamp(start_value + (start_y - move.clientY) * 0.42, -180, 180);
 			value = quantize(rotation);
@@ -93,6 +99,17 @@
 			el.removeEventListener('pointerup', on_up);
 			el.removeEventListener('pointercancel', on_up);
 			dragging = false;
+			if (travel < 3) {
+				// A tap, not a turn: count it; two quick taps put the preset back.
+				const now = performance.now();
+				if (now - last_tap < 350) {
+					last_tap = 0;
+					onreset?.();
+					settle(value);
+					return;
+				}
+				last_tap = now;
+			}
 			settle(rotation);
 		};
 
@@ -140,10 +157,6 @@
 			class="cursor-ns-resize touch-none rounded-full select-none focus-visible:outline-offset-4 active:cursor-grabbing"
 			onpointerdown={on_pointerdown}
 			onkeydown={on_keydown}
-			ondblclick={() => {
-				onreset?.();
-				settle(value);
-			}}
 			role="slider"
 			aria-label={aria_label}
 			aria-valuenow={readout(value)}
@@ -151,7 +164,7 @@
 			aria-valuemax="100"
 			aria-valuetext={`${readout(value)} of 100`}
 			tabindex="0"
-			title="Drag vertically, or use the arrow keys. Double-click to reset."
+			title="Drag vertically, or use the arrow keys. Double-tap or double-click to reset."
 		>
 			<KnobCap {cap} {rotation} size={28} />
 		</div>

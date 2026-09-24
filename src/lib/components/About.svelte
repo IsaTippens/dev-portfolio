@@ -28,13 +28,15 @@
 			</dl>
 		</Panel>
 
-		<div class="hidden flex-1 md:block">
+		<div class="flex-1">
 			<Cartography />
 		</div>
 	</div>
 
 	<!-- Portrait engine -->
-	<div class="mx-auto flex w-full max-w-[220px] shrink-0 items-center justify-center md:w-48 md:max-w-none md:self-center">
+	<div
+		class="mx-auto flex w-full max-w-[220px] shrink-0 items-center justify-center md:w-48 md:max-w-none md:self-center"
+	>
 		<ProfilePhoto />
 	</div>
 </div>

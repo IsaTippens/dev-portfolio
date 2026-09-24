@@ -10,6 +10,42 @@
 	// Svelte 5 state runes
 	/** @type {number | null} */
 	let activeChannel = $state(null);
+	/**
+	 * Touch only: the channel a tap has tuned to. The first tap on a channel tunes the deck
+	 * to it — the same preview a hover gives a mouse — and the second tap follows its link.
+	 * @type {number | null}
+	 */
+	let armedChannel = $state(null);
+	/** Whether the tap that armed a channel still owes its click: suppress that one, follow the next. */
+	let suppress_click = false;
+	/** @type {HTMLDivElement | null} */
+	let root = null;
+
+	/**
+	 * @param {PointerEvent} event
+	 * @param {number} i
+	 */
+	function arm_touch(event, i) {
+		if (event.pointerType === 'mouse') return;
+		suppress_click = armedChannel !== i;
+		armedChannel = i;
+		activeChannel = i;
+	}
+
+	/**
+	 * @param {MouseEvent} event
+	 * @param {number} i
+	 */
+	function follow_touch(event, i) {
+		// @ts-expect-error click carries pointerType for real pointers
+		if (event.pointerType !== 'touch') return; // a mouse or Enter follows at once
+		if (suppress_click) {
+			suppress_click = false;
+			event.preventDefault();
+			return;
+		}
+		armedChannel = null;
+	}
 	let levels = $state([20, 35, 15, 30, 45]);
 	let tapeRotation = $state(0);
 
@@ -115,7 +151,22 @@
 	}
 </script>
 
+<svelte:window
+	onpointerdown={(event) => {
+		if (event.pointerType === 'mouse' || armedChannel === null) return;
+		if (root?.contains(/** @type {Node} */ (event.target))) return;
+		armedChannel = null;
+		activeChannel = null;
+	}}
+	onkeydown={(event) => {
+		if (event.key !== 'Escape' || armedChannel === null) return;
+		armedChannel = null;
+		activeChannel = null;
+	}}
+/>
+
 <div
+	bind:this={root}
 	class="w-full max-w-3xl mx-auto bg-[var(--hw-case-2)] border-2 border-[var(--hw-case-line)] rounded-3xl p-4 sm:p-6 shadow-2xl relative font-mono text-dim select-none transition-colors duration-200"
 >
 	<!-- Corner Screws -->
@@ -233,7 +284,9 @@
 						onmouseenter={() => (activeChannel = i)}
 						onmouseleave={() => (activeChannel = null)}
 						onfocus={() => (activeChannel = i)}
-						onblur={() => (activeChannel = null)}
+						onblur={() => (activeChannel = armedChannel)}
+						onpointerdown={(event) => arm_touch(event, i)}
+						onclick={(event) => follow_touch(event, i)}
 					>
 						<!-- Channel indicator -->
 						<div class="flex flex-col items-center gap-1 select-none">
@@ -355,7 +408,9 @@
 					onmouseenter={() => (activeChannel = i)}
 					onmouseleave={() => (activeChannel = null)}
 					onfocus={() => (activeChannel = i)}
-					onblur={() => (activeChannel = null)}
+					onblur={() => (activeChannel = armedChannel)}
+					onpointerdown={(event) => arm_touch(event, i)}
+					onclick={(event) => follow_touch(event, i)}
 				>
 					{i + 1}
 				</a>
