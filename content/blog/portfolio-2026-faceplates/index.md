@@ -7,6 +7,7 @@ published: true
 
 <script>
     import Disclaimer from '$lib/components/Disclaimer.svelte';
+    import Clip from '$lib/components/embeds/Clip.svelte';
 </script>
 
 <Disclaimer title="AI Generated">
@@ -17,6 +18,7 @@ Tasks handled by Opus 5.5 include:
 - Highlight the new faceplate themes, the progressive blur between pages, and the new cartography map.
 - List the AI models used, from most to least used: DeepSeek Flash V4.1, DeepSeek Flash V4.0, Kimi K3, Gemini Flash 3.8, Opus 5.0, Opus 5.5 and Gemini Flash 3.7.
 - Emphasize that the work was mostly orchestrated using oh-my-pi, with some design decisions made using Kimi K3.
+- Update (25 Sep 2026): append a section covering the changes made between 23 and 25 Sep 2026, with screen recordings of the animations and the page transition. That work was done solely by Opus 5.5, with no other models involved.
 
 </Disclaimer>
 
@@ -148,6 +150,10 @@ On 17 September, three palettes called DAWN, DUNE and EMBER were added, reworked
 In July, clicking a link cut straight to the next page. The 17 September polish pass swapped the cut for a stepped blink through black, and five commits on 22 September replaced the blink with a focus pull: the screen loses focus, the new page is swapped in behind the blur, and focus comes back in.
 
 ![A focus pull frozen mid-wave on the PS2 plate: fully defocused near the ring's origin, still sharp at the far corner](/images/portfolio-2026-faceplates/focus-pull.webp)
+
+Here is the real thing, recorded going from the homepage to the gear page and slowed to quarter speed so the rings are readable:
+
+<Clip src="/images/portfolio-2026-faceplates/focus-pull.mp4" width={720} height={760} label="Screen recording of the focus pull: the page defocuses in rings from the GEAR key, the gear page is swapped in behind the blur, and focus returns" />
 
 ### Five Blurs, One Gradient
 
@@ -303,3 +309,75 @@ Like July's redesign, this round was built with AI models. Most of it was orches
 The commit history shows how the work went. Ideas were tried and thrown out quickly: three palettes in fifteen minutes, and a 3D PO-100 in two days. Many commits also carry their own measurements. The focus-pull commits timed real navigations to confirm that the page swaps on a frame where the veil is at full cover, so the swap itself never reaches the screen.
 
 The device is still the same 700-pixel chassis it was in July. It just has more faceplates now, a softer way of changing pages, and a map worth scrolling for.
+
+---
+
+## Update, 25 September: The Gear Bench
+
+This post went up on 22 September, and the device kept moving. Seven more commits landed between 23 and 25 September, touching 19 files with 2,113 lines added and 317 removed. Unlike everything above, which was a mix of seven models, every one of those commits was written by **Opus 5.5** alone, driven through oh-my-pi.
+
+| Date | What landed |
+|:---|:---|
+| 23 Sep | A brand mark in the status bar, a full-width charge banner and a real USB-C plug on the PO-100; machined knob caps shared by the PO-100 and TE-S10 |
+| 25 Sep | Line drawings and folded spec sheets on the gear page; the AGENT_WORKFLOW module; a Pi 5 that fits its accessories; touch parity; the Nothing Phone (2)'s charging Glyph |
+
+### The Status Bar Gets a Name
+
+The `DEV-PORTFOLIO` label and its LED are gone. The left of the bar now carries an IT monogram, inked in the current plate's colours, beside ISA TIPPENS. The MODE dial moves to the centre, the KEYS button hides on touch-width screens where there is no keyboard to map, and the battery gauge gains a terminal nub and a charging bolt with current running through the cell.
+
+The charging marquee is now a banner: an opaque strip wipes across the whole bar, the ticker enters from the right edge and leaves off the left, and then the strip wipes away again.
+
+<Clip src="/images/portfolio-2026-faceplates/charge-banner.mp4" width={720} height={540} label="Screen recording of the charge banner wiping across the status bar after the PO-100 is plugged in" />
+
+### A Real USB-C Plug
+
+The PO-100 has a USB-C receptacle cut into its bottom edge, under the PWR label, and it is a real button: click the port to plug the charger in, and click the connector to pull it back out. The plug is drawn as the real thing, with a metal shell, an overmould, a ribbed strain relief and a shaded cable fading off the edge of the case. It travels straight up into the port along its own axis, sparks as it seats, and the screen surges for a beat, the way a backlight jumps when the supply switches over. The glass also catches a soft glare under the mouse pointer ("a finger is not a lamp"), and the REC lamp now blinks.
+
+Unplugged and plugged back in, at half speed:
+
+<Clip src="/images/portfolio-2026-faceplates/po100-plug.mp4" width={240} height={474} label="Screen recording of the PO-100's USB-C plug sliding out, then back into the port with a spark and a screen surge" />
+
+### Machined Knobs
+
+The knobs on the PO-100 and the TE-S10 now share one `KnobCap` component: a coloured cap in a knurled, polished-metal skirt. The knurl, the lathe rings and the pointer turn with the knob, while the specular highlight stays where the light is. Cap colours are faceplate tokens (`--hw-knob-1` to `--hw-knob-4`), so the PS1 and PS2 plates now run all four controller symbols: cross, triangle, square and circle. The PO-100 itself was brought up to the TE-S10's standard, with a rounded moulding, a rounded screen bezel, an inset knob module with a printed scale, and domed keys shared with the TE-S10, along with its screws.
+
+### Drawings on the Gear Page
+
+Every hardware module on the gear page now carries a line drawing, set into a sunk well on the drafting dots, with its spec sheet folded behind a `[+] SPECS` disclosure that opens with the CRT strike-up flicker. The drawings are inked only in plate tokens, so every faceplate repaints them.
+
+- **Raspberry Pi 5 and Pi 4:** top-view schematics lifted from the official mechanical drawings, with component labels and the 85 × 56 mm dimensions.
+- **Nothing Phone (2):** the back traced to scale, with all eleven Glyphs.
+- **Laptop and tablet:** a generic 16" laptop with an editor on screen, and an 11" tablet with a notes page and a stylus.
+
+The Pi 5 drawing is also a toggle. Tap or click it and it fits the board's accessories in assembly order: the official Active Cooler, then the M.2 HAT+ on its standoffs, then a 256GB Raspberry Pi SSD (M.2 2230) in the socket. They come off again in reverse. The outlines come from the product briefs' mechanical drawings, registered on the board's mounting holes, and the cooler under the HAT shows through as dashed hidden lines.
+
+Fitting and stripping, at half speed:
+
+<Clip src="/images/portfolio-2026-faceplates/gear-pi5-fit.mp4" width={590} height={262} label="Screen recording of the Raspberry Pi 5 drawing fitting the Active Cooler, the M.2 HAT+ and the SSD one at a time, then stripping them in reverse" />
+
+The phone drawing plays a Glyph notification the same way: every Glyph double-flashes in steps, cascading from the camera ring down to the exclamation mark. And when a charger is plugged in, the exclamation mark becomes the charging meter the real phone shows: the dot lights, the bar climbs from its foot to the battery's level, holds for 2.5 seconds and drains again, pausing the notification while it runs.
+
+| Notification (real time) | Charging meter (half speed) |
+|:---:|:---:|
+| <Clip src="/images/portfolio-2026-faceplates/gear-phone-notify.mp4" width={200} height={262} label="Screen recording of the Nothing Phone (2) drawing flashing a Glyph notification" /> | <Clip src="/images/portfolio-2026-faceplates/gear-phone-charge.mp4" width={200} height={262} label="Screen recording of the charging meter: the exclamation mark lights, holds and drains" /> |
+
+Both drawings are real toggle buttons: a tap, a click or Enter/Space holds the effect on, and a mouse also previews it on hover. A finger never previews, so a second tap always switches it off. With reduced motion, the Glyphs hold lit instead of flashing, the parts go on without the stagger, and the charging meter rests at the battery's level.
+
+### The Agent Workflow Module
+
+The old Gemini pair-programming row on the gear page is replaced by `06 / AGENT_WORKFLOW`: oh-my-pi as the harness, with the model families it drives racked as live slots beside their labs. The rest of the dev environment became label/value spec sheets built from a single list, with the operating systems split per lab node (PiOS on A, NixOS on B), so no raw HTML strings are left on the page.
+
+![The AGENT_WORKFLOW module: oh-my-pi driving Gemini, Claude, Kimi and DeepSeek](/images/portfolio-2026-faceplates/agent-workflow.webp)
+
+### Touch Parity
+
+Some of the device only answered to a mouse. Now it answers to touch too:
+
+- **Socials deck:** the first tap on a channel tunes to it, giving the same TRANSMIT TO readout, REC lamp and knob presets a hover gives a mouse, and the second tap follows the link. A tap off the deck or Escape parks it.
+- **Knobs:** two quick taps reset a knob to its preset, the touch version of a double-click.
+- **Survey map:** the Cape Town cartography is no longer hidden on narrow screens.
+
+### Smaller Fixes
+
+- Post rows put the date and ID on one line, so titles get the full width, and undated drafts read `UNDATED` and sort last.
+- The GAMING_LOG tag is no longer clipped by its own scroller.
