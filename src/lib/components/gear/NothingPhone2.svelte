@@ -5,19 +5,48 @@
 	 * A1–E1. The drawing is a toggle that plays a notification: every Glyph double-flashes,
 	 * the camera ring first and the exclamation mark last. A tap, click or Enter/Space keeps
 	 * it playing; a mouse also plays it while it hovers.
+	 *
+	 * On every plug-in the exclamation mark (D1 over E1) becomes the charging meter the
+	 * real phone shows: the dot lights first, the bar climbs from its foot to the
+	 * battery's level, holds 2.5s, and drains again. The run takes priority over the
+	 * notification flash, which is suspended while it plays.
 	 */
+	import { isCharging, batteryLevel } from '$lib/stores/battery';
+
+	/** Length of one charging-Glyph run: climb 0.1s, hold 2.5s, drain 0.1s. */
+	const CHARGE_GLYPH_MS = 2700;
 
 	/** Held by a tap, click or Enter/Space; previewed while a mouse (never a finger) is over it. */
 	let held = $state(false);
 	let previewing = $state(false);
+
+	/** One climb–hold–drain run of the charging bar, restarted on every plug-in. */
+	let charge_run = $state(false);
+	let was_charging = false;
+	let run_timer: number | undefined;
+
+	$effect(() => {
+		const now = $isCharging;
+		const plugged = !was_charging && now;
+		was_charging = now;
+		window.clearTimeout(run_timer);
+		if (plugged) {
+			charge_run = true;
+			run_timer = window.setTimeout(() => (charge_run = false), CHARGE_GLYPH_MS);
+		} else if (!now) {
+			charge_run = false;
+		}
+		return () => window.clearTimeout(run_timer);
+	});
 </script>
 
 <button
 	type="button"
 	class="relative block h-full w-full"
 	aria-pressed={held}
-	aria-label="Line drawing of the back of the Nothing Phone (2): play a Glyph notification"
-	data-on={held || previewing}
+	data-on={(held || previewing) && !charge_run}
+	data-charging={$isCharging}
+	data-charge-run={charge_run}
 	onclick={() => (held = !held)}
 	onpointerenter={(e) => (previewing = e.pointerType === 'mouse')}
 	onpointerleave={() => (previewing = false)}
@@ -151,8 +180,19 @@
 			/>
 			<!-- D1 -->
 			<rect
-				class="glyph"
+				class="glyph charge-line"
 				style="--delay: 240ms"
+				x="37"
+				y="130.7"
+				width="2.4"
+				height="18.5"
+				rx="1.2"
+			/>
+			<!-- Charging meter over D1: same bar in lit ink, grown from its foot to the
+			     battery's level. Unknown level reads as full. -->
+			<rect
+				class="charge-fill"
+				style="--level: {($batteryLevel ?? 100) / 100}"
 				x="37"
 				y="130.7"
 				width="2.4"
@@ -161,7 +201,7 @@
 			/>
 			<!-- E1 -->
 			<rect
-				class="glyph"
+				class="glyph charge-dot"
 				style="--delay: 240ms"
 				x="37"
 				y="151.7"
@@ -202,6 +242,50 @@
 		100% {
 			fill: var(--line);
 			stroke: var(--ink-dim);
+		}
+	}
+
+	/* Charging meter: a lit bar over D1, scaled from its foot. Dark between runs. */
+	.charge-fill {
+		fill: var(--ink);
+		stroke: var(--ink);
+		transform: scaleY(0);
+		transform-box: fill-box;
+		transform-origin: bottom;
+	}
+
+	/* While a charge run plays it takes priority: the notification flash is gated off
+	   in the markup, the dot holds lit and the bar belongs to the meter. */
+	[data-charge-run='true'] .charge-dot {
+		fill: var(--ink);
+		stroke: var(--ink);
+	}
+
+	/* Each plug-in: the bar climbs from its foot to the battery's level, holds
+	   2.5s (3.7–96.3% of the 2.7s run), and drains again. */
+	[data-charge-run='true'] .charge-fill {
+		animation: glyph-charge 2700ms linear;
+	}
+	@keyframes glyph-charge {
+		0% {
+			transform: scaleY(0);
+		}
+		3.7% {
+			transform: scaleY(var(--level));
+		}
+		96.3% {
+			transform: scaleY(var(--level));
+		}
+		100% {
+			transform: scaleY(0);
+		}
+	}
+
+	/* Reduced motion: no climb; the meter rests at the battery's level. */
+	@media (prefers-reduced-motion: reduce) {
+		[data-charging='true'] .charge-fill {
+			animation: none;
+			transform: scaleY(var(--level));
 		}
 	}
 
