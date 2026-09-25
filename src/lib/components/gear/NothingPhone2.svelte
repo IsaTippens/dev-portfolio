@@ -44,6 +44,7 @@
 	type="button"
 	class="relative block h-full w-full"
 	aria-pressed={held}
+	aria-label="Line drawing of the back of the Nothing Phone (2): play a Glyph notification"
 	data-on={(held || previewing) && !charge_run}
 	data-charging={$isCharging}
 	data-charge-run={charge_run}
