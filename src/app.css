@@ -31,7 +31,8 @@
 	            coloured; interface may not. `--hw-knob-1…4` are the knob-cap colours
 	            in slot order (PO-100 uses 1–3, TE-S10 all four); `--hw-metal*` is the
 	            polished skirt a cap sits in, and `--hw-sheen` is what that metal and
-	            the caps reflect.
+	            the caps reflect. `--hw-glyph` is a lit Nothing Glyph LED and
+	            `--hw-glyph-edge` its outline.
 
 	The `--code-*` values are the syntax palette consumed by prism.css.
 */
@@ -120,6 +121,8 @@
 	--hw-glass: rgba(255, 255, 255, 0.1);
 	--hw-chip: rgba(0, 0, 0, 0.62);
 	--hw-chip-ink: #ffffff;
+	--hw-glyph: #ffffff;
+	--hw-glyph-edge: #55555a;
 }
 
 :root[data-theme='dark'] {
@@ -199,6 +202,8 @@
 	--hw-screen-grid: rgba(0, 255, 102, 0.02);
 	--hw-screen-glow: 0 0 2px rgba(0, 255, 102, 0.4);
 	--hw-port: #ffd700;
+	--hw-glyph: #f2f2f3;
+	--hw-glyph-edge: #f2f2f3;
 }
 
 :root[data-theme='phosphor'] {
@@ -278,6 +283,8 @@
 	--hw-screen-grid: rgba(51, 255, 102, 0.025);
 	--hw-screen-glow: 0 0 2px rgba(51, 255, 102, 0.45);
 	--hw-port: #33ff66;
+	--hw-glyph: #6bff92;
+	--hw-glyph-edge: #6bff92;
 }
 
 /*
@@ -365,6 +372,8 @@
 	--hw-screen-grid: rgba(15, 56, 15, 0.06);
 	--hw-screen-glow: none;
 	--hw-port: #0f380f;
+	--hw-glyph: #9bbc0f;
+	--hw-glyph-edge: #9bbc0f;
 }
 
 /*
@@ -456,6 +465,8 @@
 	--hw-screen-grid: rgba(230, 230, 234, 0.05);
 	--hw-screen-glow: 0 0 2px rgba(143, 183, 255, 0.35);
 	--hw-port: #9a1b35;
+	--hw-glyph: #ffffff;
+	--hw-glyph-edge: #4f4c45;
 }
 
 /*
@@ -546,6 +557,8 @@
 	--hw-screen-grid: rgba(234, 239, 251, 0.05);
 	--hw-screen-glow: 0 0 2px rgba(111, 168, 255, 0.4);
 	--hw-port: #3d8bfd;
+	--hw-glyph: #e9edf4;
+	--hw-glyph-edge: #e9edf4;
 }
 
 @layer base {

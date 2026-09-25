@@ -7,20 +7,20 @@
 	 * it playing; a mouse also plays it while it hovers.
 	 *
 	 * On every plug-in the exclamation mark (D1 over E1) becomes the charging meter the
-	 * real phone shows: the dot lights first, the bar climbs from its foot to the
-	 * battery's level, holds 2.5s, and drains again. The run takes priority over the
-	 * notification flash, which is suspended while it plays.
+	 * real phone shows: the dot lights first, the bar sweeps from its foot to full and
+	 * drops back to the battery's level, holds 2.5s, and drains again. The run takes
+	 * priority over the notification flash, which is suspended while it plays.
 	 */
 	import { isCharging, batteryLevel } from '$lib/stores/battery';
 
-	/** Length of one charging-Glyph run: climb 0.1s, hold 2.5s, drain 0.1s. */
+	/** Length of one charging-Glyph run: sweep in 0.1s, hold 2.5s, drain 0.1s. */
 	const CHARGE_GLYPH_MS = 2700;
 
 	/** Held by a tap, click or Enter/Space; previewed while a mouse (never a finger) is over it. */
 	let held = $state(false);
 	let previewing = $state(false);
 
-	/** One climb–hold–drain run of the charging bar, restarted on every plug-in. */
+	/** One sweep–hold–drain run of the charging bar, restarted on every plug-in. */
 	let charge_run = $state(false);
 	let was_charging = false;
 	let run_timer: number | undefined;
@@ -189,7 +189,7 @@
 				height="18.5"
 				rx="1.2"
 			/>
-			<!-- Charging meter over D1: same bar in lit ink, grown from its foot to the
+			<!-- Charging meter over D1: same bar lit, grown from its foot to the
 			     battery's level. Unknown level reads as full. -->
 			<rect
 				class="charge-fill"
@@ -215,7 +215,8 @@
 </button>
 
 <style>
-	/* Unlit, a Glyph is a diffuser the colour of the plate's lines; lit, it is ink. */
+	/* Unlit, a Glyph is a diffuser the colour of the plate's lines; lit, it is the
+	   faceplate's LED colour. */
 	.glyph {
 		fill: var(--line);
 		stroke: var(--ink-dim);
@@ -228,16 +229,16 @@
 	/* LEDs step, they never fade: on, off, on, then dark until the bar comes round. */
 	@keyframes glyph-flash {
 		0% {
-			fill: var(--ink);
-			stroke: var(--ink);
+			fill: var(--hw-glyph);
+			stroke: var(--hw-glyph-edge);
 		}
 		7% {
 			fill: var(--line);
 			stroke: var(--ink-dim);
 		}
 		14% {
-			fill: var(--ink);
-			stroke: var(--ink);
+			fill: var(--hw-glyph);
+			stroke: var(--hw-glyph-edge);
 		}
 		21%,
 		100% {
@@ -248,8 +249,8 @@
 
 	/* Charging meter: a lit bar over D1, scaled from its foot. Dark between runs. */
 	.charge-fill {
-		fill: var(--ink);
-		stroke: var(--ink);
+		fill: var(--hw-glyph);
+		stroke: var(--hw-glyph-edge);
 		transform: scaleY(0);
 		transform-box: fill-box;
 		transform-origin: bottom;
@@ -258,18 +259,22 @@
 	/* While a charge run plays it takes priority: the notification flash is gated off
 	   in the markup, the dot holds lit and the bar belongs to the meter. */
 	[data-charge-run='true'] .charge-dot {
-		fill: var(--ink);
-		stroke: var(--ink);
+		fill: var(--hw-glyph);
+		stroke: var(--hw-glyph-edge);
 	}
 
-	/* Each plug-in: the bar climbs from its foot to the battery's level, holds
-	   2.5s (3.7–96.3% of the 2.7s run), and drains again. */
+	/* Each plug-in: the bar sweeps from its foot to full and drops back to the
+	   battery's level (0–3.7% of the 2.7s run), holds 2.5s (3.7–96.3%), and drains
+	   again. */
 	[data-charge-run='true'] .charge-fill {
 		animation: glyph-charge 2700ms linear;
 	}
 	@keyframes glyph-charge {
 		0% {
 			transform: scaleY(0);
+		}
+		2.2% {
+			transform: scaleY(1);
 		}
 		3.7% {
 			transform: scaleY(var(--level));
@@ -294,8 +299,8 @@
 	@media (prefers-reduced-motion: reduce) {
 		[data-on='true'] .glyph {
 			animation: none;
-			fill: var(--ink);
-			stroke: var(--ink);
+			fill: var(--hw-glyph);
+			stroke: var(--hw-glyph-edge);
 		}
 	}
 </style>
