@@ -69,9 +69,10 @@
 	 * the plate zooms every layer by its own amount, and the cursor pulls them
 	 * sideways by that same depth, so the map reads as a stack rather than a print.
 	 *
-	 * Pointer-only and skipped under reduced motion: this is decoration, never
-	 * information. Zoom fades in and out with the panel curve; the cursor-driven
-	 * part has no duration at all, like the scroll scrub.
+	 * Skipped under reduced motion: this is decoration, never information. Zoom
+	 * fades in and out with the panel curve; the cursor-driven part has no
+	 * duration at all, like the scroll scrub. Touch screens have no hover, so a
+	 * tap toggles the same effect driven by device tilt instead (see below).
 	 */
 	const ZOOM = 0.14; // near-layer scale at full hover
 	const SHIFT = 14; // near-layer travel at the plate edge, in viewBox units
@@ -146,6 +147,168 @@
 		cursor.ny = 0;
 		hover = animate(cursor, { zoom: 0, duration: PANEL, ease: EASE_SNAP, onUpdate: parallax });
 	}
+
+	/**
+	 * Tilt parallax for touch screens. A tap arms it; the phone's attitude at
+	 * that moment is "level", and tilting away from it pulls the layers exactly
+	 * as the cursor would. Orientation (`deviceorientation`, gyro-fused on every
+	 * platform that has it) beats raw `devicemotion`: it reports angles, not
+	 * accelerations, so no integration and no gravity to subtract.
+	 *
+	 * iOS 13+ gates the event behind `requestPermission()`, which must run inside
+	 * the tap itself. Browsers that lack the event, refuse permission, or expose
+	 * it without a sensor behind it (desktop Chromium, insecure origins) fall back
+	 * to the tap point: the plate zooms and leans towards where it was touched.
+	 */
+	const TILT_RANGE = 20; // degrees of tilt for a full-edge shift
+	const TILT_SMOOTH = 0.18; // per-frame approach towards the sensor target
+	const LEVEL_DRIFT = 0.004; // per-reading pull of "level" towards the hold
+	const SENSOR_GRACE = 800; // ms to wait for a first reading before giving up
+
+	type OrientationCtor = typeof DeviceOrientationEvent & {
+		requestPermission?: () => Promise<'granted' | 'denied'>;
+	};
+
+	let tilting = false;
+	let last_pointer = '';
+	/** Sensor verdict for this page: unknown until the first tap asks. */
+	let sensor: 'unknown' | 'live' | 'none' = 'unknown';
+	let level: { beta: number; gamma: number } | null = null;
+	const target = { nx: 0, ny: 0 };
+	let frame = 0;
+	let grace: ReturnType<typeof setTimeout> | undefined;
+
+	/** Screen rotation in degrees, so "tilt right" stays right in landscape. */
+	const screen_angle = () => screen.orientation?.angle ?? (window.orientation || 0);
+
+	function onOrientation(event: DeviceOrientationEvent) {
+		if (event.beta === null || event.gamma === null) return;
+		if (sensor !== 'live') {
+			sensor = 'live';
+			clearTimeout(grace);
+		}
+		if (!level) level = { beta: event.beta, gamma: event.gamma };
+		// Let "level" creep towards however the phone is being held, so a
+		// settled new grip recentres instead of pinning the plate to one side.
+		level.beta += (event.beta - level.beta) * LEVEL_DRIFT;
+		level.gamma += (event.gamma - level.gamma) * LEVEL_DRIFT;
+		const db = event.beta - level.beta;
+		const dg = event.gamma - level.gamma;
+		// Device axes → screen axes: gamma is left/right, beta is towards/away.
+		const a = (screen_angle() * Math.PI) / 180;
+		const cos = Math.cos(a);
+		const sin = Math.sin(a);
+		target.nx = clamp_unit((dg * cos + db * sin) / TILT_RANGE);
+		target.ny = clamp_unit((db * cos - dg * sin) / TILT_RANGE);
+	}
+
+	function follow() {
+		cursor.nx += (target.nx - cursor.nx) * TILT_SMOOTH;
+		cursor.ny += (target.ny - cursor.ny) * TILT_SMOOTH;
+		parallax();
+		frame = requestAnimationFrame(follow);
+	}
+
+	async function sensorAllowed(): Promise<boolean> {
+		if (sensor === 'none' || !window.isSecureContext) return false;
+		const ctor = window.DeviceOrientationEvent as OrientationCtor | undefined;
+		if (!ctor) return false;
+		if (typeof ctor.requestPermission !== 'function') return true;
+		try {
+			return (await ctor.requestPermission()) === 'granted';
+		} catch {
+			return false;
+		}
+	}
+
+	/** Stop the sensor path and lean towards `(nx, ny)` from the tap instead. */
+	function leanTo(nx: number, ny: number) {
+		window.removeEventListener('deviceorientation', onOrientation);
+		cancelAnimationFrame(frame);
+		hover?.cancel();
+		hover = animate(cursor, {
+			zoom: 1,
+			nx,
+			ny,
+			duration: PANEL,
+			ease: EASE_SNAP,
+			onUpdate: parallax
+		});
+	}
+
+	async function startTilt(event: MouseEvent) {
+		tilting = true;
+		const rect = plate!.getBoundingClientRect();
+		const tap_x = clamp_unit(((event.clientX - rect.left) / rect.width) * 2 - 1);
+		const tap_y = clamp_unit(((event.clientY - rect.top) / rect.height) * 2 - 1);
+
+		// Must be the first await: iOS only honours the prompt inside the gesture.
+		const allowed = await sensorAllowed();
+		if (!tilting) return; // toggled off while the prompt was up
+		if (!allowed) {
+			sensor = 'none';
+			leanTo(tap_x, tap_y);
+			return;
+		}
+
+		level = null;
+		target.nx = target.ny = 0;
+		hover?.cancel();
+		hover = animate(cursor, { zoom: 1, duration: PANEL, ease: EASE_SNAP });
+		window.addEventListener('deviceorientation', onOrientation);
+		frame = requestAnimationFrame(follow);
+		if (sensor === 'unknown') {
+			grace = setTimeout(() => {
+				if (sensor !== 'unknown' || !tilting) return;
+				sensor = 'none';
+				leanTo(tap_x, tap_y);
+			}, SENSOR_GRACE);
+		}
+	}
+
+	function stopTilt() {
+		if (!tilting) return;
+		tilting = false;
+		clearTimeout(grace);
+		window.removeEventListener('deviceorientation', onOrientation);
+		cancelAnimationFrame(frame);
+		hover?.cancel();
+		hover = animate(cursor, {
+			zoom: 0,
+			nx: 0,
+			ny: 0,
+			duration: PANEL,
+			ease: EASE_SNAP,
+			onUpdate: parallax
+		});
+	}
+
+	function onMapDown(event: PointerEvent) {
+		last_pointer = event.pointerType;
+	}
+
+	function onMapTap(event: MouseEvent) {
+		// Mouse has hover; only touch and pen toggle. A scroll gesture cancels the
+		// pointer and never produces a click, so swiping past the map is safe.
+		if (last_pointer === 'mouse' || last_pointer === '' || !plate || reducedMotion()) return;
+		if (tilting) stopTilt();
+		else void startTilt(event);
+	}
+
+	onMount(() => {
+		if (!plate) return;
+		// Scrolled away: stand down, so the sensor isn't left running unseen.
+		const seen = new IntersectionObserver(([entry]) => {
+			if (!entry.isIntersecting) stopTilt();
+		});
+		seen.observe(plate);
+		return () => {
+			seen.disconnect();
+			clearTimeout(grace);
+			cancelAnimationFrame(frame);
+			window.removeEventListener('deviceorientation', onOrientation);
+		};
+	});
 
 	onDestroy(() => hover?.cancel());
 
@@ -224,10 +387,12 @@
 	<div
 		bind:this={plate}
 		role="presentation"
-		class="relative min-h-72 flex-1 overflow-hidden border border-line bg-sunk"
+		class="relative min-h-72 flex-1 overflow-hidden border border-line bg-sunk [@media(pointer:coarse)]:cursor-pointer"
 		onpointerenter={onMapEnter}
 		onpointermove={onMapMove}
 		onpointerleave={onMapLeave}
+		onpointerdown={onMapDown}
+		onclick={onMapTap}
 	>
 		<!-- `meet` keeps the whole survey frame in view at any plate shape; land, sea
 		     and graticule run well past the frame, so the letterbox bands fill with
