@@ -8,6 +8,7 @@
 	import Intro from '$lib/components/Intro.svelte';
 	import PostTile from '$lib/components/PostTile.svelte';
 	import Socials from '$lib/components/Socials.svelte';
+	import Panel from '$lib/components/Panel.svelte';
 
 	let { data } = $props();
 </script>
@@ -17,6 +18,9 @@
 <div class="grid gap-4">
 	<!-- Front panel. -->
 	<Intro />
+	<Panel tag="GREETING" class="p-4" data-boot="2">
+		<p class="font-mono text-[14px] text-ink">Hello Taskeen!</p>
+	</Panel>
 	<About {data} />
 
 	<Experience />
