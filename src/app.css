@@ -118,6 +118,7 @@
 	--hw-screen-grid: rgba(19, 42, 16, 0.04);
 	--hw-screen-glow: none;
 	--hw-port: #b8860b;
+	--hw-lightbar: #ff5a14;
 	--hw-glass: rgba(255, 255, 255, 0.1);
 	--hw-chip: rgba(0, 0, 0, 0.62);
 	--hw-chip-ink: #ffffff;
@@ -202,6 +203,7 @@
 	--hw-screen-grid: rgba(0, 255, 102, 0.02);
 	--hw-screen-glow: 0 0 2px rgba(0, 255, 102, 0.4);
 	--hw-port: #ffd700;
+	--hw-lightbar: #ff6a1f;
 	--hw-glyph: #f2f2f3;
 	--hw-glyph-edge: #f2f2f3;
 }
@@ -283,6 +285,7 @@
 	--hw-screen-grid: rgba(51, 255, 102, 0.025);
 	--hw-screen-glow: 0 0 2px rgba(51, 255, 102, 0.45);
 	--hw-port: #33ff66;
+	--hw-lightbar: #33ff66;
 	--hw-glyph: #6bff92;
 	--hw-glyph-edge: #6bff92;
 }
@@ -372,6 +375,7 @@
 	--hw-screen-grid: rgba(15, 56, 15, 0.06);
 	--hw-screen-glow: none;
 	--hw-port: #0f380f;
+	--hw-lightbar: #9bbc0f;
 	--hw-glyph: #9bbc0f;
 	--hw-glyph-edge: #9bbc0f;
 }
@@ -465,6 +469,7 @@
 	--hw-screen-grid: rgba(230, 230, 234, 0.05);
 	--hw-screen-glow: 0 0 2px rgba(143, 183, 255, 0.35);
 	--hw-port: #9a1b35;
+	--hw-lightbar: #3d6bff;
 	--hw-glyph: #ffffff;
 	--hw-glyph-edge: #4f4c45;
 }
@@ -557,6 +562,7 @@
 	--hw-screen-grid: rgba(234, 239, 251, 0.05);
 	--hw-screen-glow: 0 0 2px rgba(111, 168, 255, 0.4);
 	--hw-port: #3d8bfd;
+	--hw-lightbar: #3d8bfd;
 	--hw-glyph: #e9edf4;
 	--hw-glyph-edge: #e9edf4;
 }
@@ -648,6 +654,7 @@
 	--hw-screen-grid: rgba(255, 36, 25, 0.03);
 	--hw-screen-glow: 0 0 2px rgba(255, 36, 25, 0.5);
 	--hw-port: #ff2419;
+	--hw-lightbar: #ff2419;
 	--hw-glyph: #ff6b5c;
 	--hw-glyph-edge: #ff6b5c;
 }

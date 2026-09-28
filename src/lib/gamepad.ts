@@ -1,6 +1,7 @@
 import { readonly, writable, type Readable } from 'svelte/store';
 import { theme } from '$lib/stores/theme';
 import { reducedMotion } from '$lib/motion';
+import { konami, type KonamiToken } from '$lib/konami';
 
 /**
  * PAD 1 — a controller port that only exists on the PlayStation plates.
@@ -12,6 +13,10 @@ import { reducedMotion } from '$lib/motion';
  *
  * Browsers only reveal a pad after its first button press, so the port reads empty until
  * the operator touches the controller. That is the hardware being honest, not a bug.
+ *
+ * One thing reaches past the PlayStation plates: the Konami code. A connected pad is
+ * read on every plate so the code can be entered anywhere, but only the PS plates turn
+ * its presses into navigation.
  */
 
 /** Standard-mapping button indices. Anything else is not a pad we know how to read. */
@@ -23,10 +28,22 @@ const BTN = {
 	r1: 5,
 	start: 9,
 	up: 12,
-	down: 13
+	down: 13,
+	left: 14,
+	right: 15
 } as const;
 
-/** Plates with a controller port. Every other plate leaves the pad unpolled. */
+/** D-pad and face buttons as Konami inputs: B is the right face button, A the bottom. */
+const KONAMI_BUTTONS: [number, KonamiToken][] = [
+	[BTN.up, 'up'],
+	[BTN.down, 'down'],
+	[BTN.left, 'left'],
+	[BTN.right, 'right'],
+	[BTN.circle, 'b'],
+	[BTN.cross, 'a']
+];
+
+/** Plates with a controller port. Elsewhere the pad is read for the Konami code only. */
 const PAD_PLATES: Record<string, true> = { ps1: true, ps2: true };
 
 /** Stick travel before it counts as a direction; below it is thumb rest, not intent. */
@@ -111,7 +128,7 @@ function verticalOf(pad: Gamepad): -1 | 0 | 1 {
 
 /**
  * Start the controller port. Call from onMount; returns the cleanup. Polls only while a
- * pad is connected and a PlayStation plate is on, so every other plate pays nothing.
+ * pad is connected; navigation needs a PlayStation plate, the Konami code does not.
  */
 export function startGamepad(): () => void {
 	if (typeof window === 'undefined' || typeof navigator === 'undefined') return () => {};
@@ -150,41 +167,47 @@ export function startGamepad(): () => void {
 			states.set(pad.index, { buttons, dir, next_repeat: now + REPEAT_DELAY_MS });
 			return;
 		}
-
-		if (dir !== prev.dir) {
-			prev.dir = dir;
-			if (dir !== 0) {
-				step(dir);
-				prev.next_repeat = now + REPEAT_DELAY_MS;
-			}
-		} else if (dir !== 0 && now >= prev.next_repeat) {
-			step(dir);
-			prev.next_repeat = now + REPEAT_EVERY_MS;
-		}
-
 		const down = (i: number) => buttons[i] && !prev.buttons[i];
-		if (down(BTN.cross)) confirm(pad);
-		if (down(BTN.circle)) press('Escape');
-		if (down(BTN.triangle)) {
-			document.querySelector<HTMLButtonElement>('button[aria-haspopup="listbox"]')?.click();
-		}
-		if (down(BTN.l1)) shoulder(-1);
-		if (down(BTN.r1)) shoulder(1);
-		if (down(BTN.start)) press('?');
+		let completed = false;
+		for (const [i, token] of KONAMI_BUTTONS) if (down(i) && konami(token)) completed = true;
 
+		// The code ends on A, which is ✕: on the PS plates that would also click the row
+		// the ↑ ↓ presses just focused. The completing frame belongs to the code alone.
+		if (on_plate && !completed) {
+			if (dir !== prev.dir) {
+				if (dir !== 0) {
+					step(dir);
+					prev.next_repeat = now + REPEAT_DELAY_MS;
+				}
+			} else if (dir !== 0 && now >= prev.next_repeat) {
+				step(dir);
+				prev.next_repeat = now + REPEAT_EVERY_MS;
+			}
+
+			if (down(BTN.cross)) confirm(pad);
+			if (down(BTN.circle)) press('Escape');
+			if (down(BTN.triangle)) {
+				document.querySelector<HTMLButtonElement>('button[aria-haspopup="listbox"]')?.click();
+			}
+			if (down(BTN.l1)) shoulder(-1);
+			if (down(BTN.r1)) shoulder(1);
+			if (down(BTN.start)) press('?');
+		}
+
+		prev.dir = dir;
 		prev.buttons = buttons;
 	}
 
-	/** Run the poll loop exactly when there is a pad to read and a plate that has a port. */
+	/** Run the poll loop exactly when there is a pad to read. */
 	function sync() {
-		const live = on_plate && pads.size > 0;
+		const live = pads.size > 0;
 		if (live && !raf) {
 			raf = window.requestAnimationFrame(frame);
 		} else if (!live && raf) {
 			window.cancelAnimationFrame(raf);
 			raf = 0;
 		}
-		// Off-plate or unplugged, the edge history is stale by the time polling resumes.
+		// Unplugged, the edge history is stale by the time polling resumes.
 		if (!live) states.clear();
 	}
 

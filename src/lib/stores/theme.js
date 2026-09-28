@@ -124,6 +124,15 @@ export const theme = {
 			/* private mode: the plate just won't persist */
 		}
 		set(id);
+	},
+	/**
+	 * Fit a plate for this page view only: nothing is persisted and OS following is
+	 * left as it was, so a reload puts back whatever the operator last chose. This is
+	 * how the Konami code borrows a sealed plate without breaking its seal.
+	 * @param {string} id
+	 */
+	visit(id) {
+		set(id);
 	}
 };
 

@@ -15,6 +15,8 @@
 	import { maybeBoot } from '$lib/motion/boot.js';
 	import { motionEnabled } from '$lib/motion';
 	import { padConnected, startGamepad } from '$lib/gamepad';
+	import { lightbarLinked, lightbarSupported, linkLightbar, sonyPadPresent, startLightbar } from '$lib/lightbar';
+	import { startKonami } from '$lib/konami';
 	import { installConsole } from '$lib/ctf/console';
 
 	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
@@ -356,15 +358,24 @@
 
 	/* ── Ports: controller and console ───────────────────────────────────── */
 
-	// The pad only exists on the PlayStation plates; the port gates its own polling, the
-	// badge gates itself the same way so a pad left plugged in on another plate stays quiet.
+	// The pad only navigates on the PlayStation plates (elsewhere it is read for the
+	// Konami code alone), so the badge only shows there too.
 	const pad_badge = $derived($padConnected && ($theme === 'ps1' || $theme === 'ps2'));
+	// A PlayStation pad whose lightbar isn't ours yet: the badge becomes the button that
+	// asks for it, because WebHID only prompts from a click. Re-read on (dis)connect.
+	const pad_link = $derived(
+		pad_badge && !$lightbarLinked && lightbarSupported() && sonyPadPresent()
+	);
 
 	onMount(() => {
 		const stop_pad = startGamepad();
+		const stop_konami = startKonami();
+		const stop_lightbar = startLightbar();
 		const uninstall_console = installConsole();
 		return () => {
 			stop_pad();
+			stop_konami();
+			stop_lightbar();
 			uninstall_console();
 		};
 	});
@@ -573,13 +584,21 @@
 					{/if}
 				</span>
 				{#if pad_badge}
-					<span
-						class="{carrier_badge
-							? 'hidden sm:flex'
-							: 'flex'} mr-2 items-center gap-1 whitespace-nowrap font-bold text-ink"
-					>
-						<span class="badge-led" aria-hidden="true"></span>PAD 1
-					</span>
+					{@const badge_class = `${carrier_badge ? 'hidden sm:flex' : 'flex'} mr-2 items-center gap-1 whitespace-nowrap font-bold text-ink`}
+					{#if pad_link}
+						<button
+							type="button"
+							class="{badge_class} bg-transparent p-0 text-xxs uppercase tracking-widest hover:text-accent"
+							title="Link the controller's lightbar to the faceplate"
+							onclick={() => void linkLightbar()}
+						>
+							<span class="badge-led" aria-hidden="true"></span>PAD 1 · LINK LIGHT
+						</button>
+					{:else}
+						<span class={badge_class}>
+							<span class="badge-led" aria-hidden="true"></span>PAD 1{#if $lightbarLinked}&nbsp;· LIT{/if}
+						</span>
+					{/if}
 				{/if}
 				<button
 					type="button"
