@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 
 /** @typedef {{ id: string, label: string, color: string, note: string, sealed?: boolean }} Plate */
@@ -61,6 +61,13 @@ export const THEMES = [
 		label: 'MR ROBOT',
 		color: '#0a0101',
 		note: 'red terminal, operators only',
+		sealed: true
+	},
+	{
+		id: 'gd',
+		label: 'GD',
+		color: '#061f6e',
+		note: 'stereo madness blue + gold',
 		sealed: true
 	}
 ];
@@ -144,24 +151,26 @@ if (browser && typeof window.matchMedia === 'function') {
 }
 
 /**
- * Where a won plate is recorded. The console CTF (`$lib/ctf/console.ts`) writes it
- * when the final flag lands; nothing else does.
+ * Where won plates are recorded, as a comma-separated list of ids. The console CTF
+ * (`$lib/ctf/console.ts`) wins MR ROBOT, the GAMING_LOG cube wins GD; nothing else
+ * writes here. A lone id (the format before GD existed) reads as a one-item list.
  */
 export const UNLOCK_KEY = 'plate-unlocked';
 
+/** @returns {string[]} */
 const read_unlocked = () => {
 	try {
-		return localStorage.getItem(UNLOCK_KEY);
+		return (localStorage.getItem(UNLOCK_KEY) ?? '').split(',').filter(Boolean);
 	} catch {
-		return null;
+		return [];
 	}
 };
 
-const unlocked = writable(browser ? read_unlocked() : null);
+const unlocked = writable(browser ? read_unlocked() : []);
 
-/** The plates the MODE dial offers: every stock plate, plus a sealed one once won. */
+/** The plates the MODE dial offers: every stock plate, plus the sealed ones won. */
 export const plates = derived(unlocked, ($unlocked) =>
-	THEMES.filter((t) => !t.sealed || t.id === $unlocked)
+	THEMES.filter((t) => !t.sealed || $unlocked.includes(t.id))
 );
 
 /**
@@ -170,12 +179,15 @@ export const plates = derived(unlocked, ($unlocked) =>
  * @param {string} id
  */
 export function unlockPlate(id) {
+	// Merge with storage first (another tab may have won a different plate since this
+	// one loaded) and with memory (in private mode storage forgets within the visit).
+	const won = [...new Set([...read_unlocked(), ...get(unlocked), id])];
 	try {
-		localStorage.setItem(UNLOCK_KEY, id);
+		localStorage.setItem(UNLOCK_KEY, won.join(','));
 	} catch {
 		/* private mode: the seal holds for this visit only */
 	}
-	unlocked.set(id);
+	unlocked.set(won);
 }
 
 if (browser) {

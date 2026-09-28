@@ -2,6 +2,7 @@
 	import { onMount, tick } from 'svelte';
 	import Panel from '$lib/components/Panel.svelte';
 	import { MAX_DURATION, PANEL, SNAP, STEPS_FLICKER, motionEnabled } from '$lib/motion';
+	import { theme, unlockPlate } from '$lib/stores/theme';
 
 	/**
 	 * Active log. Read-only telemetry, so the rows are a table and not a control surface.
@@ -146,6 +147,12 @@
 			if (animated) hop();
 			if (streak >= DEMON_STREAK) {
 				streak = 0;
+				// The first run of twelve wins the GD plate and fits it on the spot; later
+				// runs only replay the banner, so a plate picked since is left alone.
+				if (!demon13) {
+					unlockPlate('gd');
+					theme.set('gd');
+				}
 				demon13 = true;
 				show_demon = true;
 				store(DEMON_KEY, '1');
@@ -203,6 +210,8 @@
 			const saved = Number(localStorage.getItem(ATTEMPTS_KEY));
 			if (Number.isInteger(saved) && saved > 0) attempts = saved;
 			demon13 = localStorage.getItem(DEMON_KEY) === '1';
+			// Earned before the GD plate existed: the seal is already broken, quietly.
+			if (demon13) unlockPlate('gd');
 		} catch {
 			// No storage: every visit is attempt 1.
 		}

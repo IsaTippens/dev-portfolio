@@ -108,9 +108,9 @@ Decode with key `source`. Only letters are shifted, and only letters advance the
 
 `isa.flag('ISA{w1nn3r_w1nn3r_uwc_d1nn3r}')` prints `FLAG 4/4 ACCEPTED`, an ASCII terminal (`root@ecorp:~# ./fsociety.sh` … `hello, friend._`) and `PLATE_UNLOCKED: MR ROBOT`. Then it:
 
-1. sets `localStorage['plate-unlocked'] = 'mrrobot'` (`unlockPlate` in `src/lib/stores/theme.js`);
+1. adds `mrrobot` to `localStorage['plate-unlocked']`, a comma-separated list of won plates (`unlockPlate` in `src/lib/stores/theme.js`; the Geometry Dash cube in GAMING_LOG wins `gd` the same way);
 2. fits the plate right away (`theme.set('mrrobot')`, persisted as a normal MODE pick);
-3. adds a seventh detent to the MODE dial with no reload. Other open tabs pick it up through the `storage` event.
+3. adds a detent to the MODE dial with no reload. Other open tabs pick it up through the `storage` event.
 
 The plate is the `:root[data-theme='mrrobot']` block in `src/app.css`: a one-hue red-on-black terminal in the style of PHOSPHOR (Virtual Boy LED red). Its registry row is `sealed: true`, so the dial (`plates` store) hides it until the seal is broken. The pre-paint script in `hooks.server.js` accepts `mrrobot` as a stored plate because it is in `THEME_IDS`.
 

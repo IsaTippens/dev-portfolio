@@ -659,6 +659,96 @@
 	--hw-glyph-edge: #ff6b5c;
 }
 
+/*
+	GD — sealed, like MR ROBOT, and won in the GAMING_LOG instead of the console:
+	twelve clean jumps of the Geometry Dash cube in a row. Stereo Madness colours —
+	the royal-blue level behind, the yellow cube carrying the interactive chrome,
+	GD green for ok, and a gold-plated trophy finish on the hardware.
+	ink 10.6:1 on the panel, dim 7.0:1, accent 8.4:1 (accent-ink on accent 13.9:1),
+	ok 8.3:1, warn 6.2:1, rec 4.9:1 — all AA on the panel and on the well.
+*/
+:root[data-theme='gd'] {
+	color-scheme: dark;
+
+	--bg: #061f6e;
+	--panel: #0b2f9c;
+	--panel-sunk: #08267f;
+	--hover: rgba(255, 224, 26, 0.08);
+
+	--ink: #f7fbff;
+	--ink-dim: #b8cdff;
+	--line: #2d5ae0;
+
+	--accent: #ffe01a;
+	--accent-ink: #1a1400;
+	--ok: #5aff3c;
+	--rec: #ff8a8a;
+	--warn: #ffb347;
+
+	--shadow: #020b2e;
+	--shadow-soft: rgba(1, 6, 30, 0.5);
+	--scrim: rgba(1, 6, 30, 0.34);
+	--screen-dark: rgba(2, 8, 34, 0.88);
+	--accent-wash: rgba(255, 224, 26, 0.14);
+
+	--grain: 0.03;
+	--scan: 0.05;
+
+	--code-bg: #072478;
+	--code-fg: #eef3ff;
+	--code-comment: #8fa8e8;
+	--code-punct: #c3d3ff;
+	--code-namespace: #7ff0ff;
+	--code-deleted: #ff8a8a;
+	--code-symbol: #7ff0ff;
+	--code-tag: #ffe01a;
+	--code-boolean: #ffb347;
+	--code-number: #ffb347;
+	--code-constant: #7ff0ff;
+	--code-selector: #ffe01a;
+	--code-attr: #5aff3c;
+	--code-string: #b6ff9e;
+	--code-class: #ffe01a;
+	--code-regex: #ff9ef0;
+	--code-selection: rgba(255, 224, 26, 0.22);
+
+	--hw-case: #0c33a8;
+	--hw-case-2: #0a2c93;
+	--hw-case-line: #2a55d4;
+	--hw-well: #03104a;
+	--hw-well-2: #020a33;
+	--hw-screw: #d9b21f;
+	--hw-key: #1240c4;
+	--hw-key-line: #3d6af0;
+	--hw-key-ink: #ffe01a;
+	--hw-key-shadow: #041357;
+	--hw-knob-edge: #03104a;
+	--hw-knob-1: #ffe01a;
+	--hw-knob-2: #5aff3c;
+	--hw-knob-3: #00e5ff;
+	--hw-knob-4: #ff4fd8;
+	--hw-metal-hi: #fff6b0;
+	--hw-metal: #d9b21f;
+	--hw-metal-lo: #6b5205;
+	--hw-sheen: #fffbe0;
+	--hw-screen: #041657;
+	--hw-screen-2: #020b36;
+	--hw-screen-ink: #ffe01a;
+	--hw-screen-ink-2: #fff6b0;
+	--hw-screen-line: #173aa6;
+	--hw-screen-ink-dim: #c9ad14;
+	--hw-screen-well: #030f45;
+	--hw-screen-cell: #06196b;
+	--hw-screen-cell-on: #ffe98a;
+	--hw-screen-seg-off: #0e2a8a;
+	--hw-screen-grid: rgba(0, 229, 255, 0.05);
+	--hw-screen-glow: 0 0 2px rgba(255, 224, 26, 0.45);
+	--hw-port: #ffe01a;
+	--hw-lightbar: #ffd000;
+	--hw-glyph: #fff6b0;
+	--hw-glyph-edge: #fff6b0;
+}
+
 @layer base {
 	:root {
 		--font-pixel: 'JetBrains Mono', ui-monospace, monospace;
