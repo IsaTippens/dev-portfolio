@@ -5,7 +5,10 @@
 	import Readout from '$lib/components/Readout.svelte';
 	import { RELIEF } from '$lib/components/cartography-relief';
 	import { onScrollProgress } from '$lib/motion/scrub.js';
-	import { reducedMotion, EASE_SNAP, PANEL } from '$lib/motion';
+	import { reducedMotion, motionEnabled, EASE_SNAP, PANEL } from '$lib/motion';
+	import { sunPosition, CIVIL_DUSK, type SunPosition } from '$lib/cartography/sun';
+	import { fetchWind, isCapeDoctor, compassPoint, type Wind } from '$lib/cartography/wind';
+	import { signalFrom, CAPE_TOWN, type Signal } from '$lib/cartography/signal';
 
 	/**
 	 * CARTOGRAPHY_CPT — road survey radiating out of Cape Town.
@@ -95,6 +98,7 @@
 	let water_el: SVGGElement | null = $state(null);
 	let marks_el: SVGGElement | null = $state(null);
 	let summit_el: SVGGElement | null = $state(null);
+	let cloud_el: SVGGElement | null = $state(null);
 	let near_el: SVGGElement | null = $state(null);
 
 	const SEA_LEVEL = -0.3; // land at 0 m sinks behind the glass
@@ -108,7 +112,8 @@
 
 	/**
 	 * Layer elements with their depth. The roads and lowland marks ride on the
-	 * land, just above sea level; Table Mountain's marker rides its summit.
+	 * land, just above sea level; Table Mountain's marker, and the tablecloth
+	 * when there is one, ride its summit.
 	 */
 	const layers = (): [SVGElement | null, number][] => [
 		[grid_el, SEA_LEVEL - 0.15],
@@ -117,8 +122,121 @@
 		...RELIEF.map(({ level }, i): [SVGElement | null, number] => [relief_els[i] ?? null, altitude(level)]),
 		[near_el, SEA_LEVEL + 0.02],
 		[marks_el, SEA_LEVEL + 0.02],
+		[cloud_el, altitude(1085)],
 		[summit_el, altitude(1085)]
 	];
+
+	/**
+	 * Live sky over the city. Everything here is read on the client after mount:
+	 * the server has no clock worth trusting for the visitor, no visitor time
+	 * zone, and no business calling a weather API on every render.
+	 *
+	 * The sun lights the model the way it lights the mountain right now. Each
+	 * terrace casts a flat, hard-edged copy of itself away from the sun, so the
+	 * steps read as steps; low sun, long shadow. A copy and not an SVG filter:
+	 * a filtered layer re-rasterises on every parallax frame, nine of them at
+	 * once, and a translated path costs nothing extra to move. The shade is
+	 * `--shadow-soft`, which every plate already tunes to read on its own well.
+	 */
+	const SHADOW_REACH = 2.4; // viewBox units of shadow with the sun on the horizon
+	const SUN_EVERY = 5 * 60_000; // ms between re-sightings; shadows creep, they don't sweep
+
+	let sun = $state<SunPosition | null>(null);
+	let wind = $state<Wind | null>(null);
+	let signal = $state<Signal>(null);
+	/** Ambient loops allowed: fixed at mount, like the rest of the decoration. */
+	let drift = $state(false);
+
+	/** Past civil dusk the streetlights are on and the relief has gone flat. */
+	const night = $derived(sun !== null && sun.altitude < CIVIL_DUSK);
+
+	/** Offset of every terrace's shadow, or null while the sun is under the horizon. */
+	const shade = $derived.by(() => {
+		if (!sun || sun.altitude <= 0) return null;
+		const reach = SHADOW_REACH * (1 - sun.altitude / 90);
+		const a = (sun.azimuth * Math.PI) / 180;
+		// Azimuth runs clockwise from north, and north is up the plate: the sun
+		// sits along (sin a, −cos a), so the shadow falls the other way.
+		return `translate(${(-Math.sin(a) * reach).toFixed(2)} ${(Math.cos(a) * reach).toFixed(2)})`;
+	});
+
+	/** Strong south-easter: the cloud is on the table. */
+	const tablecloth = $derived(wind !== null && isCapeDoctor(wind));
+
+	const sun_text = $derived(
+		!sun ? '--' : night ? 'NIGHT' : `${Math.round(sun.azimuth) % 360}° / ${Math.round(sun.altitude)}°`
+	);
+	const wind_text = $derived(
+		!wind
+			? '--'
+			: `${tablecloth ? 'CAPE DOCTOR' : compassPoint(wind.from)} ${Math.round(wind.speed)} KM/H`
+	);
+	// A time zone is a city, not a fix: round to the nearest ten and say so.
+	const signal_text = $derived(
+		signal === 'local'
+			? 'LOCAL'
+			: signal
+				? `~${(Math.round(signal.km / 10) * 10).toLocaleString('en-US')} KM ${Math.round(signal.bearing) % 360}°`
+				: ''
+	);
+
+	/**
+	 * Tablecloth, drawn at the summit: a cap of cloud lying along the plateau,
+	 * and tongues spilling off its north face towards the city. Puffs are
+	 * `[x, y, r]`; the cap's are in its own frame, turned to lie along the
+	 * 1000 m terrace (64.5,106 → 72,109).
+	 */
+	const CAP: [number, number, number][] = [
+		[-5.2, 0.6, 2],
+		[-3, -0.6, 2.5],
+		[-0.4, -1.1, 2.8],
+		[2.4, -0.8, 2.6],
+		[4.8, 0.2, 2.1],
+		[-1.6, 1.2, 2.3],
+		[1.4, 1.3, 2.3],
+		[3.8, 1.4, 1.7]
+	];
+	/** Where each tongue leaves the north edge, and its puffs relative to that. */
+	const TONGUES: [number, number][] = [
+		[65.5, 105.4],
+		[68.3, 105.9],
+		[71, 106.5]
+	];
+	const TONGUE_PUFFS: [number, number, number][] = [
+		[0, -0.8, 1.7],
+		[-0.5, -2.6, 1.3]
+	];
+	const POUR = 6; // s for one tongue to slide off the edge and burn away
+
+	/**
+	 * Cloud white. The plate's metal highlight is the brightest thing each plate
+	 * defines — white on paper, phosphor on phosphor — where `--panel` is darker
+	 * than the high terraces on every dark plate. Cut with the well so it sits in
+	 * the map instead of glaring off it.
+	 */
+	const CLOUD = 'color-mix(in srgb, var(--hw-metal-hi) 65%, var(--panel-sunk))';
+
+	onMount(() => {
+		const sight = () => {
+			sun = sunPosition(new Date(), CAPE_TOWN.lat, CAPE_TOWN.lon);
+		};
+		sight();
+		const clock = setInterval(sight, SUN_EVERY);
+
+		signal = signalFrom(Intl.DateTimeFormat().resolvedOptions().timeZone ?? '');
+		drift = motionEnabled();
+
+		// One reading per visit; a failure just leaves the row at `--`.
+		const ask = new AbortController();
+		void fetchWind(ask.signal).then((reading) => {
+			if (!ask.signal.aborted) wind = reading;
+		});
+
+		return () => {
+			clearInterval(clock);
+			ask.abort();
+		};
+	});
 
 	const cursor = { zoom: 0, nx: 0, ny: 0 };
 	let hover: { cancel: () => void } | undefined;
@@ -426,6 +544,16 @@
 				<pattern id="cpt-hatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
 					<line x1="0" y1="0" x2="0" y2="3" stroke="var(--line)" stroke-width="0.8" />
 				</pattern>
+				<!-- Streetlights: the roads' own light, spread and laid under them twice
+				     so the halo carries at plate size. Only applied after dusk. -->
+				<filter id="cpt-lamps" x="-5%" y="-5%" width="110%" height="110%">
+					<feGaussianBlur in="SourceGraphic" stdDeviation="1.4" result="halo" />
+					<feMerge>
+						<feMergeNode in="halo" />
+						<feMergeNode in="halo" />
+						<feMergeNode in="SourceGraphic" />
+					</feMerge>
+				</filter>
 			</defs>
 
 			<!-- Graticule, 0.1° -->
@@ -514,15 +642,28 @@
 
 			<!-- Relief: one filled terrace per contour level, lowest first, each on its
 			     own depth plane (see `altitude`). Opaque fills let higher ground
-			     cover lower, so the steps show as the layers slide. -->
+			     cover lower, so the steps show as the layers slide. By day each
+			     terrace lays its shadow on the ground below it, riding its own plane
+			     so the shadow stays attached to the step that casts it. -->
 			<g stroke="var(--ink-dim)" stroke-width="0.4" stroke-opacity="0.55" stroke-linejoin="round" fill-rule="evenodd">
 				{#each RELIEF as { level, d }, i (level)}
-					<g bind:this={relief_els[i]}><path {d} fill={tint(level)} /></g>
+					<g bind:this={relief_els[i]}>
+						{#if shade}<path {d} transform={shade} fill="var(--shadow-soft)" stroke="none" />{/if}
+						<path {d} fill={tint(level)} />
+					</g>
 				{/each}
 			</g>
 
-			<!-- The road network (scrubbed by scroll), on the near plane -->
-			<g bind:this={near_el} fill="none" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round">
+			<!-- The road network (scrubbed by scroll), on the near plane. After dusk
+			     it comes on like the city does. -->
+			<g
+				bind:this={near_el}
+				fill="none"
+				stroke="var(--accent)"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				filter={night ? 'url(#cpt-lamps)' : undefined}
+			>
 				{#each ROADS as road, i (road.name)}
 					<path
 						bind:this={road_els[i]}
@@ -568,6 +709,36 @@
 				<text x="77.6" y="91.1" font-size="8" font-weight="700" fill="var(--ink)" letter-spacing="0.8">CAPE TOWN</text>
 			</g>
 
+			<!-- The tablecloth: laid by the Cape Doctor, riding the summit's plane.
+			     Filled from the plate's own highlight (`CLOUD`), with an ink edge so
+			     it still reads where highlight and terrain run close. Every puff is
+			     drawn twice, outline then fill, so only the cloud's outer edge keeps
+			     its line. -->
+			<g bind:this={cloud_el}>
+				{#if tablecloth}
+					<g class:drift opacity="0.92" stroke="var(--ink-dim)" stroke-opacity="0.6" stroke-width="1.1">
+						{#each TONGUES as [x, y], i (i)}
+							<g class="tongue" style:animation-delay="{(-i * POUR) / TONGUES.length}s" style:animation-duration="{POUR}s">
+								<g fill="none">
+									{#each TONGUE_PUFFS as [px, py, r], j (j)}<circle cx={x + px} cy={y + py} {r} />{/each}
+								</g>
+								<g fill={CLOUD} stroke="none">
+									{#each TONGUE_PUFFS as [px, py, r], j (j)}<circle cx={x + px} cy={y + py} {r} />{/each}
+								</g>
+							</g>
+						{/each}
+						<g transform="translate(68.2 107.6) rotate(22)">
+							<g fill="none">
+								{#each CAP as [cx, cy, r], j (j)}<circle {cx} {cy} {r} />{/each}
+							</g>
+							<g fill={CLOUD} stroke="none">
+								{#each CAP as [cx, cy, r], j (j)}<circle {cx} {cy} {r} />{/each}
+							</g>
+						</g>
+					</g>
+				{/if}
+			</g>
+
 			<!-- Table Mountain's summit (Maclear's Beacon), riding its own height -->
 			<g
 				bind:this={summit_el}
@@ -593,12 +764,18 @@
 			</g>
 		</svg>
 
-		<!-- Glass: readouts sit above the map and never move with it -->
+		<!-- Glass: readouts sit above the map and never move with it. The ink tick
+		     on the rose points the way the visitor's signal came in from. -->
 		<div
 			class="pointer-events-none absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full border border-line bg-sunk"
 			aria-hidden="true"
 		>
 			<div class="absolute h-4 w-0.5 bg-line"></div>
+			{#if signal && signal !== 'local'}
+				<div class="absolute inset-0" style:rotate="{signal.bearing.toFixed(1)}deg">
+					<div class="absolute top-0.5 left-1/2 h-[9px] w-px -translate-x-1/2 bg-ink"></div>
+				</div>
+			{/if}
 			<div
 				class="absolute top-1 h-0 w-0 border-r-[2px] border-b-[4px] border-l-[2px] border-r-transparent border-b-accent border-l-transparent"
 			></div>
@@ -611,6 +788,37 @@
 			<dt>LAT/LON</dt><dd class="text-ink">33.9249°S 18.4241°E</dd>
 			<dt>DATUM</dt><dd class="text-ink">WGS84 · TM</dd>
 			<dt>ROADS</dt><dd class="text-ink"><Readout value={net_km} pad={3} suffix=" KM" /></dd>
+			<dt>SUN</dt><dd class="text-ink">{sun_text}</dd>
+			<dt>WIND</dt><dd class="text-ink">{wind_text}</dd>
+			{#if signal}<dt>SIGNAL</dt><dd class="text-ink">{signal_text}</dd>{/if}
 		</dl>
 	</div>
 </Panel>
+
+<style>
+	/*
+		The tablecloth pours: tongues slide off the north face towards the city
+		and burn off as they drop, the way the real one evaporates into the
+		warmer air below. This is weather, not a control, so it runs on its own
+		slow linear clock like the tape reels instead of the panel curves, and
+		holds still, tongues out, when motion is off.
+	*/
+	.drift .tongue {
+		animation-name: pour;
+		animation-timing-function: linear;
+		animation-iteration-count: infinite;
+	}
+	@keyframes pour {
+		0% {
+			transform: translate(0, 0);
+			opacity: 0;
+		}
+		15% {
+			opacity: 1;
+		}
+		100% {
+			transform: translate(-1.2px, -5px);
+			opacity: 0;
+		}
+	}
+</style>

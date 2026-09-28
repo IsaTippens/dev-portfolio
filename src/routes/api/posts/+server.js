@@ -29,5 +29,9 @@ export const GET = async () => {
 		return new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime();
 	});
 
-	return json(sortedPosts);
+	// CTF flag 2 of 4, reached from flag 1 (`curl -i`). ROT13: the ISA{ prefix is the
+	// crib. The chain is written up in src/lib/ctf/SOLUTIONS.md.
+	return json(sortedPosts, {
+		headers: { 'x-flag': 'VFN{e0o0gf_xa0j_ju3e3_gu3_z0a3l_vf}' }
+	});
 };

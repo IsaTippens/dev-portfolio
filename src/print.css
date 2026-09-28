@@ -1,0 +1,239 @@
+/*
+	PRINT — the device ships with a paper manual.
+
+	Ctrl+P on a hardware UI prints a screenshot of hardware: dark plates, a sticky bar
+	stamped over every page, grain, and buttons nobody can press. Paper gets what paper
+	can hold instead — the manual cover first, then the current program in ink on white.
+
+	Nothing here applies on screen except hiding the manual. Selectors lean on markup
+	the layout already has (`data-status-bar`, `data-boot`, component classes) rather
+	than print-only hooks, so the layout keeps no knowledge of this file.
+*/
+
+/* The manual is paper-only. `hidden` already keeps it off screen and out of the
+   accessibility tree; this is the belt to that attribute's braces. */
+.print-manual {
+	display: none;
+}
+
+@page {
+	size: A4;
+	margin: 14mm;
+}
+
+@media print {
+	/*
+		Paper plate. Whatever plate is fitted on screen, paper is white and ink is ink:
+		the light plate's tokens with the surfaces pulled to white, shadows, grain and
+		scanlines zeroed, and hairlines darkened a step so they survive a laser printer.
+		`html:root[data-theme]` outranks every `:root[data-theme='…']` block in app.css
+		(and any plate added later) without caring which file loads first.
+	*/
+	html:root,
+	html:root[data-theme] {
+		color-scheme: light;
+
+		--bg: #ffffff;
+		--panel: #ffffff;
+		--panel-sunk: #f4f4f5;
+		--hover: transparent;
+
+		--ink: #121212;
+		--ink-dim: #55555a;
+		--line: #b4b4ba;
+
+		--accent: #c2410c;
+		--accent-ink: #ffffff;
+		--ok: #0f7a3d;
+		--rec: #c0161b;
+		--warn: #8a5300;
+
+		--shadow: transparent;
+		--shadow-soft: transparent;
+		--scrim: transparent;
+		--screen-dark: rgba(8, 8, 10, 0.86);
+		--accent-wash: rgba(204, 68, 0, 0.09);
+
+		--radius: 2px;
+		--stroke: 1px;
+		--grain: 0;
+		--scan: 0;
+
+		--code-bg: #f4f4f5;
+		--code-fg: #24292f;
+		--code-comment: #57606a;
+		--code-punct: #4c545e;
+		--code-namespace: #3c4d5c;
+		--code-deleted: #82071e;
+		--code-symbol: #0550ae;
+		--code-tag: #cf222e;
+		--code-boolean: #0550ae;
+		--code-number: #953800;
+		--code-constant: #0550ae;
+		--code-selector: #6f35c4;
+		--code-attr: #116329;
+		--code-string: #0a3069;
+		--code-class: #953800;
+		--code-regex: #0550ae;
+		--code-selection: rgba(31, 86, 158, 0.18);
+
+		/* Physical components — case, well, key caps, knob caps. */
+		--hw-case: #e6e6e3;
+		--hw-case-2: #dfdfdf;
+		--hw-case-line: #c5c5c5;
+		--hw-well: #1c1c1c;
+		--hw-well-2: #121212;
+		--hw-screw: #c9c9cb;
+		--hw-key: #f4f4f2;
+		--hw-key-line: #cccccc;
+		--hw-key-ink: #4b4b50;
+		--hw-key-shadow: #b5b5b8;
+		--hw-knob-edge: #111111;
+		--hw-knob-1: #0a84ff;
+		--hw-knob-2: #00b25a;
+		--hw-knob-3: #ff5a14;
+		--hw-knob-4: #ffc400;
+		--hw-metal-hi: #ffffff;
+		--hw-metal: #c4c4c8;
+		--hw-metal-lo: #77777d;
+		--hw-sheen: #ffffff;
+		--hw-screen: #8ba67e;
+		--hw-screen-2: #071308;
+		--hw-screen-ink: #132a10;
+		--hw-screen-ink-2: #00ff66;
+		--hw-screen-line: #6c8660;
+		--hw-screen-ink-dim: #5e7456;
+		--hw-screen-well: #83a07a;
+		--hw-screen-cell: #899f7c;
+		--hw-screen-cell-on: #86a077;
+		--hw-screen-seg-off: #738a6a;
+		--hw-screen-grid: rgba(19, 42, 16, 0.04);
+		--hw-screen-glow: none;
+		--hw-port: #b8860b;
+		--hw-glass: rgba(255, 255, 255, 0.1);
+		--hw-chip: rgba(0, 0, 0, 0.62);
+		--hw-chip-ink: #ffffff;
+		--hw-glyph: #ffffff;
+		--hw-glyph-edge: #55555a;
+	}
+
+	html,
+	body {
+		background: #ffffff !important;
+		color: var(--ink);
+	}
+
+	/* ── Chrome ─────────────────────────────────────────────────────────────
+	   Controls, overlays and motion surfaces. The status bar is the device's
+	   control strip, the bottom bar is live telemetry (POS, FPS) that is wrong the
+	   moment it is printed, and the grain, grid and focus veil are screen texture. */
+	.grain,
+	.focus-sweep,
+	[data-status-bar],
+	[data-status-bar] ~ [data-boot='7'],
+	#key-map,
+	[role='dialog'],
+	.hbtn,
+	.hw-key,
+	.usb-port,
+	video,
+	audio,
+	iframe {
+		display: none !important;
+	}
+
+	/* The background grid. Its own rule: an unsupported `:has()` would void the
+	   whole selector list above in engines that lack it, and unhide the chrome. */
+	div:has(> .print-manual) > .absolute.inset-0 {
+		display: none !important;
+	}
+
+	/* The layout root is a flex column, so `order` lifts the manual above the page it
+	   is rendered after — the cover prints first without the layout moving it. */
+	div:has(> .print-manual) {
+		display: flex !important;
+		flex-direction: column;
+		align-items: stretch !important;
+		justify-content: flex-start !important;
+		min-height: 0 !important;
+		padding: 0 !important;
+	}
+
+	.print-manual {
+		display: block !important;
+		order: -1;
+		break-after: page;
+	}
+
+	/* The chassis goes flat: a sheet of paper is the chassis now. */
+	div:has(> [data-status-bar]) {
+		max-width: none !important;
+		border: 0 !important;
+		box-shadow: none !important;
+	}
+
+	/* Boot choreography may be mid-run when the dialog opens; paper gets every
+	   module seated. The failsafe would get there in 4 s, the printer will not wait. */
+	[data-boot] {
+		opacity: 1 !important;
+		transform: none !important;
+		visibility: visible !important;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation: none !important;
+		transition: none !important;
+		text-shadow: none !important;
+	}
+
+	/* Hardware keeps its moulding on screen; on paper a drop shadow is a smudge. */
+	.shadow-2xl,
+	.panel {
+		box-shadow: none !important;
+	}
+
+	/* ── Pagination ─────────────────────────────────────────────────────────
+	   A module is read as a unit: never split one across a page. Taller-than-a-page
+	   modules break anyway, which is the correct failure. */
+	.panel,
+	figure,
+	pre,
+	table,
+	tr,
+	img,
+	svg {
+		break-inside: avoid;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		break-after: avoid;
+	}
+
+	p {
+		orphans: 3;
+		widows: 3;
+	}
+
+	/* ── Links ──────────────────────────────────────────────────────────────
+	   Paper has no hover. External links print their address after the text;
+	   in-site links are the site's own navigation and would just print noise. */
+	a[href^='http']::after,
+	a[href^='mailto:']::after {
+		content: ' <' attr(href) '>';
+		font-family: var(--font-mono);
+		font-size: 0.8em;
+		font-weight: 400;
+		color: var(--ink-dim);
+		word-break: break-all;
+	}
+
+	/* The manual writes its addresses out in full already. */
+	.print-manual a::after {
+		content: none !important;
+	}
+}

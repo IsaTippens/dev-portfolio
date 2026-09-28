@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page, navigating } from '$app/state';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	import { THEMES, theme } from '$lib/stores/theme';
 	import {
@@ -14,14 +14,18 @@
 	} from '$lib/stores/battery';
 	import { maybeBoot } from '$lib/motion/boot.js';
 	import { motionEnabled } from '$lib/motion';
+	import { padConnected, startGamepad } from '$lib/gamepad';
+	import { installConsole } from '$lib/ctf/console';
 
 	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
 	import FocusSweep from '$lib/components/FocusSweep.svelte';
 	import ModeDial from '$lib/components/ModeDial.svelte';
 	import Panel from '$lib/components/Panel.svelte';
 	import Readout from '$lib/components/Readout.svelte';
+	import PrintManual from '$lib/components/PrintManual.svelte';
 	import '../app.css';
 	import '../prism.css';
+	import '../print.css';
 
 	let { children } = $props();
 
@@ -82,6 +86,288 @@
 			}
 		}
 	}
+
+	/* ── Brand: the stretched name ───────────────────────────────────────── */
+
+	// Every handle Isa owns is the name held down too long — issssaaaaaaaaah, issaaahhhh —
+	// so holding the brand does the same to the status bar. Past a long-press the S's pile
+	// up, then the A's, then the H lands, one letter a beat; letting go snaps it back in
+	// stepped pairs. There is no fixed cap: the bar is the cap. A letter that would clip is
+	// measured and taken back before the frame paints, so a 390px phone simply stops sooner.
+	const LONG_PRESS_MS = 250;
+	const GROW_EVERY_MS = 90;
+	// Two letters a step, a step every 40ms: the whole handle retracts in six steps,
+	// inside PANEL, and each step is a cut — the letters are state, not a tween.
+	const RETRACT_EVERY_MS = 40;
+	const RETRACT_LETTERS = 2;
+	/** An `isa:stretch` holds the name this long: time to grow the handle and read it. */
+	const EVENT_HOLD_MS = 1200;
+	/** A click this soon after a long-press is the tail of that press, not a new one. */
+	const CLICK_SWALLOW_MS = 400;
+
+	// ISA -> ISSSSAAAAAAAAAH: three more S's, eight more A's, then the H. One stage a letter.
+	const EXTRA_S = 3;
+	const EXTRA_A = 8;
+	const MAX_STRETCH = EXTRA_S + EXTRA_A + 1;
+
+	function stretchedName(n: number) {
+		const s = Math.min(n, EXTRA_S);
+		const a = Math.min(Math.max(n - EXTRA_S, 0), EXTRA_A);
+		return 'IS' + 'S'.repeat(s) + 'A' + 'A'.repeat(a) + (n > EXTRA_S + EXTRA_A ? 'H' : '');
+	}
+
+	let stretch = $state(0);
+	let stretched_by: 'hold' | 'event' | null = $state(null);
+	let brand_link: HTMLAnchorElement | null = $state(null);
+	let brand_name: HTMLSpanElement | null = $state(null);
+	const brand_text = $derived(`${stretchedName(stretch)} TIPPENS`);
+
+	let hold_timer: ReturnType<typeof setTimeout> | undefined;
+	let event_timer: ReturnType<typeof setTimeout> | undefined;
+	let grow_timer: ReturnType<typeof setInterval> | undefined;
+	let retract_timer: ReturnType<typeof setInterval> | undefined;
+	let long_pressed = false;
+	let swallow_until = 0;
+	let held_key: string | null = null;
+
+	/** One more letter, unless it would clip. Resolves to whether there is room for another. */
+	async function grow(): Promise<boolean> {
+		if (stretch >= MAX_STRETCH) return false;
+		stretch += 1;
+		// tick() flushes the DOM without yielding to the renderer, so the measure below sees
+		// the new letter and can take it back in the same frame it was added.
+		await tick();
+		if (stretched_by === null) return false;
+		if (brand_name && brand_name.scrollWidth > brand_name.clientWidth) {
+			stretch -= 1;
+			return false;
+		}
+		return true;
+	}
+
+	function engage(by: 'hold' | 'event') {
+		// A finger on the name outranks a scripted stretch; a scripted one never cuts a hold.
+		if (stretched_by === 'hold') return;
+		clearTimeout(event_timer);
+		const running = stretched_by !== null;
+		stretched_by = by;
+		if (running) return;
+		clearInterval(retract_timer);
+		if (!motionEnabled()) {
+			// Nothing to watch grow: the whole handle that fits is simply there, in one frame.
+			void (async () => {
+				let room = true;
+				while (room) room = await grow();
+			})();
+			return;
+		}
+		void grow();
+		grow_timer = setInterval(async () => {
+			if (!(await grow())) clearInterval(grow_timer);
+		}, GROW_EVERY_MS);
+	}
+
+	function release(by: 'hold' | 'event') {
+		if (stretched_by !== by) return;
+		stretched_by = null;
+		clearInterval(grow_timer);
+		clearTimeout(event_timer);
+		clearInterval(retract_timer);
+		if (!motionEnabled()) {
+			stretch = 0;
+			return;
+		}
+		retract_timer = setInterval(() => {
+			stretch = Math.max(0, stretch - RETRACT_LETTERS);
+			if (stretch === 0) clearInterval(retract_timer);
+		}, RETRACT_EVERY_MS);
+	}
+
+	function armHold() {
+		clearTimeout(hold_timer);
+		long_pressed = false;
+		hold_timer = setTimeout(() => {
+			hold_timer = undefined;
+			long_pressed = true;
+			engage('hold');
+		}, LONG_PRESS_MS);
+	}
+
+	/** Lets go of a press. True when it had turned into a long-press. */
+	function endHold() {
+		clearTimeout(hold_timer);
+		hold_timer = undefined;
+		window.removeEventListener('pointerup', onHoldPointerUp);
+		window.removeEventListener('pointercancel', onHoldPointerUp);
+		if (!long_pressed) return false;
+		long_pressed = false;
+		release('hold');
+		return true;
+	}
+
+	function onHoldPointerUp() {
+		if (endHold()) swallow_until = performance.now() + CLICK_SWALLOW_MS;
+	}
+
+	function onBrandPointerDown(e: PointerEvent) {
+		if (e.button !== 0 || !e.isPrimary) return;
+		armHold();
+		// On window, not the link: a held press that drifts off the name still lets go.
+		window.addEventListener('pointerup', onHoldPointerUp);
+		window.addEventListener('pointercancel', onHoldPointerUp);
+	}
+
+	// Capture phase, straight on the link: it has to mark the click before the router's
+	// listener further up sees it, and the router skips a click that is defaultPrevented.
+	function onBrandClick(e: MouseEvent) {
+		if (performance.now() < swallow_until) e.preventDefault();
+		swallow_until = 0;
+	}
+
+	// Android opens the link menu on a long-press. The press already belongs to the name.
+	function onBrandContextMenu(e: MouseEvent) {
+		if (hold_timer !== undefined || stretched_by === 'hold' || performance.now() < swallow_until) {
+			e.preventDefault();
+		}
+	}
+
+	// A link follows on Enter's keydown, so a held Enter would be gone before it was held.
+	// Enter and Space are taken on the way down; a tap follows the link on the way up, a
+	// hold stretches the name instead. Only real keys: the gamepad's synthetic presses
+	// never send the keyup that would let go.
+	function onBrandKeydown(e: KeyboardEvent) {
+		if (!e.isTrusted || (e.key !== 'Enter' && e.key !== ' ')) return;
+		if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+		e.preventDefault();
+		if (held_key !== null) return;
+		held_key = e.key;
+		armHold();
+	}
+
+	function onBrandKeyup(e: KeyboardEvent) {
+		if (e.key !== held_key) return;
+		e.preventDefault();
+		held_key = null;
+		if (!endHold() && e.key === 'Enter') brand_link?.click();
+	}
+
+	function onBrandBlur() {
+		if (held_key === null) return;
+		held_key = null;
+		endHold();
+	}
+
+	onMount(() => {
+		// Anything may ask for the bit (the console's `isa.stretch()`, for one): it plays
+		// as a fixed long-press.
+		function onStretchEvent() {
+			if (stretched_by === 'hold' || hold_timer !== undefined) return;
+			engage('event');
+			event_timer = setTimeout(() => release('event'), EVENT_HOLD_MS);
+		}
+		window.addEventListener('isa:stretch', onStretchEvent);
+		return () => {
+			window.removeEventListener('isa:stretch', onStretchEvent);
+			window.removeEventListener('pointerup', onHoldPointerUp);
+			window.removeEventListener('pointercancel', onHoldPointerUp);
+			clearTimeout(hold_timer);
+			clearTimeout(event_timer);
+			clearInterval(grow_timer);
+			clearInterval(retract_timer);
+		};
+	});
+
+	/* ── Standby: the tab title ──────────────────────────────────────────── */
+
+	const STANDBY_TITLE = '▮ STANDBY // ISA TIPPENS';
+	const RESTORED_TITLE = 'SIGNAL RESTORED';
+	const RESTORED_MS = 2000;
+
+	onMount(() => {
+		// Pages title themselves through <svelte:head>, so the tab only ever puts a title back
+		// over one of its own. If it reads anything else, a navigation retitled it while we
+		// were away, and the page's title wins.
+		let saved: string | null = null;
+		let restore_timer: ReturnType<typeof setTimeout> | undefined;
+		const ours = () => document.title === STANDBY_TITLE || document.title === RESTORED_TITLE;
+
+		function onVisibility() {
+			clearTimeout(restore_timer);
+			if (document.visibilityState === 'hidden') {
+				// Hidden again mid-restore: what is saved is still the page's real title.
+				if (!ours()) saved = document.title;
+				if (saved !== null) document.title = STANDBY_TITLE;
+				return;
+			}
+			if (saved === null) return;
+			if (document.title !== STANDBY_TITLE) {
+				saved = null;
+				return;
+			}
+			document.title = RESTORED_TITLE;
+			restore_timer = setTimeout(() => {
+				if (saved !== null && document.title === RESTORED_TITLE) document.title = saved;
+				saved = null;
+			}, RESTORED_MS);
+		}
+
+		document.addEventListener('visibilitychange', onVisibility);
+		return () => {
+			document.removeEventListener('visibilitychange', onVisibility);
+			clearTimeout(restore_timer);
+			if (saved !== null && ours()) document.title = saved;
+		};
+	});
+
+	/* ── Carrier: the network line ───────────────────────────────────────── */
+
+	const CARRIER_DETECT_MS = 1500;
+
+	// Optimistic until the client can read the line: the server has no idea, and a
+	// NO CARRIER flash on every first paint would be a lie.
+	let online = $state(true);
+	let carrier_detect = $state(false);
+	const carrier_badge = $derived(!online || carrier_detect);
+
+	onMount(() => {
+		let detect_timer: ReturnType<typeof setTimeout> | undefined;
+		online = navigator.onLine;
+
+		function onOffline() {
+			clearTimeout(detect_timer);
+			online = false;
+			carrier_detect = false;
+		}
+		function onOnline() {
+			clearTimeout(detect_timer);
+			online = true;
+			carrier_detect = true;
+			detect_timer = setTimeout(() => (carrier_detect = false), CARRIER_DETECT_MS);
+		}
+
+		window.addEventListener('offline', onOffline);
+		window.addEventListener('online', onOnline);
+		return () => {
+			window.removeEventListener('offline', onOffline);
+			window.removeEventListener('online', onOnline);
+			clearTimeout(detect_timer);
+		};
+	});
+
+	/* ── Ports: controller and console ───────────────────────────────────── */
+
+	// The pad only exists on the PlayStation plates; the port gates its own polling, the
+	// badge gates itself the same way so a pad left plugged in on another plate stays quiet.
+	const pad_badge = $derived($padConnected && ($theme === 'ps1' || $theme === 'ps2'));
+
+	onMount(() => {
+		const stop_pad = startGamepad();
+		const uninstall_console = installConsole();
+		return () => {
+			stop_pad();
+			uninstall_console();
+		};
+	});
 
 	/* ── Instrumentation: FPS and tape position ──────────────────────────── */
 
@@ -229,10 +515,21 @@
 					</div>
 				</div>
 			{/if}
+			<!-- Held, the name stretches instead of following the link (see the Brand
+			     section). Not draggable: a held mouse would otherwise pick the link up. -->
 			<a
+				bind:this={brand_link}
 				href="/"
-				class="brand flex items-center gap-2 justify-self-start text-ink no-underline"
+				class="brand flex min-w-0 max-w-full items-center gap-2 justify-self-start text-ink no-underline"
 				aria-label="Isa Tippens, home"
+				draggable="false"
+				data-stretching={stretched_by !== null}
+				onpointerdown={onBrandPointerDown}
+				onclickcapture={onBrandClick}
+				oncontextmenu={onBrandContextMenu}
+				onkeydown={onBrandKeydown}
+				onkeyup={onBrandKeyup}
+				onblur={onBrandBlur}
 			>
 				<!-- Monogram. Painted entirely from faceplate tokens, so it re-inks itself
 				     with every plate: ink body, panel-coloured letters, one accent pixel. -->
@@ -242,7 +539,11 @@
 					<rect class="brand-dot" x="3.5" y="3.5" width="2.5" height="2.5" fill="var(--accent)" />
 					<path d="M8.5 3.5H11v3h2V8.5h-2v2h2v2H8.5v-4H7.5v-2h1Z" fill="var(--panel)" />
 				</svg>
-				<span class="whitespace-nowrap font-bold">ISA TIPPENS</span>
+				<!-- Clips rather than wraps or widens the bar: the grid column is the cap. -->
+				<span
+					bind:this={brand_name}
+					class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap font-bold">{brand_text}</span
+				>
 			</a>
 			<span class="flex items-center gap-2">
 				<ModeDial />
@@ -256,27 +557,52 @@
 					[?] KEYS
 				</button>
 			</span>
-			<button
-				type="button"
-				class="flex items-center gap-1.5 justify-self-end whitespace-nowrap bg-transparent p-0 text-xxs uppercase tracking-widest hover:text-accent"
-				aria-pressed={$isCharging}
-				aria-label={`Battery ${$batteryLevel ?? 'unknown'} percent${$isCharging ? ', charging' : ''}`}
-				onclick={toggleCharging}
-			>
-				<span class="flex items-center gap-1">
-					<!-- The readout only exists once there is a real number, so it ticks up
-					     to the machine's actual charge instead of to a placeholder. -->
-					BAT: {#if $batteryLevel !== null}<Readout value={$batteryLevel} />%{:else}--%{/if}
-				</span>
-				<span class="battery" data-charging={$isCharging} aria-hidden="true">
-					<span class="battery-fill" style="--level: {($batteryLevel ?? 0) / 100}"></span>
-					{#if $isCharging}
-						<svg viewBox="0 0 10 16" class="battery-bolt" aria-hidden="true">
-							<path d="M6 0 0 9h4l-1 7 7-10H6l1-6Z" />
-						</svg>
+			<!-- Badges sit ahead of BAT. On a phone the bar has no room for both, so while a
+			     badge is up BAT drops its number and keeps the cell, and a lost line outranks
+			     the pad. -->
+			<span class="flex items-center justify-self-end">
+				<span role="status" class="flex items-center">
+					{#if !online}
+						<span class="carrier-lost mr-2 flex items-center gap-1 whitespace-nowrap font-bold text-ink">
+							<span class="badge-led" aria-hidden="true"></span>NO CARRIER
+						</span>
+					{:else if carrier_detect}
+						<span class="mr-2 flex items-center gap-1 whitespace-nowrap font-bold text-ink">
+							<span class="badge-led" aria-hidden="true"></span>CARRIER DETECT
+						</span>
 					{/if}
 				</span>
-			</button>
+				{#if pad_badge}
+					<span
+						class="{carrier_badge
+							? 'hidden sm:flex'
+							: 'flex'} mr-2 items-center gap-1 whitespace-nowrap font-bold text-ink"
+					>
+						<span class="badge-led" aria-hidden="true"></span>PAD 1
+					</span>
+				{/if}
+				<button
+					type="button"
+					class="flex items-center gap-1.5 whitespace-nowrap bg-transparent p-0 text-xxs uppercase tracking-widest hover:text-accent"
+					aria-pressed={$isCharging}
+					aria-label={`Battery ${$batteryLevel ?? 'unknown'} percent${$isCharging ? ', charging' : ''}`}
+					onclick={toggleCharging}
+				>
+					<span class="{carrier_badge || pad_badge ? 'hidden sm:flex' : 'flex'} items-center gap-1">
+						<!-- The readout only exists once there is a real number, so it ticks up
+						     to the machine's actual charge instead of to a placeholder. -->
+						BAT: {#if $batteryLevel !== null}<Readout value={$batteryLevel} />%{:else}--%{/if}
+					</span>
+					<span class="battery" data-charging={$isCharging} aria-hidden="true">
+						<span class="battery-fill" style="--level: {($batteryLevel ?? 0) / 100}"></span>
+						{#if $isCharging}
+							<svg viewBox="0 0 10 16" class="battery-bolt" aria-hidden="true">
+								<path d="M6 0 0 9h4l-1 7 7-10H6l1-6Z" />
+							</svg>
+						{/if}
+					</span>
+				</button>
+			</span>
 		</div>
 
 		<!-- Main viewport. Keyed on the route so a navigation reads as a program swap, and
@@ -360,6 +686,9 @@
 			</div>
 		{/if}
 	</div>
+
+	<!-- Print-only: the screen hides it, paper gets the manual. -->
+	<PrintManual />
 </div>
 
 <style>
@@ -368,8 +697,15 @@
 	.brand span {
 		transition: color 120ms linear;
 	}
-	.brand:hover span {
+	.brand:hover span,
+	.brand[data-stretching='true'] span {
 		color: var(--accent);
+	}
+	/* A held name is a held name, not a text selection, a callout or a link drag. */
+	.brand {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
 	}
 	/* The dot on the i hops once when the mark is touched — two frames up, two down. */
 	.brand-dot {
@@ -382,6 +718,29 @@
 	@keyframes brand-hop {
 		50% {
 			transform: translateY(-1.5px);
+		}
+	}
+
+	/* ── Status badges ───────────────────────────────────────────────────── */
+
+	.badge-led {
+		display: inline-block;
+		width: 5px;
+		height: 5px;
+		background-color: var(--accent);
+	}
+	/* NO CARRIER blinks like a modem light: on, off, no fade in between. The global
+	   reduced-motion block collapses it to one frame, which ends lit; the failsafe's
+	   `data-motion="off"` gets the same steady light. */
+	.carrier-lost {
+		animation: carrier-blink 1s steps(1, end) infinite;
+	}
+	:global(:root[data-motion='off']) .carrier-lost {
+		animation: none;
+	}
+	@keyframes carrier-blink {
+		50% {
+			opacity: 0;
 		}
 	}
 

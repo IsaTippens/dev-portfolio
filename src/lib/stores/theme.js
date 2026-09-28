@@ -1,5 +1,7 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
+
+/** @typedef {{ id: string, label: string, color: string, note: string, sealed?: boolean }} Plate */
 
 /**
  * Face plate registry — the plates the device ships with.
@@ -10,6 +12,12 @@ import { browser } from '$app/environment';
  *
  * Adding a plate is two edits: a token block in `app.css`, and a row here. If a
  * plate needs anything more than that, the components are not token-pure yet.
+ *
+ * A `sealed` plate ships in the registry — so the pre-paint script and the store
+ * accept it as a stored pick — but the MODE dial only offers it once it has been
+ * won (see `unlockPlate`).
+ *
+ * @type {Plate[]}
  */
 export const THEMES = [
 	{
@@ -47,6 +55,13 @@ export const THEMES = [
 		label: 'PS2',
 		color: '#0d0f14',
 		note: 'charcoal black + wordmark blue'
+	},
+	{
+		id: 'sanren',
+		label: 'SANREN',
+		color: '#0b1a3d',
+		note: 'uwc blue + gold, winners only',
+		sealed: true
 	}
 ];
 
@@ -116,5 +131,48 @@ if (browser && typeof window.matchMedia === 'function') {
 	const scheme = window.matchMedia('(prefers-color-scheme: dark)');
 	scheme.addEventListener('change', () => {
 		if (!manual) set(os_plate());
+	});
+}
+
+/**
+ * Where a won plate is recorded. The console CTF (`$lib/ctf/console.ts`) writes it
+ * when the final flag lands; nothing else does.
+ */
+export const UNLOCK_KEY = 'plate-unlocked';
+
+const read_unlocked = () => {
+	try {
+		return localStorage.getItem(UNLOCK_KEY);
+	} catch {
+		return null;
+	}
+};
+
+const unlocked = writable(browser ? read_unlocked() : null);
+
+/** The plates the MODE dial offers: every stock plate, plus a sealed one once won. */
+export const plates = derived(unlocked, ($unlocked) =>
+	THEMES.filter((t) => !t.sealed || t.id === $unlocked)
+);
+
+/**
+ * Break a sealed plate's seal. Persisted, and pushed straight into `plates` so the
+ * dial grows its extra detent in this tab without a reload.
+ * @param {string} id
+ */
+export function unlockPlate(id) {
+	try {
+		localStorage.setItem(UNLOCK_KEY, id);
+	} catch {
+		/* private mode: the seal holds for this visit only */
+	}
+	unlocked.set(id);
+}
+
+if (browser) {
+	// Other open tabs learn about the win through `storage`, which never fires in the
+	// tab that wrote it — that one was already told by `unlockPlate`.
+	window.addEventListener('storage', (event) => {
+		if (event.key === UNLOCK_KEY || event.key === null) unlocked.set(read_unlocked());
 	});
 }

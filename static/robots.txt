@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /faucet
 
 Sitemap: https://isatippens.com/sitemap.xml

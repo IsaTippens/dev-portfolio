@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Panel from '$lib/components/Panel.svelte';
+	import QuantumToken from '$lib/components/QuantumToken.svelte';
 
 	/**
 	 * Experience record. Three bolted-down modules, each seating as it comes up the page.
@@ -13,7 +14,9 @@
 		{
 			tag: '02 / MSC_CS_CANDIDATE',
 			lead: 'Thesis',
-			body: '"A framework for secure financial transactions using relativistic quantum tokens", combining quantum computing and software engineering to develop next-generation secure transaction protocols. Currently in the final year of an MSc in Computer Science at the University of the Western Cape.'
+			body: '"A framework for secure financial transactions using relativistic quantum tokens", combining quantum computing and software engineering to develop next-generation secure transaction protocols. Currently in the final year of an MSc in Computer Science at the University of the Western Cape.',
+			// The thesis subject, as a working part: see QuantumToken.
+			token: true
 		},
 		{
 			tag: '03 / CYBERSECURITY_UWC',
@@ -29,6 +32,9 @@
 			<p class="mt-1 text-[13px] leading-relaxed text-ink">
 				<span class="font-bold uppercase">{entry.lead}</span>: {entry.body}
 			</p>
+			{#if entry.token}
+				<QuantumToken />
+			{/if}
 		</Panel>
 	{/each}
 </div>

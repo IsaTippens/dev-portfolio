@@ -1,21 +1,22 @@
 <script lang="ts">
-	import { THEMES, theme } from '$lib/stores/theme';
+	import { plates, theme } from '$lib/stores/theme';
 	import Panel from '$lib/components/Panel.svelte';
 
 	/**
 	 * MODE — the faceplate dial.
 	 *
-	 * A rotary switch, not a dropdown. Four detents, one per plate; the pointer sits on
-	 * the current plate's position. Keyboard: arrows walk the detents, Enter commits,
-	 * ESC backs out. It is a `listbox` to assistive tech and a knob to everyone else.
+	 * A rotary switch, not a dropdown. One detent per plate on offer; the pointer sits on
+	 * the current plate's position. A sealed plate is not on offer until it is won, and
+	 * then the dial simply grows a detent. Keyboard: arrows walk the detents, Enter
+	 * commits, ESC backs out. It is a `listbox` to assistive tech and a knob to everyone else.
 	 */
 	let open = $state(false);
 	let active = $state(0);
 	let trigger: HTMLButtonElement | null = $state(null);
 	let options = $state<HTMLButtonElement[]>([]);
 
-	const index_of = (id: string) => Math.max(0, THEMES.findIndex((t) => t.id === id));
-	const detent = (i: number) => -45 + (i * 90) / Math.max(1, THEMES.length - 1);
+	const index_of = (id: string) => Math.max(0, $plates.findIndex((t) => t.id === id));
+	const detent = (i: number) => -45 + (i * 90) / Math.max(1, $plates.length - 1);
 
 	function openList(start_at_current = true) {
 		active = start_at_current ? index_of($theme) : active;
@@ -37,7 +38,7 @@
 	}
 
 	function move(delta: number) {
-		const n = THEMES.length;
+		const n = $plates.length;
 		active = (active + delta + n) % n;
 	}
 
@@ -65,12 +66,12 @@
 				break;
 			case 'End':
 				event.preventDefault();
-				active = THEMES.length - 1;
+				active = $plates.length - 1;
 				break;
 			case 'Enter':
 			case ' ':
 				event.preventDefault();
-				commit(THEMES[active].id);
+				commit($plates[active].id);
 				break;
 			case 'Escape':
 				event.preventDefault();
@@ -168,7 +169,7 @@
 			onkeydown={onListKeydown}
 		>
 			<div class="flex flex-col gap-1">
-				{#each THEMES as plate, i (plate.id)}
+				{#each $plates as plate, i (plate.id)}
 					<button
 						bind:this={options[i]}
 						type="button"
