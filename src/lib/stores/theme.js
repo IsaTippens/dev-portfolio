@@ -57,10 +57,10 @@ export const THEMES = [
 		note: 'charcoal black + wordmark blue'
 	},
 	{
-		id: 'sanren',
-		label: 'SANREN',
-		color: '#0b1a3d',
-		note: 'uwc blue + gold, winners only',
+		id: 'mrrobot',
+		label: 'MR ROBOT',
+		color: '#0a0101',
+		note: 'red terminal, operators only',
 		sealed: true
 	}
 ];

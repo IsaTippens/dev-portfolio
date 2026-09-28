@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { plates, theme } from '$lib/stores/theme';
+	import { THEMES, plates, theme } from '$lib/stores/theme';
 	import Panel from '$lib/components/Panel.svelte';
 
 	/**
@@ -152,7 +152,7 @@
 					style="transform-origin: 50% 150%; transform: rotate({detent(index_of($theme))}deg)"
 				></span>
 			</span>
-			{$theme.toUpperCase()}
+			{THEMES.find((t) => t.id === $theme)?.label ?? $theme.toUpperCase()}
 		</span>
 	</button>
 

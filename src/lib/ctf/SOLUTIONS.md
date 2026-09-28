@@ -2,7 +2,7 @@
 
 Spoilers. This file is for Isa. It is never imported, so it doesn't ship in the client bundle. If the repo is public, though, anyone can read the answers here.
 
-Four flags, format `ISA{...}`, solved in order. Each flag's text tells you where the next one is. Submit flags in the devtools console with `isa.flag('ISA{...}')`. The check is case-insensitive inside the braces. The final flag unseals the hidden seventh faceplate, **SANREN** (UWC blue and trophy gold).
+Four flags, format `ISA{...}`, solved in order. Each flag's text tells you where the next one is. Submit flags in the devtools console with `isa.flag('ISA{...}')`. The check is case-insensitive inside the braces. The final flag unseals the hidden seventh faceplate, **MR ROBOT** (a red-on-black terminal).
 
 | # | Where                                         | Encoding                 | Flag                                  |
 | - | --------------------------------------------- | ------------------------ | ------------------------------------- |
@@ -106,13 +106,13 @@ Decode with key `source`. Only letters are shifted, and only letters advance the
 
 ## The prize
 
-`isa.flag('ISA{w1nn3r_w1nn3r_uwc_d1nn3r}')` prints `FLAG 4/4 ACCEPTED`, an ASCII trophy (`1 S T / SANREN / 2025`) and `PLATE_UNLOCKED: SANREN`. Then it:
+`isa.flag('ISA{w1nn3r_w1nn3r_uwc_d1nn3r}')` prints `FLAG 4/4 ACCEPTED`, an ASCII terminal (`root@ecorp:~# ./fsociety.sh` … `hello, friend._`) and `PLATE_UNLOCKED: MR ROBOT`. Then it:
 
-1. sets `localStorage['plate-unlocked'] = 'sanren'` (`unlockPlate` in `src/lib/stores/theme.js`);
-2. fits the plate right away (`theme.set('sanren')`, persisted as a normal MODE pick);
+1. sets `localStorage['plate-unlocked'] = 'mrrobot'` (`unlockPlate` in `src/lib/stores/theme.js`);
+2. fits the plate right away (`theme.set('mrrobot')`, persisted as a normal MODE pick);
 3. adds a seventh detent to the MODE dial with no reload. Other open tabs pick it up through the `storage` event.
 
-The plate is the `:root[data-theme='sanren']` block in `src/app.css`. Its registry row is `sealed: true`, so the dial (`plates` store) hides it until the seal is broken. The pre-paint script in `hooks.server.js` accepts `sanren` as a stored plate because it is in `THEME_IDS`.
+The plate is the `:root[data-theme='mrrobot']` block in `src/app.css`: a one-hue red-on-black terminal in the style of PHOSPHOR (Virtual Boy LED red). Its registry row is `sealed: true`, so the dial (`plates` store) hides it until the seal is broken. The pre-paint script in `hooks.server.js` accepts `mrrobot` as a stored plate because it is in `THEME_IDS`.
 
 Earlier flags work at any time and print `FLAG n/4 ACCEPTED`. Progress is kept in `localStorage['ctf-flags']` (e.g. `"123"`) and shown by `isa.help()`. Wrong answers get a random quip, for example "Nope. Get gud."
 
@@ -126,4 +126,4 @@ Earlier flags work at any time and print `FLAG n/4 ACCEPTED`. Progress is kept i
      node -e "console.log(require('crypto').createHash('sha256').update('ISA{...}').digest('hex'))"
      ```
   3. Changing flag 3's word changes the Vigenère key, so re-seal tape 4 as well.
-- **Verified:** every encoding above was checked with node and independently with Python. The steps were XOR→flag 1, ROT13→flag 2, an MD5 dictionary attack over rockyou-75→`source`, and Vigenère decode→flag 4. All four SHA-256 digests match `FLAGS`. The console module was also run under node with stubs: it accepts all four flags in order, rejects bad input, records progress `1234`, unlocks and fits `sanren`, and fires `isa:stretch`.
+- **Verified:** every encoding above was checked with node and independently with Python. The steps were XOR→flag 1, ROT13→flag 2, an MD5 dictionary attack over rockyou-75→`source`, and Vigenère decode→flag 4. All four SHA-256 digests match `FLAGS`. The console module was also run under node with stubs: it accepts all four flags in order, rejects bad input, records progress `1234`, unlocks and fits `mrrobot`, and fires `isa:stretch`.

@@ -562,94 +562,94 @@
 }
 
 /*
-	SANREN — the sealed plate. It is not in the MODE dial until the console CTF is
-	solved (`$lib/ctf/`), because it commemorates one: UWC's team took 1st at SANReN
-	in 2025. UWC blue moulding with the trophy gold carrying the interactive chrome.
-	ink 14.9:1 and 12.5:1, dim 8.7:1 and 7.3:1, and accent, ok, rec and warn all clear
-	AA on the body and on the panel (rec, the tightest, is 5.2:1 on the panel).
-
-	The hardware is the trophy: gold-plated metal under every cap, gold legends on
-	blue keys, and a scoreboard for a screen — deep blue, lit in gold.
+	MR ROBOT — the sealed plate. It is not in the MODE dial until the console CTF is
+	solved (`$lib/ctf/`): the prize for breaking in is the terminal the show lives
+	in. Built like PHOSPHOR, one hue and nothing else, but that hue is the red of a
+	Virtual Boy LED on black. The semantic colours stay inside the red, graded by
+	brightness: ok is the hottest, rec the deepest.
+	ink 7.2:1 on the panel, dim 5.0:1, accent 5.3:1 (accent-ink on accent 5.5:1),
+	ok 9.1:1, warn 11.8:1. Red carries little luminance, so the ink is lifted towards
+	salmon to clear AAA, and the scanlines are turned up past phosphor's.
 */
-:root[data-theme='sanren'] {
+:root[data-theme='mrrobot'] {
 	color-scheme: dark;
 
-	--bg: #0b1a3d;
-	--panel: #13275a;
-	--panel-sunk: #0e1f4a;
-	--hover: rgba(245, 197, 66, 0.07);
+	--bg: #0a0101;
+	--panel: #120303;
+	--panel-sunk: #070000;
+	--hover: rgba(255, 36, 25, 0.08);
 
-	--ink: #f4efe0;
-	--ink-dim: #aeb9d6;
-	--line: #34498a;
+	--ink: #ff6b5c;
+	--ink-dim: #e4463a;
+	--line: #4a1410;
 
-	--accent: #f5c542;
-	--accent-ink: #1b1402;
-	--ok: #3fd689;
-	--rec: #ff6b6b;
-	--warn: #ff9f4a;
+	--accent: #ff2419;
+	--accent-ink: #0a0000;
+	--ok: #ff8f80;
+	--rec: #ff2419;
+	--warn: #ffb3a6;
 
-	--shadow: #040a1c;
-	--shadow-soft: rgba(0, 0, 0, 0.5);
-	--scrim: rgba(2, 6, 20, 0.34);
-	--screen-dark: rgba(3, 8, 22, 0.88);
-	--accent-wash: rgba(245, 197, 66, 0.12);
+	--shadow: #000000;
+	--shadow-soft: rgba(0, 0, 0, 0.6);
+	--scrim: rgba(0, 0, 0, 0.36);
+	--screen-dark: rgba(4, 0, 0, 0.9);
+	--accent-wash: rgba(255, 36, 25, 0.14);
 
-	--grain: 0.035;
-	--scan: 0.06;
+	--grain: 0.03;
+	--scan: 0.16;
 
-	--code-bg: #0c1c45;
-	--code-fg: #e6e9f2;
-	--code-comment: #8795bb;
-	--code-punct: #b8c2dc;
-	--code-namespace: #9fb4e8;
-	--code-deleted: #ff6b6b;
-	--code-symbol: #7fb2ff;
-	--code-tag: #f5c542;
-	--code-boolean: #ff9f4a;
-	--code-number: #ffb86b;
-	--code-constant: #7fb2ff;
-	--code-selector: #f5c542;
-	--code-attr: #9fe0b5;
-	--code-string: #ffe08a;
-	--code-class: #f5c542;
-	--code-regex: #e6e9f2;
-	--code-selection: rgba(245, 197, 66, 0.2);
+	--code-bg: #0e0101;
+	--code-fg: #ff7a6c;
+	--code-comment: #8a2a22;
+	--code-punct: #e4463a;
+	--code-namespace: #f0584b;
+	--code-deleted: #ff2419;
+	--code-symbol: #ff3b2f;
+	--code-tag: #ff7a6c;
+	--code-boolean: #ffb3a6;
+	--code-number: #ffb3a6;
+	--code-constant: #ff3b2f;
+	--code-selector: #e4463a;
+	--code-attr: #f0584b;
+	--code-string: #ff9c90;
+	--code-class: #ff7a6c;
+	--code-regex: #ffb3a6;
+	--code-selection: rgba(255, 36, 25, 0.24);
 
-	--hw-case: #13285c;
-	--hw-case-2: #102352;
-	--hw-case-line: #26407f;
-	--hw-well: #050b1c;
-	--hw-well-2: #02050f;
-	--hw-screw: #b8953a;
-	--hw-key: #1a3170;
-	--hw-key-line: #33508f;
-	--hw-key-ink: #f5c542;
-	--hw-key-shadow: #070f26;
-	--hw-knob-edge: #050b1c;
-	--hw-knob-1: #f5c542;
-	--hw-knob-2: #3d7bff;
-	--hw-knob-3: #f4efe0;
-	--hw-knob-4: #d4a017;
-	--hw-metal-hi: #fff3c4;
-	--hw-metal: #c9a13b;
-	--hw-metal-lo: #5c4410;
-	--hw-sheen: #fff8dc;
-	--hw-screen: #07112b;
-	--hw-screen-2: #030817;
-	--hw-screen-ink: #ffd765;
-	--hw-screen-ink-2: #fff1b8;
-	--hw-screen-line: #1d2c55;
-	--hw-screen-ink-dim: #c2a24a;
-	--hw-screen-well: #050c20;
-	--hw-screen-cell: #0a1633;
-	--hw-screen-cell-on: #ffe08a;
-	--hw-screen-seg-off: #16234a;
-	--hw-screen-grid: rgba(255, 215, 101, 0.04);
-	--hw-screen-glow: 0 0 2px rgba(255, 215, 101, 0.4);
-	--hw-port: #f5c542;
-	--hw-glyph: #fff1b8;
-	--hw-glyph-edge: #fff1b8;
+	--hw-case: #0f0202;
+	--hw-case-2: #0b0101;
+	--hw-case-line: #3a0f0b;
+	--hw-well: #030000;
+	--hw-well-2: #010000;
+	--hw-screw: #3a0f0b;
+	--hw-key: #120303;
+	--hw-key-line: #4a1410;
+	--hw-key-ink: #e4463a;
+	--hw-key-shadow: #000000;
+	--hw-knob-edge: #000000;
+	--hw-knob-1: #ff2419;
+	--hw-knob-2: #c41a12;
+	--hw-knob-3: #ff6b5c;
+	--hw-knob-4: #8a120c;
+	--hw-metal-hi: #ff6b5c;
+	--hw-metal: #4a1410;
+	--hw-metal-lo: #030000;
+	--hw-sheen: #ffb3a6;
+	--hw-screen: #140100;
+	--hw-screen-2: #050000;
+	--hw-screen-ink: #ff3b2f;
+	--hw-screen-ink-2: #ff6b5c;
+	--hw-screen-line: #3a0f0b;
+	--hw-screen-ink-dim: #d8392c;
+	--hw-screen-well: #0a0000;
+	--hw-screen-cell: #140302;
+	--hw-screen-cell-on: #230605;
+	--hw-screen-seg-off: #3f0e0a;
+	--hw-screen-grid: rgba(255, 36, 25, 0.03);
+	--hw-screen-glow: 0 0 2px rgba(255, 36, 25, 0.5);
+	--hw-port: #ff2419;
+	--hw-glyph: #ff6b5c;
+	--hw-glyph-edge: #ff6b5c;
 }
 
 @layer base {

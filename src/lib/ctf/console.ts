@@ -11,7 +11,7 @@ import { plates, theme, unlockPlate } from '$lib/stores/theme';
  *   2. an `x-flag` header on /api/posts, ROT13
  *   3. robots.txt -> /faucet, an MD5 for hashcat and rockyou
  *   4. view-source — a Vigenère tape in app.html, keyed with flag 3
- * Landing 4 breaks the seal on the SANREN plate. The full walkthrough, answers
+ * Landing 4 breaks the seal on the MR ROBOT plate. The full walkthrough, answers
  * included, is SOLUTIONS.md next to this file.
  *
  * Nothing in here holds an answer in the clear: flags are checked against SHA-256
@@ -53,7 +53,7 @@ const FLAGS = [
 const TAPE_01 = '63 79 6B 51 49 5F 58 46 75 07 43 75 05 4B 5A 43 05 5A 45 59 5E 59 57';
 
 /** The plate the last flag unseals. */
-const PRIZE = 'sanren';
+const PRIZE = 'mrrobot';
 
 /** Which flags this browser has landed, as a string of flag numbers ("124"). */
 const PROGRESS_KEY = 'ctf-flags';
@@ -79,15 +79,15 @@ const DEVICE = String.raw`
 |______________________________________________________|`;
 
 const TROPHY = String.raw`
-    ___________
-   |           |
-  (|   1 S T   |)
-   |  SANREN   |
-    \  2025   /
-     '._   _.'
-        | |
-      __|_|__
-     |_______|`;
+ ____________________________________
+|  root@ecorp:~# ./fsociety.sh       |
+|                                    |
+|  > shell ............. [ OWNED ]   |
+|  > seal .............. [ BROKEN ]  |
+|  > plate ............. MR ROBOT    |
+|                                    |
+|  hello, friend._                   |
+|____________________________________|`;
 
 /**
  * Console styles, read from the fitted plate at print time, so the console wears the
@@ -153,7 +153,7 @@ function help() {
 			"  isa.flag('ISA{...}')    submit a flag",
 			'',
 			`CTF // ${FLAGS.length} FLAGS, FORMAT ISA{...}. EACH ONE SAYS WHERE THE NEXT ONE IS.`,
-			`  PROGRESS ${boxes}${won ? '  // SANREN PLATE UNLOCKED' : ''}`,
+			`  PROGRESS ${boxes}${won ? '  // MR ROBOT PLATE UNLOCKED' : ''}`,
 			'',
 			`TAPE_01 // ${TAPE_01.split(' ').length} BYTES, SCRAMBLED`,
 			`  ${TAPE_01}`,
@@ -205,15 +205,15 @@ async function submit(value: unknown) {
 
 	unlockPlate(PRIZE);
 	theme.set(PRIZE);
-	// The layout fits the new plate on its next effect flush. Wait a frame so the trophy
-	// is printed in SANREN's own gold, not the plate it just replaced.
+	// The layout fits the new plate on its next effect flush. Wait a frame so the
+	// terminal is printed in the plate's own red, not the plate it just replaced.
 	const frame = Promise.withResolvers<number>();
 	requestAnimationFrame(frame.resolve);
 	await frame.promise;
 	const won = styles();
 	console.log(`%c${TROPHY}`, won.knobs[0]);
 	console.log(
-		'%cPLATE_UNLOCKED: SANREN%c UWC blue and trophy gold. Fitted now, and on the MODE dial for good.\nYou would have done fine at SANReN. Tell me you got it: isatippens2@gmail.com',
+		'%cPLATE_UNLOCKED: MR ROBOT%c Red on black, fitted now and on the MODE dial for good.\nTell me you got in: isatippens2@gmail.com',
 		won.chip,
 		''
 	);
