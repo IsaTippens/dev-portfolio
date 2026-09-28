@@ -132,7 +132,7 @@ function banner() {
 	});
 	console.log(art, ...knob_styles);
 	console.log(
-		'%cISA TIPPENS%c software engineer, Cape Town\nhiring? isatippens2@gmail.com\ntype %cisa.help()',
+		'%cISA TIPPENS%c software engineer, Cape Town\ntype %cisa.help()',
 		s.chip,
 		'',
 		s.bold
