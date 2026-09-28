@@ -19,6 +19,3 @@ cloudflarelog.txt
 
 # Wrangler
 .wrangler/
-
-# CTF answers stay local; the repo is public
-src/lib/ctf/SOLUTIONS.md
