@@ -195,7 +195,8 @@
 				let quiet = 0;
 				observer = new ResizeObserver(() => (quiet = 0));
 				observer.observe(root);
-				for (const el of root.querySelectorAll('*')) if (onScreen(el)) observer.observe(el);
+				// An SVG's insides cannot move the page; the <svg> box itself is still watched.
+				for (const el of root.querySelectorAll(':not(svg *)')) if (onScreen(el)) observer.observe(el);
 				const tick = () => {
 					if (++quiet >= SETTLE_FRAMES) return done();
 					frame = requestAnimationFrame(tick);

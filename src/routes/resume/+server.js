@@ -1,19 +1,9 @@
-export const GET = async () => {
-	// Fetch pdf and download onto user's computer
-	let data = await fetch(
-		'https://raw.githubusercontent.com/IsaTippens/dev-portfolio/main/content/resume/Isa Tippens CV.pdf'
-	);
-	if (data.status === 404) {
-		let resp = new Response('Not Found', { status: 404 });
-		return resp;
-	}
+import { read } from '$app/server';
+import cv from '../../../content/resume/Isa Tippens CV.pdf';
 
-	let buffer = await data.arrayBuffer();
-
-	let dataB = new Uint8Array(buffer);
-
-	let resp = new Response(dataB, { headers: { 'Content-Type': 'application/pdf' } });
-	resp.headers.set('Content-Disposition', 'attachment; filename="Isa Tippens CV.pdf"');
-
-	return resp;
-};
+/** The CV ships with the build: no GitHub round trip, streamed rather than buffered. */
+export function GET() {
+	const file = read(cv);
+	file.headers.set('Content-Disposition', 'attachment; filename="Isa Tippens CV.pdf"');
+	return file;
+}

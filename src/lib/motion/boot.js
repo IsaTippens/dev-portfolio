@@ -128,8 +128,8 @@ const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/_#$%';
  * @param {HTMLElement} node
  * @param {number} duration
  */
-export function scrambleIn(node, duration = 400) {
-	const final_text = node.dataset.scramble ?? node.textContent ?? '';
+function scrambleIn(node, duration = 400) {
+	const final_text = node.textContent ?? '';
 	if (!final_text) return;
 	node.setAttribute('aria-label', final_text);
 

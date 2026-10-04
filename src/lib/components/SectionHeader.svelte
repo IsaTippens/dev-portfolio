@@ -1,5 +1,4 @@
 <script lang="ts">
-	import RightArrow from 'virtual:icons/mingcute/right-fill.svelte';
 	let { title, href, linkText = 'View all' } = $props<{
 		title: string;
 		href?: string;
@@ -21,7 +20,7 @@
 			</div>
 			<div class="flex items-center gap-1 font-mono text-xxs text-dim uppercase">
 				<span>{linkText}</span>
-				<RightArrow class="h-4 w-4 text-accent" />
+				<svg viewBox="0 0 24 24" width="1.2em" height="1.2em" class="h-4 w-4 text-accent"><g fill="none" fill-rule="evenodd"><path fill="currentColor" d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z"/></g></svg>
 			</div>
 		</div>
 	</a>

@@ -4,20 +4,15 @@ const tailwind_theme = require('tailwindcss/defaultTheme');
 	Tailwind mirror of the faceplate tokens in `src/app.css`. Every key here is a
 	CSS custom property, so a faceplate swap repaints the whole site without a
 	single component-level override.
-
-	`darkMode: 'class'` is kept only so `dark:` variants still compile; nothing in
-	the app uses them — themes are token swaps, not class forks.
 */
 const config = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
-	darkMode: 'class',
 
 	theme: {
 		extend: {
 			fontFamily: {
 				sans: ['var(--font-body)', ...tailwind_theme.fontFamily.sans],
-				mono: ['var(--font-mono)', ...tailwind_theme.fontFamily.mono],
-				pixel: ['var(--font-pixel)', ...tailwind_theme.fontFamily.mono]
+				mono: ['var(--font-mono)', ...tailwind_theme.fontFamily.mono]
 			},
 			fontSize: {
 				xxs: '10px',
@@ -51,9 +46,7 @@ const config = {
 				warn: 'var(--warn)'
 			}
 		}
-	},
-
-	plugins: [require('@tailwindcss/typography')]
+	}
 };
 
 module.exports = config;

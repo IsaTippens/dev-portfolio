@@ -1,4 +1,4 @@
-import { readonly, writable, type Readable } from 'svelte/store';
+import { setPadConnected } from '$lib/ports';
 import { theme } from '$lib/stores/theme';
 import { reducedMotion } from '$lib/motion';
 import { konami, type KonamiToken } from '$lib/konami';
@@ -62,11 +62,6 @@ const PAGES = [
 	{ key: 'F2', path: '/projects' },
 	{ key: 'F4', path: '/gear' }
 ];
-
-const connected = writable(false);
-
-/** True while a standard-mapping pad is plugged in, whatever the plate. */
-export const padConnected: Readable<boolean> = readonly(connected);
 
 /** Per-pad edge state: last frame's buttons and the held vertical direction. */
 type PadState = {
@@ -214,14 +209,14 @@ export function startGamepad(): () => void {
 	function onConnect(event: GamepadEvent) {
 		if (event.gamepad.mapping !== 'standard') return;
 		pads.add(event.gamepad.index);
-		connected.set(true);
+		setPadConnected(true);
 		sync();
 	}
 
 	function onDisconnect(event: GamepadEvent) {
 		pads.delete(event.gamepad.index);
 		states.delete(event.gamepad.index);
-		connected.set(pads.size > 0);
+		setPadConnected(pads.size > 0);
 		sync();
 	}
 
@@ -229,7 +224,7 @@ export function startGamepad(): () => void {
 	for (const pad of snapshot()) {
 		if (pad && pad.connected && pad.mapping === 'standard') pads.add(pad.index);
 	}
-	connected.set(pads.size > 0);
+	setPadConnected(pads.size > 0);
 
 	window.addEventListener('gamepadconnected', onConnect);
 	window.addEventListener('gamepaddisconnected', onDisconnect);
@@ -247,6 +242,6 @@ export function startGamepad(): () => void {
 		raf = 0;
 		states.clear();
 		pads.clear();
-		connected.set(false);
+		setPadConnected(false);
 	};
 }

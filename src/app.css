@@ -1,9 +1,121 @@
-@import '@fontsource/noto-sans/400.css';
-@import '@fontsource/noto-sans/700.css';
-@import '@fontsource/jetbrains-mono/400-italic.css';
-@import '@fontsource/jetbrains-mono/700-italic.css';
-@import '@fontsource/jetbrains-mono/400.css';
-@import '@fontsource/jetbrains-mono/700.css';
+/*
+	Fonts: only the subsets the site's text uses. Latin and Latin Extended for both
+	families (JetBrains Mono's italics are Prism's selectors and attributes), plus Greek
+	for Noto Sans. These are @fontsource's own rules, without the .woff fallbacks. Within
+	one family, style and weight, latin comes last, as fontsource emits it.
+*/
+@font-face {
+	font-family: 'Noto Sans';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400;
+	src: url('@fontsource/noto-sans/files/noto-sans-greek-400-normal.woff2') format('woff2');
+	unicode-range: U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF;
+}
+@font-face {
+	font-family: 'Noto Sans';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400;
+	src: url('@fontsource/noto-sans/files/noto-sans-latin-ext-400-normal.woff2') format('woff2');
+	unicode-range: U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+	font-family: 'Noto Sans';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400;
+	src: url('@fontsource/noto-sans/files/noto-sans-latin-400-normal.woff2') format('woff2');
+	unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+	font-family: 'Noto Sans';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 700;
+	src: url('@fontsource/noto-sans/files/noto-sans-greek-700-normal.woff2') format('woff2');
+	unicode-range: U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF;
+}
+@font-face {
+	font-family: 'Noto Sans';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 700;
+	src: url('@fontsource/noto-sans/files/noto-sans-latin-ext-700-normal.woff2') format('woff2');
+	unicode-range: U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+	font-family: 'Noto Sans';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 700;
+	src: url('@fontsource/noto-sans/files/noto-sans-latin-700-normal.woff2') format('woff2');
+	unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: italic;
+	font-display: swap;
+	font-weight: 400;
+	src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-ext-400-italic.woff2') format('woff2');
+	unicode-range: U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: italic;
+	font-display: swap;
+	font-weight: 400;
+	src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-italic.woff2') format('woff2');
+	unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: italic;
+	font-display: swap;
+	font-weight: 700;
+	src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-ext-700-italic.woff2') format('woff2');
+	unicode-range: U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: italic;
+	font-display: swap;
+	font-weight: 700;
+	src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-italic.woff2') format('woff2');
+	unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400;
+	src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-ext-400-normal.woff2') format('woff2');
+	unicode-range: U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400;
+	src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+	unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 700;
+	src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-ext-700-normal.woff2') format('woff2');
+	unicode-range: U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 700;
+	src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-normal.woff2') format('woff2');
+	unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 
 @tailwind base;
 @tailwind components;
@@ -106,9 +218,7 @@
 	--hw-metal-lo: #77777d;
 	--hw-sheen: #ffffff;
 	--hw-screen: #8ba67e;
-	--hw-screen-2: #071308;
 	--hw-screen-ink: #132a10;
-	--hw-screen-ink-2: #00ff66;
 	--hw-screen-line: #6c8660;
 	--hw-screen-ink-dim: #5e7456;
 	--hw-screen-well: #83a07a;
@@ -191,9 +301,7 @@
 	--hw-metal-lo: #1e1e22;
 	--hw-sheen: #ffffff;
 	--hw-screen: #071308;
-	--hw-screen-2: #040c05;
 	--hw-screen-ink: #13a846;
-	--hw-screen-ink-2: #00ff66;
 	--hw-screen-line: #1c2e1f;
 	--hw-screen-ink-dim: #13a846;
 	--hw-screen-well: #060e07;
@@ -273,9 +381,7 @@
 	--hw-metal-lo: #010402;
 	--hw-sheen: #b6ffc4;
 	--hw-screen: #04170c;
-	--hw-screen-2: #010502;
 	--hw-screen-ink: #33ff66;
-	--hw-screen-ink-2: #6bff92;
 	--hw-screen-line: #12351f;
 	--hw-screen-ink-dim: #2ad156;
 	--hw-screen-well: #020c06;
@@ -363,9 +469,7 @@
 	--hw-metal-lo: #0f380f;
 	--hw-sheen: #9bbc0f;
 	--hw-screen: #8bac0f;
-	--hw-screen-2: #0f380f;
 	--hw-screen-ink: #0f380f;
-	--hw-screen-ink-2: #0f380f;
 	--hw-screen-line: #0f380f;
 	--hw-screen-ink-dim: #306230;
 	--hw-screen-well: #84a30e;
@@ -457,9 +561,7 @@
 	--hw-metal-lo: #6a655a;
 	--hw-sheen: #ffffff;
 	--hw-screen: #101014;
-	--hw-screen-2: #06060a;
 	--hw-screen-ink: #e6e6ea;
-	--hw-screen-ink-2: #8fb7ff;
 	--hw-screen-line: #2a2a32;
 	--hw-screen-ink-dim: #9a9aa4;
 	--hw-screen-well: #0c0c10;
@@ -550,9 +652,7 @@
 	--hw-metal-lo: #12151b;
 	--hw-sheen: #ffffff;
 	--hw-screen: #080b12;
-	--hw-screen-2: #04060a;
 	--hw-screen-ink: #eaeffb;
-	--hw-screen-ink-2: #6fa8ff;
 	--hw-screen-line: #232a3a;
 	--hw-screen-ink-dim: #93a0b8;
 	--hw-screen-well: #05070c;
@@ -642,9 +742,7 @@
 	--hw-metal-lo: #030000;
 	--hw-sheen: #ffb3a6;
 	--hw-screen: #140100;
-	--hw-screen-2: #050000;
 	--hw-screen-ink: #ff3b2f;
-	--hw-screen-ink-2: #ff6b5c;
 	--hw-screen-line: #3a0f0b;
 	--hw-screen-ink-dim: #d8392c;
 	--hw-screen-well: #0a0000;
@@ -732,9 +830,7 @@
 	--hw-metal-lo: #6b5205;
 	--hw-sheen: #fffbe0;
 	--hw-screen: #041657;
-	--hw-screen-2: #020b36;
 	--hw-screen-ink: #ffe01a;
-	--hw-screen-ink-2: #fff6b0;
 	--hw-screen-line: #173aa6;
 	--hw-screen-ink-dim: #c9ad14;
 	--hw-screen-well: #030f45;
@@ -751,11 +847,8 @@
 
 @layer base {
 	:root {
-		--font-pixel: 'JetBrains Mono', ui-monospace, monospace;
 		--font-mono: 'JetBrains Mono', ui-monospace, monospace;
 		--font-body: 'Noto Sans', system-ui, sans-serif;
-
-		font-family: var(--font-body);
 	}
 
 	html {
@@ -847,9 +940,7 @@
 		border-color: var(--accent);
 		color: var(--accent);
 	}
-	.hbtn:active:not(:disabled),
-	.hbtn[aria-pressed='true'],
-	.hbtn[data-active='true'] {
+	.hbtn:active:not(:disabled) {
 		transform: translate(1px, 2px);
 		box-shadow: 0 0 0 var(--shadow);
 	}
@@ -998,6 +1089,14 @@
 		background-size: 8px 8px;
 	}
 
+	/* The layout's backdrop: a 20px dot field in the ink colour, at 5%. */
+	.bg-dots {
+		background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+		background-size: 20px 20px;
+		background-position: center;
+		opacity: 0.05;
+	}
+
 	/*
 		Line drawings (the gear page's device plates) are drawn in millimetres and scaled to
 		fit their well; every stroke stays `--stroke` wide on screen regardless, so a drawing
@@ -1010,7 +1109,8 @@
 }
 
 /* The highlight-link class is the one place a link may light up. */
-.highlight-link {
+.highlight-link,
+.blog-content a {
 	font-weight: 700;
 	color: var(--ink);
 	text-decoration: underline;
@@ -1018,7 +1118,8 @@
 	text-underline-offset: 4px;
 	transition: color 120ms linear;
 }
-.highlight-link:hover {
+.highlight-link:hover,
+.blog-content a:hover {
 	background-color: transparent;
 	color: var(--accent);
 }
@@ -1120,11 +1221,8 @@
 .blog-content td {
 	border: var(--stroke) solid var(--line);
 	color: var(--ink);
-	@apply p-2 text-sm leading-loose;
-}
-
-.blog-content a {
-	@apply highlight-link;
+	font-size: 0.875rem;
+	@apply p-2 leading-loose;
 }
 
 hr {

@@ -1,48 +1,72 @@
+<script module lang="ts">
+	type Twttr = {
+		ready: (callback: (twttr: Twttr) => void) => void;
+		events: { bind: (name: 'rendered', callback: (event: { target: HTMLElement }) => void) => void };
+		widgets: { load: (root?: Element) => void };
+	};
+
+	/** One widgets.js per page, kept for the whole visit and shared by every Tweet. */
+	let widgets: Promise<Twttr> | null = null;
+
+	function loadWidgets(): Promise<Twttr> {
+		widgets ??= new Promise<Twttr>((resolve, reject) => {
+			const script = document.createElement('script');
+			script.src = 'https://platform.twitter.com/widgets.js';
+			script.async = true;
+			script.onload = () => {
+				// widgets.js publishes `window.twttr`; lib.dom has no type for it, so `Twttr` is asserted.
+				const twttr = 'twttr' in window ? (window.twttr as Twttr | undefined) : undefined;
+				if (twttr) twttr.ready(resolve);
+				else reject(new Error('widgets.js loaded without window.twttr'));
+			};
+			script.onerror = () => reject(new Error('widgets.js failed to load'));
+			document.head.appendChild(script);
+		}).catch((error) => {
+			widgets = null; // the next Tweet may try again
+			throw error;
+		});
+		return widgets;
+	}
+</script>
+
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
 	let { tweetLink = '' } = $props<{ tweetLink?: string }>();
-	let twitter_widgets_script: HTMLScriptElement | null = null;
 	let isLoaded = $state(false);
 	let root: HTMLDivElement;
 
-	const load_twitter_widgets_script = () => {
-		if (twitter_widgets_script) return;
-		twitter_widgets_script = document.createElement('script');
-		twitter_widgets_script.src = 'https://platform.twitter.com/widgets.js';
-		twitter_widgets_script.async = true;
-		document.head.appendChild(twitter_widgets_script);
-
-		// Check window.twttr
-		const checkTwttr = setInterval(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			if ((window as any).twttr) {
-				clearInterval(checkTwttr);
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(window as any).twttr.ready((twttr: { events: { bind: (name: string, cb: (e: { target: HTMLElement }) => void) => void } }) => {
-					twttr.events.bind('rendered', (event: { target: HTMLElement }) => {
-						if (event.target && root.contains(event.target)) {
-							isLoaded = true;
-						}
-					});
-				});
-			}
-		}, 100);
-
-		// Fallback timeout to hide spinner if script fails or is blocked
-		setTimeout(() => {
-			isLoaded = true;
-			clearInterval(checkTwttr);
-		}, 6000);
-	};
-
-	const remove_twitter_widget_script = () => {
-		if (twitter_widgets_script) {
-			document.head.removeChild(twitter_widgets_script);
-			twitter_widgets_script = null;
-		}
-	};
-	onMount(load_twitter_widgets_script);
-	onDestroy(remove_twitter_widget_script);
+	$effect(() => {
+		let live = true;
+		let fallback: ReturnType<typeof setTimeout> | undefined;
+		// Third-party script only as the reader approaches the tweet.
+		const near = new IntersectionObserver(
+			([entry]) => {
+				if (!entry.isIntersecting) return;
+				near.disconnect();
+				// Fallback: a blocked or failed script still shows the plain link after 6s.
+				fallback = setTimeout(() => (isLoaded = true), 6000);
+				loadWidgets().then(
+					(twttr) => {
+						if (!live) return;
+						twttr.events.bind('rendered', (event) => {
+							if (live && event.target && root.contains(event.target)) {
+								clearTimeout(fallback);
+								isLoaded = true;
+							}
+						});
+						twttr.widgets.load(root);
+					},
+					() => {}
+				);
+			},
+			{ rootMargin: '600px' }
+		);
+		near.observe(root);
+		return () => {
+			live = false;
+			near.disconnect();
+			clearTimeout(fallback);
+		};
+	});
 </script>
 
 <div class="tweet-wrapper" bind:this={root}>
@@ -90,10 +114,6 @@
 		border-top-color: transparent;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
-	}
-
-	.loading-text {
-		color: var(--accent);
 	}
 
 	@keyframes spin {

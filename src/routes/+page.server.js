@@ -1,17 +1,6 @@
-import { getYearsSince } from '$lib/getYear';
-export async function load({ fetch }) {
-	const age = getYearsSince(new Date('2001-06-01'));
-	const devYear = getYearsSince(new Date('2014-06-01'));
-	const seYear = getYearsSince(new Date('2021-06-01'));
-	const vibeYear = new Date().getFullYear() - 2025;
+import { load_entries } from '$lib/server/content';
 
-	const res = await fetch(`/api/posts`);
-	const posts = res.ok ? await res.json() : [];
-	return {
-		age,
-		devYear,
-		seYear,
-		vibeYear,
-		posts: Array.isArray(posts) ? posts : []
-	};
+/** The five newest posts; nothing else on the home page comes from the server. */
+export function load() {
+	return { posts: load_entries('blog').slice(0, 5) };
 }

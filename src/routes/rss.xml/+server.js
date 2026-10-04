@@ -9,8 +9,10 @@ const escape = (value = '') =>
 		.replace(/"/g, '&quot;')
 		.replace(/'/g, '&apos;');
 
-export async function GET() {
-	const posts = await load_entries('blog');
+export const prerender = true;
+
+export function GET() {
+	const posts = load_entries('blog');
 
 	const items = posts
 		.map(({ meta, path }) => {
@@ -39,9 +41,6 @@ ${items}
 `;
 
 	return new Response(xml, {
-		headers: {
-			'content-type': 'application/rss+xml; charset=utf-8',
-			'cache-control': 'public, max-age=0, s-maxage=3600'
-		}
+		headers: { 'content-type': 'application/rss+xml; charset=utf-8' }
 	});
 }

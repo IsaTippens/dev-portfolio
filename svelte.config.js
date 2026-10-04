@@ -9,7 +9,19 @@ const config = {
 		adapter: adapter({
 			routes: {
 				include: ['/*'],
-				exclude: ['<all>']
+				// Static files never reach the Worker. `/images/*` replaces `<files>`, which emits
+				// one rule per image and would outgrow _routes.json's 100-rule cap.
+				exclude: [
+					'<build>',
+					'<prerendered>',
+					'<redirects>',
+					'/images/*',
+					'/favicon.ico',
+					'/favicon-16x16.png',
+					'/favicon-32x32.png',
+					'/og.png',
+					'/robots.txt'
+				]
 			}
 		})
 	},

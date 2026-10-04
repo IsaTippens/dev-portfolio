@@ -19,9 +19,8 @@
 
 <div class="my-2">
 <iframe
-	data-testid="spotify"
 	title={`spotify-${spotifyLink}`}
-	class="spotify-sveltekit-embed"
+	loading="lazy"
 	src={`https://open.spotify.com/embed/${spotifyLink}`}
 	frameBorder="0"
 	allow="encrypted-media"

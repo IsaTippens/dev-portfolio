@@ -19,7 +19,7 @@ export const CHARGE_BANNER_MS = 3400;
 let banner_timer: number | undefined;
 
 /** Plays the charge banner. A re-plug mid-run restarts it rather than cutting it short. */
-export function announceCharge() {
+function announceCharge() {
 	window.clearTimeout(banner_timer);
 	playLightning.set(false);
 	requestAnimationFrame(() => {

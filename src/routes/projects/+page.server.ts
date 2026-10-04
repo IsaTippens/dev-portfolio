@@ -1,7 +1,3 @@
-export const load = async ({ fetch }) => {
-	const posts = await fetch(`/api/projects`);
-	const allPosts = await posts.json();
-	return {
-		posts: allPosts
-	};
-};
+import { load_entries } from '$lib/server/content';
+
+export const load = () => ({ posts: load_entries('projects') });

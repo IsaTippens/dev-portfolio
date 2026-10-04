@@ -7,14 +7,32 @@
 	 * The hero row: identity, survey plate and the portrait engine — the device's
 	 * front panel.
 	 */
-	let { data } = $props<{ data: any }>();
 
-	const FIELDS = $derived([
+	/**
+	 * Whole years from a UTC date to `now` on the UTC calendar: an anniversary not yet
+	 * reached this year does not count. The page is prerendered: this runs at build
+	 * time for the HTML and again in the browser on hydration, which rewrites the text
+	 * when the build is older than the last anniversary.
+	 */
+	function yearsSince(iso: string, now: Date) {
+		const then = new Date(iso);
+		const years = now.getUTCFullYear() - then.getUTCFullYear();
+		const before =
+			now.getUTCMonth() < then.getUTCMonth() ||
+			(now.getUTCMonth() === then.getUTCMonth() && now.getUTCDate() < then.getUTCDate());
+		return before ? years - 1 : years;
+	}
+
+	const now = new Date();
+	const FIELDS = [
 		{ label: 'LOCATION', value: 'Cape Town, South Africa' },
-		{ label: 'STATUS', value: `${data.age} y/o programmer (${data.devYear} yrs code)` },
-		{ label: 'EXPERIENCE', value: `software engineer for ${data.seYear} years` },
-		{ label: 'VIBE_CHECK', value: `vibe coder for ${data.vibeYear} year` }
-	]);
+		{
+			label: 'STATUS',
+			value: `${yearsSince('2001-06-01', now)} y/o programmer (${yearsSince('2014-06-01', now)} yrs code)`
+		},
+		{ label: 'EXPERIENCE', value: `software engineer for ${yearsSince('2021-06-01', now)} years` },
+		{ label: 'VIBE_CHECK', value: `vibe coder for ${now.getUTCFullYear() - 2025} year` }
+	];
 </script>
 
 <div class="flex flex-col gap-6 md:flex-row">

@@ -1,4 +1,4 @@
-import { readonly, writable, type Readable } from 'svelte/store';
+import { hid, setLightbarLinked, type HIDConnectionEvent, type HIDDevice } from '$lib/ports';
 import { theme } from '$lib/stores/theme';
 
 /**
@@ -17,28 +17,6 @@ import { theme } from '$lib/stores/theme';
  * Output reports follow the Linux hid-playstation driver's layouts. USB and Bluetooth
  * differ: Bluetooth wraps the same fields in a larger report sealed with a CRC32.
  */
-
-// Just enough of WebHID for this file; the DOM lib does not ship its types.
-interface HIDReportInfo {
-	reportId: number;
-}
-interface HIDCollectionInfo {
-	outputReports?: HIDReportInfo[];
-}
-interface HIDDevice extends EventTarget {
-	opened: boolean;
-	productId: number;
-	collections: HIDCollectionInfo[];
-	open(): Promise<void>;
-	sendReport(reportId: number, data: Uint8Array): Promise<void>;
-}
-interface HIDConnectionEvent extends Event {
-	device: HIDDevice;
-}
-interface HID extends EventTarget {
-	getDevices(): Promise<HIDDevice[]>;
-	requestDevice(options: { filters: { vendorId: number; productId: number }[] }): Promise<HIDDevice[]>;
-}
 
 const SONY = 0x054c;
 type Model = 'ds4' | 'dualsense';
@@ -59,33 +37,8 @@ const BT_LENGTH = 77;
 
 type Pad = { device: HIDDevice; model: Model; bluetooth: boolean; seq: number; queue: Promise<void> };
 
-const linked = writable(false);
-
-/** True while at least one PlayStation pad has its lightbar under the plate's control. */
-export const lightbarLinked: Readable<boolean> = readonly(linked);
-
 const pads = new Map<HIDDevice, Pad>();
 let rgb: [number, number, number] | null = null;
-
-const hid = (): HID | null =>
-	typeof navigator !== 'undefined' && 'hid' in navigator ? (navigator as unknown as { hid: HID }).hid : null;
-
-/** WebHID exists here: Chromium desktop, secure context. */
-export function lightbarSupported(): boolean {
-	return hid() !== null;
-}
-
-/** A Sony pad is plugged in, going by the ids the Gamepad API reports. */
-export function sonyPadPresent(): boolean {
-	if (typeof navigator === 'undefined' || typeof navigator.getGamepads !== 'function') return false;
-	try {
-		return navigator
-			.getGamepads()
-			.some((p) => p?.connected && /054c|dualsense|dualshock|wireless controller/i.test(p.id));
-	} catch {
-		return false;
-	}
-}
 
 const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
 	let c = n;
@@ -173,7 +126,7 @@ async function adopt(device: HIDDevice) {
 	const bluetooth = device.collections.some((c) => c.outputReports?.some((r) => r.reportId === bt_id));
 	const pad: Pad = { device, model, bluetooth, seq: 0, queue: Promise.resolve() };
 	pads.set(device, pad);
-	linked.set(true);
+	setLightbarLinked(true);
 	if (model === 'dualsense') send(pad, dualsenseReport(pad, [0, 0, 0], true));
 	paint(pad);
 }
@@ -215,7 +168,7 @@ export function startLightbar(): () => void {
 	}
 	function onDisconnect(event: Event) {
 		pads.delete((event as HIDConnectionEvent).device);
-		linked.set(pads.size > 0);
+		setLightbarLinked(pads.size > 0);
 	}
 
 	api.addEventListener('connect', onConnect);
@@ -238,6 +191,6 @@ export function startLightbar(): () => void {
 		api.removeEventListener('connect', onConnect);
 		api.removeEventListener('disconnect', onDisconnect);
 		pads.clear();
-		linked.set(false);
+		setLightbarLinked(false);
 	};
 }

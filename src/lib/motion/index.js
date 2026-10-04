@@ -1,4 +1,4 @@
-import { readable, get } from 'svelte/store';
+import { readable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 /**
@@ -21,9 +21,6 @@ import { browser } from '$app/environment';
 
 /** Primary panel motion: fast out of the gate, long settle. */
 export const EASE_SNAP = 'cubic-bezier(0.2, 0.9, 0.25, 1)';
-
-/** Decisive state flips: almost a cut, with just enough shape to read as motion. */
-export const EASE_HARD = 'cubic-bezier(0.85, 0, 0.15, 1)';
 
 /**
  * Sustained travel: a wave crossing the screen. Symmetrical and gentle out of the gate,
@@ -57,31 +54,35 @@ export const REFOCUS = 340;
 /** Hard ceiling for anything time-based. Scroll-scrubbed effects are exempt. */
 export const MAX_DURATION = 400;
 
-/** Stagger between siblings of one module, and between modules of the boot sequence. */
-export const CHILD_STAGGER = 30;
+/** Stagger between modules of the boot sequence. */
 export const MODULE_STAGGER = 50;
 
 /** Anime.js linear() sampler is fine for stepped values; these are the step counts. */
 export const STEPS_BLINK = 3;
 export const STEPS_FLICKER = 4;
 
+/** The one `prefers-reduced-motion` query, created once: hot paths read it per event. */
+const reduce_query =
+	browser && typeof window.matchMedia === 'function'
+		? window.matchMedia('(prefers-reduced-motion: reduce)')
+		: null;
+
 /**
  * Reactive `prefers-reduced-motion: reduce`, re-evaluated on media-query change.
  * SSR-safe: reports `false` on the server, then the first client read is authoritative.
  */
 export const prefersReducedMotion = readable(false, (set) => {
-	if (!browser || typeof window.matchMedia !== 'function') return;
-	const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-	set(mq.matches);
+	if (!reduce_query) return;
+	set(reduce_query.matches);
 	/** @param {MediaQueryListEvent} event */
 	const on_change = (event) => set(event.matches);
-	mq.addEventListener('change', on_change);
-	return () => mq.removeEventListener('change', on_change);
+	reduce_query.addEventListener('change', on_change);
+	return () => reduce_query.removeEventListener('change', on_change);
 });
 
 /** Imperative read for use inside effects and event handlers. */
 export function reducedMotion() {
-	return get(prefersReducedMotion);
+	return reduce_query?.matches ?? false;
 }
 
 /** Is the document allowed to animate? The pre-paint script owns this flag. */

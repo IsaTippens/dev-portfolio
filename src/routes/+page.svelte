@@ -17,7 +17,7 @@
 <div class="grid gap-4">
 	<!-- Front panel. -->
 	<Intro />
-	<About {data} />
+	<About />
 
 	<Experience />
 
@@ -31,7 +31,7 @@
 	<div>
 		<SectionHeader title="Recent Posts" href="/blog" />
 		<div class="grid">
-			{#each (data.posts ?? []).slice(0, 5) as post (post.path)}
+			{#each data.posts as post (post.path)}
 				<PostTile data={post} />
 			{/each}
 		</div>

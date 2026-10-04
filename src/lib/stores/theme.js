@@ -89,25 +89,26 @@ export const OS_PLATES = { light: 'ps1', dark: 'ps2' };
  */
 export const PLATE_KEY = 'plate';
 
-if (browser) {
-	// Drop the legacy key: every value it holds was written by the store, not a pick.
-	try {
-		localStorage.removeItem('theme');
-	} catch {
-		/* private mode: nothing was stored anyway */
-	}
-}
+/** The OS colour scheme, queried once and followed live. */
+const dark_scheme =
+	browser && typeof window.matchMedia === 'function'
+		? window.matchMedia('(prefers-color-scheme: dark)')
+		: null;
 
-const stored = browser ? localStorage.getItem(PLATE_KEY) : null;
+/** @returns {string | null} */
+const read_plate = () => {
+	try {
+		return localStorage.getItem(PLATE_KEY);
+	} catch {
+		return null; /* storage blocked: follow the OS */
+	}
+};
+
+const stored = browser ? read_plate() : null;
 const manual_pick = typeof stored === 'string' && THEME_IDS.includes(stored) ? stored : null;
 
-/** The OS plate right now: ps1 under a light scheme, dark under a dark one. */
-const os_plate = () =>
-	browser &&
-	typeof window.matchMedia === 'function' &&
-	window.matchMedia('(prefers-color-scheme: dark)').matches
-		? OS_PLATES.dark
-		: OS_PLATES.light;
+/** The OS plate right now: OS_PLATES.light under a light scheme, OS_PLATES.dark under a dark one. */
+const os_plate = () => (dark_scheme?.matches ? OS_PLATES.dark : OS_PLATES.light);
 
 let manual = manual_pick !== null;
 
@@ -143,19 +144,16 @@ export const theme = {
 	}
 };
 
-if (browser && typeof window.matchMedia === 'function') {
-	const scheme = window.matchMedia('(prefers-color-scheme: dark)');
-	scheme.addEventListener('change', () => {
-		if (!manual) set(os_plate());
-	});
-}
+dark_scheme?.addEventListener('change', () => {
+	if (!manual) set(os_plate());
+});
 
 /**
  * Where won plates are recorded, as a comma-separated list of ids. The console CTF
  * (`$lib/ctf/console.ts`) wins MR ROBOT, the GAMING_LOG cube wins GD; nothing else
  * writes here. A lone id (the format before GD existed) reads as a one-item list.
  */
-export const UNLOCK_KEY = 'plate-unlocked';
+const UNLOCK_KEY = 'plate-unlocked';
 
 /** @returns {string[]} */
 const read_unlocked = () => {

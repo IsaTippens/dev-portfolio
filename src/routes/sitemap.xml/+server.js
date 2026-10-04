@@ -9,8 +9,11 @@ const url = (path) => ({
 	lastmod: null
 });
 
-export async function GET() {
-	const [posts, projects] = await Promise.all([load_entries('blog'), load_entries('projects')]);
+export const prerender = true;
+
+export function GET() {
+	const posts = load_entries('blog');
+	const projects = load_entries('projects');
 
 	const entries = [
 		...STATIC_ROUTES.map(url),
@@ -38,9 +41,6 @@ ${entries
 `;
 
 	return new Response(xml, {
-		headers: {
-			'content-type': 'application/xml; charset=utf-8',
-			'cache-control': 'public, max-age=0, s-maxage=3600'
-		}
+		headers: { 'content-type': 'application/xml; charset=utf-8' }
 	});
 }

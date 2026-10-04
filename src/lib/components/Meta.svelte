@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { SITE, NAME, TWITTER } from '$lib/site';
+
 	/**
 	 * Per-page head metadata. `path` is resolved against the canonical origin for the
 	 * canonical link and og:url, so every page shares one set of card/OG tags.
@@ -16,9 +18,6 @@
 		type?: 'website' | 'article';
 		published?: string | Date | null;
 	}>();
-
-	const SITE = 'https://isatippens.com';
-	const NAME = 'Isa Tippens';
 
 	const url = $derived(`${SITE}${path === '/' ? '' : encodeURI(path)}`);
 	const full_title = $derived(title === NAME ? title : `${title} — ${NAME}`);
@@ -44,8 +43,8 @@
 	{/if}
 
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:site" content="@issssaaaaaaaaah" />
-	<meta name="twitter:creator" content="@issssaaaaaaaaah" />
+	<meta name="twitter:site" content={TWITTER} />
+	<meta name="twitter:creator" content={TWITTER} />
 	<meta name="twitter:title" content={full_title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={`${SITE}/og.png`} />

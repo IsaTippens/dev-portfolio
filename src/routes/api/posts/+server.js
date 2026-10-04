@@ -1,37 +1,14 @@
-import { dev } from '$app/environment';
 import { json } from '@sveltejs/kit';
-export const GET = async () => {
-	// glob all md and svx files in the posts folder
+import { load_entries } from '$lib/server/content';
 
-	const allPostFiles = import.meta.glob('/content/blog/**/index.{md,svx}');
-	const iterablePostFiles = Object.entries(allPostFiles);
-	let allPosts = await Promise.all(
-		iterablePostFiles.map(async ([path, resolver]) => {
-			const { metadata } = /** @type {any} */ (await resolver());
-			//get second last folder of path
-			const temp = path.split('/');
-			const postPath = temp[temp.length - 2];
+// Stays on the Worker: CTF flag 2 is the `x-flag` response header, which a
+// prerendered static file would not carry.
+export const prerender = false;
 
-			return {
-				meta: metadata,
-				path: postPath
-			};
-		})
-	);
-
-	if (!dev) {
-		allPosts = allPosts.filter((post) => {
-			return post.meta.published;
-		});
-	}
-
-	const sortedPosts = allPosts.sort((a, b) => {
-		return new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime();
-	});
-
+export function GET() {
 	// CTF flag 2 of 4, reached from flag 1 (`curl -i`). ROT13: the ISA{ prefix is the
 	// crib. The chain is written up in src/lib/ctf/SOLUTIONS.md.
-	return json(sortedPosts, {
+	return json(load_entries('blog'), {
 		headers: { 'x-flag': 'VFN{e0o0gf_xa0j_ju3e3_gu3_z0a3l_vf}' }
 	});
-};
+}

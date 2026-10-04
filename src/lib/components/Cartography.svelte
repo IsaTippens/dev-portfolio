@@ -4,7 +4,7 @@
 	import Panel from '$lib/components/Panel.svelte';
 	import Readout from '$lib/components/Readout.svelte';
 	import { RELIEF } from '$lib/components/cartography-relief';
-	import { onScrollProgress } from '$lib/motion/scrub.js';
+	import { onScrollFrame } from '$lib/motion/scrub.js';
 	import { reducedMotion, motionEnabled, EASE_SNAP, PANEL } from '$lib/motion';
 	import { sunPosition, CIVIL_DUSK, type SunPosition } from '$lib/cartography/sun';
 	import { fetchWind, isCapeDoctor, compassPoint, type Wind } from '$lib/cartography/wind';
@@ -115,16 +115,21 @@
 	 * land, just above sea level; Table Mountain's marker, and the tablecloth
 	 * when there is one, ride its summit.
 	 */
-	const layers = (): [SVGElement | null, number][] => [
-		[grid_el, SEA_LEVEL - 0.15],
-		[coast_el, SEA_LEVEL],
-		[water_el, SEA_LEVEL],
-		...RELIEF.map(({ level }, i): [SVGElement | null, number] => [relief_els[i] ?? null, altitude(level)]),
-		[near_el, SEA_LEVEL + 0.02],
-		[marks_el, SEA_LEVEL + 0.02],
-		[cloud_el, altitude(1085)],
-		[summit_el, altitude(1085)]
-	];
+	let stack: [SVGElement, number][] = [];
+
+	function collectLayers() {
+		const pairs: [SVGElement | null, number][] = [
+			[grid_el, SEA_LEVEL - 0.15],
+			[coast_el, SEA_LEVEL],
+			[water_el, SEA_LEVEL],
+			...RELIEF.map(({ level }, i): [SVGElement | null, number] => [relief_els[i] ?? null, altitude(level)]),
+			[near_el, SEA_LEVEL + 0.02],
+			[marks_el, SEA_LEVEL + 0.02],
+			[cloud_el, altitude(1085)],
+			[summit_el, altitude(1085)]
+		];
+		stack = pairs.filter((pair): pair is [SVGElement, number] => pair[0] !== null);
+	}
 
 	/**
 	 * Live sky over the city. Everything here is read on the client after mount:
@@ -241,10 +246,24 @@
 	const cursor = { zoom: 0, nx: 0, ny: 0 };
 	let hover: { cancel: () => void } | undefined;
 
+	/** The pose last written to the layers. */
+	const written = { zoom: NaN, nx: NaN, ny: NaN };
+
 	function parallax() {
 		const { zoom, nx, ny } = cursor;
-		for (const [el, depth] of layers()) {
-			if (!el) continue;
+		// Below these steps the rounded transforms come out the same (a phone held still
+		// on the tilt loop): skip the 16 writes and the repaint they cost.
+		if (
+			Math.abs(zoom - written.zoom) < 1e-5 &&
+			Math.abs(nx - written.nx) < 1e-4 &&
+			Math.abs(ny - written.ny) < 1e-4
+		) {
+			return;
+		}
+		written.zoom = zoom;
+		written.nx = nx;
+		written.ny = ny;
+		for (const [el, depth] of stack) {
 			const dx = -nx * SHIFT * depth * zoom;
 			const dy = -ny * SHIFT * depth * zoom;
 			const scale = 1 + zoom * ZOOM * depth;
@@ -430,11 +449,16 @@
 		else void startTilt(event);
 	}
 
+	/** The plate is on screen: weather only animates while someone can see it. */
+	let on_screen = $state(true);
+
 	onMount(() => {
+		collectLayers();
 		if (!plate) return;
-		// Scrolled away: stand down, so the sensor isn't left running unseen.
+		// Scrolled away: stand down the sensor and the tablecloth.
 		const seen = new IntersectionObserver(([entry]) => {
-			if (!entry.isIntersecting) stopTilt();
+			on_screen = entry.isIntersecting;
+			if (!on_screen) stopTilt();
 		});
 		seen.observe(plate);
 		return () => {
@@ -447,9 +471,14 @@
 
 	onDestroy(() => hover?.cancel());
 
+	/** Reach last painted: a scroll that no longer moves the network writes nothing. */
+	let painted = -1;
+
 	/** Grow the network to fraction `p` of its full reach, 0 → 1. */
 	function paint(p: number) {
 		const reach = Math.max(0, Math.min(1, p)) * net_length;
+		if (reach === painted) return;
+		painted = reach;
 		let drawn = 0;
 		spans.forEach(({ start, length }, i) => {
 			const d = Math.max(0, Math.min(length, reach - start));
@@ -499,15 +528,11 @@
 			onUpdate: () => paint(proxy.p)
 		});
 
-		// `onScrollProgress` reports once synchronously on subscribe; only reads
-		// after that are real movement.
-		let live = false;
-		const stop = onScrollProgress(source, () => {
-			if (!live) return;
+		// The scroll takes over from the intro on the first real movement.
+		const stop = onScrollFrame(() => {
 			intro.cancel();
 			paint(reach());
 		});
-		live = true;
 
 		return () => {
 			stop();
@@ -558,55 +583,13 @@
 
 			<!-- Graticule, 0.1° -->
 			<g bind:this={grid_el}>
-				<g class="stroke-line" stroke-width="0.6" stroke-dasharray="1.5 3">
-					<line x1="-189" y1="-300" x2="-189" y2="580" />
-					<line x1="-157.5" y1="-300" x2="-157.5" y2="580" />
-					<line x1="-126" y1="-300" x2="-126" y2="580" />
-					<line x1="-94.5" y1="-300" x2="-94.5" y2="580" />
-					<line x1="-63" y1="-300" x2="-63" y2="580" />
-					<line x1="-31.5" y1="-300" x2="-31.5" y2="580" />
-					<line x1="0" y1="-300" x2="0" y2="580" />
-					<line x1="31.5" y1="-300" x2="31.5" y2="580" />
-					<line x1="63" y1="-300" x2="63" y2="580" />
-					<line x1="94.5" y1="-300" x2="94.5" y2="580" />
-					<line x1="126" y1="-300" x2="126" y2="580" />
-					<line x1="157.5" y1="-300" x2="157.5" y2="580" />
-					<line x1="189" y1="-300" x2="189" y2="580" />
-					<line x1="220.5" y1="-300" x2="220.5" y2="580" />
-					<line x1="252" y1="-300" x2="252" y2="580" />
-					<line x1="283.5" y1="-300" x2="283.5" y2="580" />
-					<line x1="315" y1="-300" x2="315" y2="580" />
-					<line x1="346.5" y1="-300" x2="346.5" y2="580" />
-					<line x1="378" y1="-300" x2="378" y2="580" />
-					<line x1="409.5" y1="-300" x2="409.5" y2="580" />
-					<line x1="441" y1="-300" x2="441" y2="580" />
-					<line x1="472.6" y1="-300" x2="472.6" y2="580" />
-					<line x1="504.1" y1="-300" x2="504.1" y2="580" />
-					<line x1="535.6" y1="-300" x2="535.6" y2="580" />
-					<line x1="567.1" y1="-300" x2="567.1" y2="580" />
-					<line x1="-290" y1="-258.4" x2="665" y2="-258.4" />
-					<line x1="-290" y1="-220.4" x2="665" y2="-220.4" />
-					<line x1="-290" y1="-182.4" x2="665" y2="-182.4" />
-					<line x1="-290" y1="-144.4" x2="665" y2="-144.4" />
-					<line x1="-290" y1="-106.4" x2="665" y2="-106.4" />
-					<line x1="-290" y1="-68.4" x2="665" y2="-68.4" />
-					<line x1="-290" y1="-30.4" x2="665" y2="-30.4" />
-					<line x1="-290" y1="7.6" x2="665" y2="7.6" />
-					<line x1="-290" y1="45.6" x2="665" y2="45.6" />
-					<line x1="-290" y1="83.6" x2="665" y2="83.6" />
-					<line x1="-290" y1="121.6" x2="665" y2="121.6" />
-					<line x1="-290" y1="159.6" x2="665" y2="159.6" />
-					<line x1="-290" y1="197.6" x2="665" y2="197.6" />
-					<line x1="-290" y1="235.6" x2="665" y2="235.6" />
-					<line x1="-290" y1="273.6" x2="665" y2="273.6" />
-					<line x1="-290" y1="311.6" x2="665" y2="311.6" />
-					<line x1="-290" y1="349.6" x2="665" y2="349.6" />
-					<line x1="-290" y1="387.6" x2="665" y2="387.6" />
-					<line x1="-290" y1="425.6" x2="665" y2="425.6" />
-					<line x1="-290" y1="463.6" x2="665" y2="463.6" />
-					<line x1="-290" y1="501.6" x2="665" y2="501.6" />
-					<line x1="-290" y1="539.6" x2="665" y2="539.6" />
-				</g>
+				<path
+					class="stroke-line"
+					fill="none"
+					stroke-width="0.6"
+					stroke-dasharray="1.5 3"
+					d="M-189 -300V580M-157.5 -300V580M-126 -300V580M-94.5 -300V580M-63 -300V580M-31.5 -300V580M0 -300V580M31.5 -300V580M63 -300V580M94.5 -300V580M126 -300V580M157.5 -300V580M189 -300V580M220.5 -300V580M252 -300V580M283.5 -300V580M315 -300V580M346.5 -300V580M378 -300V580M409.5 -300V580M441 -300V580M472.6 -300V580M504.1 -300V580M535.6 -300V580M567.1 -300V580M-290 -258.4H665M-290 -220.4H665M-290 -182.4H665M-290 -144.4H665M-290 -106.4H665M-290 -68.4H665M-290 -30.4H665M-290 7.6H665M-290 45.6H665M-290 83.6H665M-290 121.6H665M-290 159.6H665M-290 197.6H665M-290 235.6H665M-290 273.6H665M-290 311.6H665M-290 349.6H665M-290 387.6H665M-290 425.6H665M-290 463.6H665M-290 501.6H665M-290 539.6H665"
+				/>
 				<g
 					fill="var(--ink-dim)"
 					font-family="var(--font-mono)"
@@ -716,7 +699,7 @@
 			     its line. -->
 			<g bind:this={cloud_el}>
 				{#if tablecloth}
-					<g class:drift opacity="0.92" stroke="var(--ink-dim)" stroke-opacity="0.6" stroke-width="1.1">
+					<g class:drift class:paused={!on_screen} opacity="0.92" stroke="var(--ink-dim)" stroke-opacity="0.6" stroke-width="1.1">
 						{#each TONGUES as [x, y], i (i)}
 							<g class="tongue" style:animation-delay="{(-i * POUR) / TONGUES.length}s" style:animation-duration="{POUR}s">
 								<g fill="none">
@@ -807,6 +790,9 @@
 		animation-name: pour;
 		animation-timing-function: linear;
 		animation-iteration-count: infinite;
+	}
+	.drift.paused .tongue {
+		animation-play-state: paused;
 	}
 	@keyframes pour {
 		0% {

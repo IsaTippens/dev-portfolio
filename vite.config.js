@@ -1,31 +1,20 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import Icons from 'unplugin-icons/vite';
+
 /** @type {import('vite').UserConfig} */
 const config = {
-	plugins: [
-		sveltekit(),
-		Icons({
-			compiler: 'svelte'
-		})
-	],
+	plugins: [sveltekit()],
+	build: {
+		// The stylesheet already needs color-mix() and @property, and the CTF console uses
+		// Promise.withResolvers, so nothing older than ES2022 runs this site. Native class
+		// fields and #private members replace esbuild's WeakMap helpers in the bundle.
+		target: 'es2022',
+		// CSS keeps Vite's previous default target, so the stylesheet is minified exactly
+		// as before.
+		cssTarget: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']
+	},
 	server: {
 		fs: {
 			allow: ['..']
-		}
-	},
-	optimizeDeps: {
-		exclude: ['virtual:icons', 'virtual:icons/*', '~icons/*'],
-		esbuildOptions: {
-			plugins: [
-				{
-					name: 'ignore-icons',
-					setup(build) {
-						build.onResolve({ filter: /^(virtual:icons\/|~icons\/)/ }, (args) => {
-							return { path: args.path, external: true };
-						});
-					}
-				}
-			]
 		}
 	}
 };

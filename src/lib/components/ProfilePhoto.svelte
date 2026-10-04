@@ -471,14 +471,27 @@
 		opacity: 1;
 	}
 
-	/* The camcorder REC lamp: on, off, on. */
-	.rec-blink {
+	/*
+		The camcorder REC lamp: on, off, on. The lamp is its dark face; the lit face is a
+		layer whose opacity steps, so the blink runs on the compositor. `.led.` keeps this
+		above app.css's `.led[data-on='true']` in any stylesheet order.
+	*/
+	.led.rec-blink {
+		position: relative;
+		background-color: var(--hw-well-2);
+		box-shadow: none;
+	}
+	.led.rec-blink::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-color: var(--rec);
+		box-shadow: 0 0 4px var(--rec);
 		animation: rec-blink 1.2s steps(2, jump-none) infinite;
 	}
 	@keyframes rec-blink {
 		50% {
-			background-color: var(--hw-well-2);
-			box-shadow: none;
+			opacity: 0;
 		}
 	}
 
@@ -573,16 +586,49 @@
 		box-shadow: 0 0 2px var(--ok);
 	}
 
-	/* A live LED blinks in steps. Diodes do not interpolate. */
+	/*
+		A live LED blinks in steps: on, half, off, half — `steps(2, end)` across the old
+		on→off keyframes showed the half-way colour for a beat. Each lit face is a layer
+		whose opacity steps on the compositor; the dot itself is the dark face.
+	*/
 	.indicator-dot.blink-red {
+		position: relative;
+	}
+	.indicator-dot.blink-red::before,
+	.indicator-dot.blink-red::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		animation: 1.6s steps(1, end) infinite;
+	}
+	.indicator-dot.blink-red::before {
+		background-color: color-mix(in srgb, var(--rec) 50%, var(--hw-well-2));
+		box-shadow: 0 0 1px color-mix(in srgb, var(--rec) 50%, transparent);
+		opacity: 0;
+		animation-name: blink-red-half;
+	}
+	.indicator-dot.blink-red::after {
 		background-color: var(--rec);
 		box-shadow: 0 0 2px var(--rec);
-		animation: blink-red 1.6s steps(2, end) infinite;
+		animation-name: blink-red-on;
 	}
-	@keyframes blink-red {
+	@keyframes blink-red-on {
+		0% {
+			opacity: 1;
+		}
+		25%,
+		100% {
+			opacity: 0;
+		}
+	}
+	@keyframes blink-red-half {
+		0%,
 		50% {
-			background-color: var(--hw-well-2);
-			box-shadow: none;
+			opacity: 0;
+		}
+		25%,
+		75% {
+			opacity: 1;
 		}
 	}
 </style>

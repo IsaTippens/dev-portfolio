@@ -14,12 +14,9 @@
 	} from '$lib/stores/battery';
 	import { maybeBoot } from '$lib/motion/boot.js';
 	import { motionEnabled } from '$lib/motion';
-	import { padConnected, startGamepad } from '$lib/gamepad';
-	import { lightbarLinked, lightbarSupported, linkLightbar, sonyPadPresent, startLightbar } from '$lib/lightbar';
+	import { lightbarLinked, lightbarSupported, padConnected, sonyPadPresent } from '$lib/ports';
 	import { startKonami } from '$lib/konami';
-	import { installConsole } from '$lib/ctf/console';
 
-	import NoisyGradient from '$lib/components/NoisyGradient.svelte';
 	import FocusSweep from '$lib/components/FocusSweep.svelte';
 	import ModeDial from '$lib/components/ModeDial.svelte';
 	import Panel from '$lib/components/Panel.svelte';
@@ -122,6 +119,7 @@
 	let stretched_by: 'hold' | 'event' | null = $state(null);
 	let brand_link: HTMLAnchorElement | null = $state(null);
 	let brand_name: HTMLSpanElement | null = $state(null);
+	let telemetry: HTMLDivElement | null = $state(null);
 	const brand_text = $derived(`${stretchedName(stretch)} TIPPENS`);
 
 	let hold_timer: ReturnType<typeof setTimeout> | undefined;
@@ -362,21 +360,64 @@
 	// Konami code alone), so the badge only shows there too.
 	const pad_badge = $derived($padConnected && ($theme === 'ps1' || $theme === 'ps2'));
 	// A PlayStation pad whose lightbar isn't ours yet: the badge becomes the button that
-	// asks for it, because WebHID only prompts from a click. Re-read on (dis)connect.
+	// asks for it, because WebHID only prompts from a click. The lightbar follows every
+	// plate, so the button shows on every plate too. Re-read on (dis)connect.
 	const pad_link = $derived(
-		pad_badge && !$lightbarLinked && lightbarSupported() && sonyPadPresent()
+		$padConnected && !$lightbarLinked && lightbarSupported() && sonyPadPresent()
 	);
 
+	/** The lightbar driver, once loaded. Only a WebHID browser ever loads it. */
+	let lightbar: typeof import('$lib/lightbar') | null = null;
+
+	function linkPad() {
+		void lightbar?.linkLightbar();
+	}
+
 	onMount(() => {
-		const stop_pad = startGamepad();
-		const stop_konami = startKonami();
-		const stop_lightbar = startLightbar();
-		const uninstall_console = installConsole();
+		let disposed = false;
+		const stops: Array<() => void> = [startKonami()];
+		/** Keep a driver's cleanup, or run it at once if the layout is already gone. */
+		const keep = (stop: () => void) => {
+			if (disposed) stop();
+			else stops.push(stop);
+		};
+
+		// The pad driver loads with the first pad. Browsers only reveal a pad after a
+		// button press, and that press only seeds the driver's edge state; its own
+		// snapshot picks the pad up.
+		const loadPad = () => {
+			window.removeEventListener('gamepadconnected', loadPad);
+			void import('$lib/gamepad').then((m) => keep(m.startGamepad()));
+		};
+		let pad_present = false;
+		try {
+			pad_present = navigator.getGamepads().some((pad) => pad?.connected === true);
+		} catch {
+			// No Gamepad API, a permissions policy or an insecure context: the port is sealed.
+		}
+		if (pad_present) loadPad();
+		else window.addEventListener('gamepadconnected', loadPad);
+
+		// Loaded at mount, not on demand: a pad granted on an earlier visit is re-linked
+		// without a press. Non-WebHID browsers never download it.
+		if (lightbarSupported()) {
+			void import('$lib/lightbar').then((m) => {
+				lightbar = m;
+				keep(m.startLightbar());
+			});
+		}
+
+		// The console is for devtools; nobody types `isa.help()` in the first frames.
+		const loadConsole = () => {
+			void import('$lib/ctf/console').then((m) => keep(m.installConsole()));
+		};
+		if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(loadConsole);
+		else setTimeout(loadConsole, 1);
+
 		return () => {
-			stop_pad();
-			stop_konami();
-			stop_lightbar();
-			uninstall_console();
+			disposed = true;
+			window.removeEventListener('gamepadconnected', loadPad);
+			for (const stop of stops) stop();
 		};
 	});
 
@@ -402,7 +443,9 @@
 			}
 		}
 
-		// FPS counter. rAF is already parked by the browser in a hidden tab.
+		// FPS counter. It samples only while the bottom bar is on screen: a readout nobody
+		// can see is not worth waking the main thread every frame (rAF is already parked in
+		// a hidden tab). Back in view it resumes, and a fresh figure lands within a second.
 		let lastTime: number | null = null;
 		let frameCount = 0;
 		let raf = 0;
@@ -417,7 +460,15 @@
 			}
 			raf = window.requestAnimationFrame(updateFps);
 		}
-		raf = window.requestAnimationFrame(updateFps);
+
+		const meter = new IntersectionObserver(([entry]) => {
+			window.cancelAnimationFrame(raf);
+			if (!entry.isIntersecting) return;
+			lastTime = null;
+			frameCount = 0;
+			raf = window.requestAnimationFrame(updateFps);
+		});
+		if (telemetry) meter.observe(telemetry);
 
 		// Tape counter: scroll position as a device readout, rAF-throttled.
 		let queued = false;
@@ -437,6 +488,7 @@
 		window.addEventListener('resize', onScroll);
 
 		return () => {
+			meter.disconnect();
 			window.cancelAnimationFrame(raf);
 			window.removeEventListener('scroll', onScroll);
 			window.removeEventListener('resize', onScroll);
@@ -448,10 +500,6 @@
 	onMount(() => {
 		// The inline boot script drops its own safety net as soon as the app is alive.
 		(window as any).__motion_ready?.();
-		if (!motionEnabled()) {
-			document.documentElement.dataset.boot = 'done';
-			return;
-		}
 		maybeBoot(document);
 	});
 
@@ -487,7 +535,7 @@
 
 <div class="relative flex min-h-screen flex-col items-center justify-center p-3 sm:p-5">
 	<!-- Background grid -->
-	<div class="absolute inset-0 z-0"><NoisyGradient /></div>
+	<div class="bg-dots absolute inset-0 z-0 bg-page text-ink transition-colors duration-300"></div>
 
 	<!-- TE Device Chassis. Top-anchored on every route, same shadow everywhere. -->
 	<div
@@ -583,14 +631,14 @@
 						</span>
 					{/if}
 				</span>
-				{#if pad_badge}
+				{#if pad_badge || pad_link}
 					{@const badge_class = `${carrier_badge ? 'hidden sm:flex' : 'flex'} mr-2 items-center gap-1 whitespace-nowrap font-bold text-ink`}
 					{#if pad_link}
 						<button
 							type="button"
 							class="{badge_class} bg-transparent p-0 text-xxs uppercase tracking-widest hover:text-accent"
 							title="Link the controller's lightbar to the faceplate"
-							onclick={() => void linkLightbar()}
+							onclick={linkPad}
 						>
 							<span class="badge-led" aria-hidden="true"></span>PAD 1 · LINK LIGHT
 						</button>
@@ -607,12 +655,20 @@
 					aria-label={`Battery ${$batteryLevel ?? 'unknown'} percent${$isCharging ? ', charging' : ''}`}
 					onclick={toggleCharging}
 				>
-					<span class="{carrier_badge || pad_badge ? 'hidden sm:flex' : 'flex'} items-center gap-1">
+					<span class="{carrier_badge || pad_badge || pad_link ? 'hidden sm:flex' : 'flex'} items-center gap-1">
 						<!-- The readout only exists once there is a real number, so it ticks up
 						     to the machine's actual charge instead of to a placeholder. -->
 						BAT: {#if $batteryLevel !== null}<Readout value={$batteryLevel} />%{:else}--%{/if}
 					</span>
-					<span class="battery" data-charging={$isCharging} aria-hidden="true">
+					<!-- Current flows while the cell is filling, and through the plug-in banner.
+					     A full cell on the charger (every desktop reports that, forever) sits
+					     solid: an endless highlight there recomposited the whole window,
+					     grain overlay included, every frame. -->
+					<span
+						class="battery"
+						data-flow={$isCharging && ($playLightning || $batteryLevel === null || $batteryLevel < 100)}
+						aria-hidden="true"
+					>
 						<span class="battery-fill" style="--level: {($batteryLevel ?? 0) / 100}"></span>
 						{#if $isCharging}
 							<svg viewBox="0 0 10 16" class="battery-bolt" aria-hidden="true">
@@ -639,6 +695,7 @@
 
 		<!-- Bottom Technical Status Bar -->
 		<div
+			bind:this={telemetry}
 			class="flex items-center justify-between border-t border-line bg-sunk px-4 py-2 font-mono text-xxs uppercase tracking-widest text-dim"
 			data-boot="7"
 		>
@@ -787,29 +844,43 @@
 		background-color: var(--line);
 	}
 	.battery-fill {
+		position: relative;
+		overflow: hidden;
 		display: block;
 		height: 100%;
 		background-color: var(--accent);
 		transform: scaleX(var(--level));
 		transform-origin: left;
 	}
-	/* Current flowing in: a highlight runs through the cell while it is on the charger. */
-	.battery[data-charging='true'] .battery-fill {
+	/*
+		Current flowing in: a highlight runs through the cell while it fills (see `data-flow`).
+		The gradient rides a transformed layer, so it runs on the compositor: three
+		250%-wide tiles starting one tile left of the cell, travelling -20% → 30% of the
+		layer's width — exactly the old background-position 100% → -150% (−1.5 → +2.25
+		cell widths).
+	*/
+	.battery[data-flow='true'] .battery-fill::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: -250%;
+		width: 750%;
 		background-image: linear-gradient(
 			90deg,
 			transparent 30%,
 			color-mix(in srgb, var(--accent-ink) 55%, transparent) 50%,
 			transparent 70%
 		);
-		background-size: 250% 100%;
+		background-size: calc(100% / 3) 100%;
 		animation: battery-flow 1.4s linear infinite;
 	}
 	@keyframes battery-flow {
 		from {
-			background-position: 100% 0;
+			transform: translateX(-20%);
 		}
 		to {
-			background-position: -150% 0;
+			transform: translateX(30%);
 		}
 	}
 	.battery-bolt {
@@ -913,9 +984,13 @@
 		}
 	}
 
+	/* One 14px period per run, by transform: the stream runs on the compositor. */
 	@keyframes charge-stream {
+		from {
+			transform: skewX(-30deg);
+		}
 		to {
-			background-position: 14px 0;
+			transform: skewX(-30deg) translateX(14px);
 		}
 	}
 

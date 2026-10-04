@@ -1,11 +1,14 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { animate, utils } from 'animejs';
-	import { EASE_SNAP, STEPS_FLICKER, reducedMotion } from '$lib/motion';
+	import { EASE_SNAP, reducedMotion } from '$lib/motion';
 
 	/**
 	 * A numeric readout — FPS, POS, BAT, VAL. It ticks up to its value the first time it
 	 * appears (stepped rounding, never a fade), then tracks its value directly, because
-	 * a knob readout has to move with the knob.
+	 * a knob readout has to move with the knob. A value that changes mid tick-up cancels
+	 * the tween and is shown as is; a first value equal to the shown 0 has nothing to
+	 * tick through.
 	 */
 	let {
 		value,
@@ -23,17 +26,21 @@
 
 	let shown = $state(0);
 	let settled = false;
+	let tick: ReturnType<typeof animate> | undefined;
 
 	$effect(() => {
 		const target = Math.round(value);
-		if (settled || reducedMotion()) {
+		tick?.cancel();
+		tick = undefined;
+		const from = untrack(() => shown);
+		if (settled || from === target || reducedMotion()) {
 			settled = true;
 			shown = target;
 			return;
 		}
-		const proxy = { v: shown };
 		settled = true;
-		animate(proxy, {
+		const proxy = { v: from };
+		tick = animate(proxy, {
 			v: target,
 			duration,
 			ease: EASE_SNAP,
@@ -44,9 +51,9 @@
 		});
 	});
 
-	const text = $derived(
-		pad ? `${String(Math.round(shown)).padStart(pad, '0')}${suffix}` : `${Math.round(shown)}${suffix}`
-	);
+	$effect(() => () => tick?.cancel());
+
+	const text = $derived(pad ? `${String(shown).padStart(pad, '0')}${suffix}` : `${shown}${suffix}`);
 </script>
 
-<span class="tabular-nums {klass}" data-readout data-steps={STEPS_FLICKER}>{text}</span>
+<span class="tabular-nums {klass}">{text}</span>

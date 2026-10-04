@@ -16,22 +16,10 @@ pre[class*='language-'] {
 	word-break: normal;
 	word-wrap: normal;
 
-	-moz-tab-size: 4;
-	-o-tab-size: 4;
 	tab-size: 4;
 
 	-webkit-hyphens: none;
-	-moz-hyphens: none;
-	-ms-hyphens: none;
 	hyphens: none;
-}
-
-pre[class*='language-']::-moz-selection,
-pre[class*='language-'] ::-moz-selection,
-code[class*='language-']::-moz-selection,
-code[class*='language-'] ::-moz-selection {
-	text-shadow: none;
-	background: var(--code-selection);
 }
 
 pre[class*='language-']::selection,
@@ -40,13 +28,6 @@ code[class*='language-']::selection,
 code[class*='language-'] ::selection {
 	text-shadow: none;
 	background: var(--code-selection);
-}
-
-@media print {
-	code[class*='language-'],
-	pre[class*='language-'] {
-		text-shadow: none;
-	}
 }
 
 /* Code blocks */
