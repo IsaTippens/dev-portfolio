@@ -637,27 +637,41 @@
 				{/each}
 			</g>
 
-			<!-- The road network (scrubbed by scroll), on the near plane. After dusk
-			     it comes on like the city does. -->
-			<g
-				bind:this={near_el}
-				fill="none"
-				stroke="var(--accent)"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				filter={night ? 'url(#cpt-lamps)' : undefined}
-			>
-				{#each ROADS as road, i (road.name)}
-					<path
-						bind:this={road_els[i]}
-						d={road.d}
-						stroke-width={road.major ? 1.75 : 1}
-						opacity={road.major ? 1 : 0.8}
-						pathLength="1"
-						stroke-dasharray="1"
-						stroke-dashoffset="1"
-					/>
-				{/each}
+			<!-- The road network (scrubbed by scroll), on the near plane. Survey
+			     linework, not highway paint: majors dashed, branches dotted, both in a
+			     thinned accent. Growth is drawn by the solid reveal strokes in the mask,
+			     so the dash pattern stays fixed to the ground as the front advances.
+			     After dusk it comes on like the city does. -->
+			<g bind:this={near_el} filter={night ? 'url(#cpt-lamps)' : undefined}>
+				<mask id="cpt-roads-reveal" maskUnits="userSpaceOnUse" x="-300" y="-300" width="1000" height="900">
+					<g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+						{#each ROADS as road, i (road.name)}
+							<path
+								bind:this={road_els[i]}
+								d={road.d}
+								pathLength="1"
+								stroke-dasharray="1"
+								stroke-dashoffset="1"
+							/>
+						{/each}
+					</g>
+				</mask>
+				<g
+					mask="url(#cpt-roads-reveal)"
+					fill="none"
+					stroke="var(--accent)"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					{#each ROADS as road (road.name)}
+						<path
+							d={road.d}
+							stroke-width={road.major ? 1 : 0.9}
+							stroke-dasharray={road.major ? '3.5 2' : '1.2 1.6'}
+							stroke-opacity={road.major ? (night ? 0.8 : 0.65) : 0.7}
+						/>
+					{/each}
+				</g>
 			</g>
 
 			<!-- Points of interest. The plate-coloured halo keeps labels legible over
