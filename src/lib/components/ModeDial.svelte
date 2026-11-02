@@ -130,7 +130,7 @@
 	<button
 		bind:this={trigger}
 		type="button"
-		class="flex items-center gap-1.5 border border-line bg-sunk px-1.5 py-0.5 font-bold text-tiny uppercase tracking-wider"
+		class="flex min-h-7 items-center gap-1 sm:gap-1.5 border border-line bg-sunk px-1.5 sm:px-2 py-1 font-bold text-xxs uppercase tracking-wider hover:border-accent"
 		aria-haspopup="listbox"
 		aria-expanded={open}
 		aria-controls="mode-list"
@@ -176,7 +176,7 @@
 						role="option"
 						aria-selected={plate.id === $theme}
 						tabindex="-1"
-						class="flex items-center justify-between gap-2 border border-transparent px-2 py-1.5 text-left text-tiny uppercase tracking-wider {i ===
+						class="flex items-center justify-between gap-3 border border-transparent px-2.5 py-1.5 text-left text-xxs uppercase tracking-wider {i ===
 						active
 							? 'border-line bg-hover text-ink'
 							: 'text-dim'}"
@@ -191,7 +191,7 @@
 							></span>
 							{plate.label}
 						</span>
-						<span class="text-micro normal-case tracking-normal opacity-70">{plate.note}</span>
+						<span class="text-xxs normal-case tracking-normal opacity-75">{plate.note}</span>
 					</button>
 				{/each}
 			</div>

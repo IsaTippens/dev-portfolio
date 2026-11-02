@@ -15,12 +15,12 @@ const config = {
 				mono: ['var(--font-mono)', ...tailwind_theme.fontFamily.mono]
 			},
 			fontSize: {
-				xxs: '10px',
-				tiny: '9px',
-				micro: '8px',
-				nano: '7px',
-				pico: '6px',
-				femto: '5px'
+				xxs: '11px',
+				tiny: '11px',
+				micro: '10px',
+				nano: '10px',
+				pico: '9px',
+				femto: '9px'
 			},
 			borderRadius: {
 				DEFAULT: 'var(--radius)'

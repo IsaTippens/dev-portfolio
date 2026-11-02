@@ -1,10 +1,9 @@
 import { setPadConnected } from '#lib/ports.ts';
-import { theme } from '#lib/stores/theme.js';
 import { reducedMotion } from '#lib/motion/index.js';
 import { konami, type KonamiToken } from '#lib/konami.ts';
 
 /**
- * PAD 1 — a controller port that only exists on the PlayStation plates.
+ * PAD 1 — controller port.
  *
  * The pad does not get an input system of its own. It is a thumb on the keyboard: every
  * button becomes the keydown the page already answers, dispatched where a real key would
@@ -13,10 +12,6 @@ import { konami, type KonamiToken } from '#lib/konami.ts';
  *
  * Browsers only reveal a pad after its first button press, so the port reads empty until
  * the operator touches the controller. That is the hardware being honest, not a bug.
- *
- * One thing reaches past the PlayStation plates: the Konami code. A connected pad is
- * read on every plate so the code can be entered anywhere, but only the PS plates turn
- * its presses into navigation.
  */
 
 /** Standard-mapping button indices. Anything else is not a pad we know how to read. */
@@ -42,9 +37,6 @@ const KONAMI_BUTTONS: [number, KonamiToken][] = [
 	[BTN.circle, 'b'],
 	[BTN.cross, 'a']
 ];
-
-/** Plates with a controller port. Elsewhere the pad is read for the Konami code only. */
-const PAD_PLATES: Record<string, true> = { ps1: true, ps2: true };
 
 /** Stick travel before it counts as a direction; below it is thumb rest, not intent. */
 const STICK_DEADZONE = 0.5;
@@ -123,7 +115,7 @@ function verticalOf(pad: Gamepad): -1 | 0 | 1 {
 
 /**
  * Start the controller port. Call from onMount; returns the cleanup. Polls only while a
- * pad is connected; navigation needs a PlayStation plate, the Konami code does not.
+ * pad is connected.
  */
 export function startGamepad(): () => void {
 	if (typeof window === 'undefined' || typeof navigator === 'undefined') return () => {};
@@ -131,9 +123,7 @@ export function startGamepad(): () => void {
 
 	const pads = new Set<number>();
 	const states = new Map<number, PadState>();
-	let on_plate = false;
 	let raf = 0;
-
 	function snapshot(): (Gamepad | null)[] {
 		try {
 			return navigator.getGamepads();
@@ -166,9 +156,9 @@ export function startGamepad(): () => void {
 		let completed = false;
 		for (const [i, token] of KONAMI_BUTTONS) if (down(i) && konami(token)) completed = true;
 
-		// The code ends on A, which is ✕: on the PS plates that would also click the row
-		// the ↑ ↓ presses just focused. The completing frame belongs to the code alone.
-		if (on_plate && !completed) {
+		// The code ends on A, which is ✕: that would also click the row the ↑ ↓ presses
+		// just focused. The completing frame belongs to the code alone.
+		if (!completed) {
 			if (dir !== prev.dir) {
 				if (dir !== 0) {
 					step(dir);
@@ -225,17 +215,11 @@ export function startGamepad(): () => void {
 		if (pad && pad.connected && pad.mapping === 'standard') pads.add(pad.index);
 	}
 	setPadConnected(pads.size > 0);
+	sync();
 
 	window.addEventListener('gamepadconnected', onConnect);
 	window.addEventListener('gamepaddisconnected', onDisconnect);
-
-	const unsubscribe = theme.subscribe((id: string) => {
-		on_plate = PAD_PLATES[id] === true;
-		sync();
-	});
-
 	return () => {
-		unsubscribe();
 		window.removeEventListener('gamepadconnected', onConnect);
 		window.removeEventListener('gamepaddisconnected', onDisconnect);
 		if (raf) window.cancelAnimationFrame(raf);

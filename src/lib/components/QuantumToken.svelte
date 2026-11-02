@@ -74,7 +74,7 @@
 			: ledger === 'SIGNALLING'
 				? 'SIGNALLING // AWAITING LIGHT CONE'
 				: ledger === 'REDEEMED'
-					? 'REDEEMED'
+					? 'REDEEMED // OPEN 2ND TAB TO TEST LIGHT CONE'
 					: ledger === 'SPENT'
 						? SPENT_TEXT
 						: observed
@@ -285,7 +285,7 @@
 	>
 	<button
 		type="button"
-		class="hw-key ml-auto h-6 shrink-0 px-3 text-nano disabled:cursor-default disabled:opacity-60"
+		class="hbtn ml-auto min-h-7 shrink-0 px-3 py-1 text-xxs disabled:cursor-default disabled:opacity-60"
 		disabled={pending || ledger === 'REDEEMED'}
 		onclick={redeem}
 	>

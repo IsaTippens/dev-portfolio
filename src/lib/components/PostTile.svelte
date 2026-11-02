@@ -23,6 +23,9 @@
 	);
 	const status = $derived(meta.status ?? null);
 	const date = $derived(new Date(meta.date));
+	const date_text = $derived(
+		Number.isNaN(date.getTime()) ? 'UNDATED' : date.toISOString().slice(0, 10).replaceAll('-', '.')
+	);
 </script>
 
 <a
@@ -34,11 +37,11 @@
 >
 	<div class="flex flex-col gap-1">
 		<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
-			<span class="font-mono text-tiny tracking-widest text-dim uppercase">
-				{Number.isNaN(date.getTime()) ? 'UNDATED' : date.toDateString()}
+			<span class="font-mono text-xxs tracking-widest text-dim uppercase tabular-nums">
+				{date_text}
 			</span>
 			{#if showId}
-				<span class="font-mono text-micro tracking-widest text-dim uppercase"
+				<span class="font-mono text-xxs tracking-widest text-dim uppercase"
 					>[ID: {data.path}]</span
 				>
 			{/if}
@@ -54,7 +57,7 @@
 
 		{#if project && (stack.length || status || meta.link)}
 			<div
-				class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-micro tracking-wider uppercase"
+				class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xxs tracking-wider uppercase"
 			>
 				{#if stack.length}
 					<span class="text-dim">STACK: <span class="text-ink">{stack.join(' / ')}</span></span>

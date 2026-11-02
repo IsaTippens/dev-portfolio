@@ -1,50 +1,55 @@
 <script lang="ts">
 	import { cubicIn, cubicOut } from 'svelte/easing';
-	import Knob from '#lib/components/Knob.svelte';
-	import Readout from '#lib/components/Readout.svelte';
+	import Panel from '#lib/components/Panel.svelte';
 	import { isCharging, batteryLevel, setCharging } from '#lib/stores/battery.ts';
 	import { reducedMotion } from '#lib/motion/index.js';
 
-	type PoMode = 'LCD' | 'CRT' | 'GAMEBOY' | 'DOT_MATRIX' | 'NORMAL';
+	type PoMode = 'NORMAL' | 'CRT' | 'LCD' | 'GAMEBOY';
 
 	/**
 	 * The display's own phosphor colours. These are the tube, not the interface, so they
 	 * are deliberately faceplate-independent — the case around them changes with the
 	 * theme, the phosphor inside does not, exactly like real hardware.
 	 */
-	const MODES: { id: PoMode; key: string; hud: string; preset: [number, number, number] }[] = [
-		{ id: 'LCD', key: 'LCD', hud: '#00ff66', preset: [43.2, -28.8, 90] },
-		{ id: 'CRT', key: 'CRT', hud: '#33ccff', preset: [-90, 57.6, -43.2] },
-		{ id: 'GAMEBOY', key: 'GB', hud: '#8bac0f', preset: [180, 118.8, 28.8] },
-		{ id: 'DOT_MATRIX', key: 'DM', hud: '#ff5500', preset: [-28.8, -90, 118.8] },
-		{ id: 'NORMAL', key: 'NOR', hud: '#ffffff', preset: [0, 0, 0] }
+	const MODES: { id: PoMode; key: string; label: string; hud: string; filter: string }[] = [
+		{
+			id: 'NORMAL',
+			key: 'NOR',
+			label: 'Normal optical feed',
+			hud: '#ffffff',
+			filter: 'grayscale(35%) contrast(105%)'
+		},
+		{
+			id: 'CRT',
+			key: 'CRT',
+			label: 'CRT phosphor monitor',
+			hud: '#33ccff',
+			filter: 'contrast(135%) brightness(1.08) saturate(135%) sepia(18%)'
+		},
+		{
+			id: 'LCD',
+			key: 'LCD',
+			label: 'Monochrome green LCD',
+			hud: '#00ff66',
+			filter: 'grayscale(100%) contrast(145%) brightness(0.85) sepia(100%) hue-rotate(95deg) saturate(240%)'
+		},
+		{
+			id: 'GAMEBOY',
+			key: 'GB',
+			label: 'Four-tone DMG matrix',
+			hud: '#8bac0f',
+			filter: 'grayscale(100%) contrast(185%) brightness(0.92) sepia(100%) hue-rotate(55deg) saturate(280%)'
+		}
 	];
 
-	const NORMAL = MODES.find((m) => m.id === 'NORMAL')!;
-
-	// The panel boots on the untouched photo; modes change only from the keys.
 	let mode = $state<PoMode>('NORMAL');
-	let freq = $state(NORMAL.preset[0]);
-	let phase = $state(NORMAL.preset[1]);
-	let rgb = $state(NORMAL.preset[2]);
-
 	let screen: HTMLDivElement | null = $state(null);
 
 	const active = $derived(MODES.find((m) => m.id === mode) ?? MODES[0]);
-	const readout = (v: number) => Math.round((v + 180) / 3.6);
 
 	function apply(id: PoMode) {
 		if (id === mode) return;
 		mode = id;
-		const preset = MODES.find((m) => m.id === id)?.preset;
-		if (preset) [freq, phase, rgb] = preset;
-	}
-
-	function reset(knob: 'freq' | 'phase' | 'rgb') {
-		const [f, p, r] = active.preset;
-		if (knob === 'freq') freq = f;
-		else if (knob === 'phase') phase = p;
-		else rgb = r;
 	}
 
 	// A mode change is a switch, not a fade: the tube blinks for a frame and comes back
@@ -98,84 +103,45 @@
 		glare_y = ((e.clientY - r.top) / r.height) * 100;
 		glare_on = true;
 	}
-
-	const filter_style = $derived(
-		mode === 'LCD'
-			? `grayscale(100%) contrast(${150 + phase}%) brightness(0.8) sepia(100%) hue-rotate(${80 + freq}deg) saturate(${200 + rgb}%)`
-			: mode === 'CRT'
-				? `contrast(${120 + freq * 0.5}%) brightness(${1.1 + phase * 0.002}) saturate(${130 + rgb * 0.5}%) sepia(20%)`
-				: mode === 'GAMEBOY'
-					? `grayscale(100%) contrast(${200 + phase * 0.5}%) brightness(0.9) sepia(100%) hue-rotate(${50 + freq}deg) saturate(${300 + rgb}%)`
-					: mode === 'DOT_MATRIX'
-						? `grayscale(100%) contrast(${400 + phase * 1.5}%) sepia(100%) hue-rotate(${-25 + freq}deg) saturate(400%) brightness(${0.7 + rgb * 0.002})`
-						: `grayscale(${Math.max(0, Math.min(100, 50 - freq / 3.6))}%) contrast(${100 + phase * 0.5}%) opacity(${Math.max(0.2, Math.min(1, 0.8 + rgb * 0.001))})`
-	);
-
-	const bar = (v: number) => Math.max(0.12, (v + 180) / 360);
 </script>
 
-<!-- PO-100 · portrait engine. Chassis materials, not interface colours. Built to the
-     TE-S10's spec: rounded moulding, inset modules, machined knobs and screws. -->
-<div
-	class="relative flex w-full flex-col gap-3.5 rounded-2xl border-2 border-[var(--hw-case-line)] bg-[var(--hw-case-2)] px-4 pt-5 pb-5 shadow-2xl select-none"
-	data-boot="5"
+<!-- PO-100 · portrait module integrated into the ISA-1 chassis. -->
+<Panel
+	tag="PO-100 // ID"
+	class="relative flex w-full flex-col justify-between gap-2.5 p-3 pt-4 select-none"
+	data-boot="3"
 >
-	<div class="dot-grid pointer-events-none absolute inset-0 rounded-[inherit] opacity-40"></div>
-
-	{#each ['top-2 left-2', 'top-2 right-2', 'bottom-2 left-2', 'bottom-2 right-2'] as pos, i (pos)}
-		<span class="hw-screw {pos}" style="--angle: {[45, -30, 60, 15][i]}deg" aria-hidden="true"
-		></span>
-	{/each}
-
-	<!-- Device header -->
-	<div class="z-10 flex items-center justify-between px-1">
-		<div class="flex flex-col">
-			<span class="font-mono text-micro font-bold tracking-wider text-ink">PO-100 / ID-PHOTO</span>
-			<span class="font-mono text-pico tracking-widest text-dim uppercase">TE_PORTRAIT_ENGINE</span>
-		</div>
-
-		<!-- Speaker grill -->
-		<div class="grid grid-cols-4 gap-0.5 opacity-60" aria-hidden="true">
-			{#each Array(12) as _}
-				<div class="h-0.5 w-0.5 rounded-full bg-[var(--hw-key-ink)]"></div>
-			{/each}
-		</div>
-	</div>
-
 	<!-- Recessed screen -->
 	<div
-		class="relative z-10 flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl border-2 border-[var(--hw-well-2)] bg-[var(--hw-well)] p-[3px] shadow-[inset_0_2px_5px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.1)]"
+		class="relative z-10 flex aspect-square w-full items-center justify-center overflow-hidden border border-line bg-[var(--hw-well)] p-[3px] shadow-[inset_0_2px_5px_rgba(0,0,0,0.8)]"
 		onpointermove={moveGlare}
 		onpointerleave={() => (glare_on = false)}
 		role="presentation"
 	>
 		<div
 			bind:this={screen}
-			class="scanlines relative h-full w-full overflow-hidden rounded-lg"
-			data-boot="5"
+			class="scanlines relative h-full w-full overflow-hidden"
+			data-boot="3"
 			data-boot-screen
 		>
 			<img
 				src="/images/profile-instagram.jpg"
-				alt="Portrait of Isa"
+				alt="Portrait of Isa Tippens"
 				class="absolute inset-0 h-full w-full object-cover"
-				style="filter: {filter_style};"
+				style="filter: {active.filter};"
 			/>
 
 			{#if mode === 'LCD'}
-				<div class="lcd-overlay absolute inset-0 pointer-events-none"></div>
+				<div class="lcd-overlay pointer-events-none absolute inset-0"></div>
 			{/if}
 			{#if mode === 'CRT'}
-				<div class="crt-overlay absolute inset-0 pointer-events-none"></div>
+				<div class="crt-overlay pointer-events-none absolute inset-0"></div>
 				<div
-					class="absolute inset-0 z-10 pointer-events-none shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"
+					class="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"
 				></div>
 			{/if}
 			{#if mode === 'GAMEBOY'}
-				<div class="gb-overlay absolute inset-0 pointer-events-none"></div>
-			{/if}
-			{#if mode === 'DOT_MATRIX'}
-				<div class="dot-overlay absolute inset-0 pointer-events-none"></div>
+				<div class="gb-overlay pointer-events-none absolute inset-0"></div>
 			{/if}
 
 			<!-- Glass: a fixed sheen, plus the glare of whatever the pointer is. -->
@@ -190,118 +156,64 @@
 
 			<!-- HUD -->
 			<div
-				class="pointer-events-none absolute inset-0 z-30 flex flex-col justify-between p-2 font-mono text-nano select-none"
+				class="pointer-events-none absolute inset-0 z-30 flex flex-col justify-between p-2 font-mono text-xxs select-none"
 				style="color: {active.hud};"
 			>
 				<div class="flex items-start justify-between">
-					<span class="bg-[var(--hw-chip)] px-1 py-0.5 tracking-wider">
+					<span class="bg-[var(--hw-chip)] px-1.5 py-0.5 tracking-wider">
 						{$isCharging ? 'PWR: CHG' : 'LNK: ON'}
 					</span>
-					<div class="flex items-center gap-1 bg-[var(--hw-chip)] px-1 py-0.5">
+					<div class="flex items-center gap-1 bg-[var(--hw-chip)] px-1.5 py-0.5">
 						<span class="led rec-blink" data-on="true"></span>
 						<span class="text-[var(--hw-chip-ink)]">REC</span>
 					</div>
 				</div>
 
 				<div class="flex items-end justify-between">
-					<div class="flex flex-col bg-[var(--hw-chip)] px-1 py-0.5 leading-tight">
-						<span>MODE: {active.key}</span>
-						<span
-							>VAL: <Readout value={readout(freq)} pad={3} />
-							<Readout value={readout(phase)} pad={3} />
-							<Readout value={readout(rgb)} pad={3} /></span
-						>
-					</div>
-
-					<!-- Meter bars: scaled, never resized -->
-					<div class="flex h-[18px] items-end gap-0.5 bg-[var(--hw-chip)] p-0.5">
-						{#each [freq, phase, rgb] as v, i (i)}
-							<div
-								class="h-full w-1 origin-bottom"
-								style="background-color: {active.hud}; transform: scaleY({bar(v)});"
-							></div>
-						{/each}
-					</div>
+					<span class="bg-[var(--hw-chip)] px-1.5 py-0.5 leading-tight tracking-wider">
+						MODE: {active.key}
+					</span>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Mode keys -->
-	<div class="z-10 mt-0.5 grid grid-cols-5 gap-1">
+	<!-- Display mode selector (4 presets) -->
+	<div class="z-10 grid grid-cols-4 gap-1.5" role="group" aria-label="Portrait display mode">
 		{#each MODES as m (m.id)}
-			<div class="flex flex-col items-center gap-1.5">
-				<button
-					type="button"
-					class="hw-key h-7 w-7 text-nano"
-					aria-pressed={mode === m.id}
-					aria-label={`Display mode ${m.id.replace('_', ' ')}`}
-					onclick={() => apply(m.id)}
-				>
-					{m.key}
-				</button>
-				<span class="led" data-on={mode === m.id ? 'true' : 'false'} aria-hidden="true"></span>
-			</div>
+			<button
+				type="button"
+				class="hbtn min-h-7 px-1.5 py-1 text-xxs {mode === m.id
+					? 'border-accent text-accent'
+					: 'text-dim'}"
+				aria-pressed={mode === m.id}
+				aria-label={m.label}
+				onclick={() => apply(m.id)}
+			>
+				{m.key}
+			</button>
 		{/each}
 	</div>
 
-	<!-- Parameter knobs: their own inset module, as on the TE-S10. -->
+	<!-- Bottom power bus & USB-C port -->
 	<div
-		class="z-10 flex items-center justify-around rounded-xl border border-[var(--hw-case-line)] bg-[var(--hw-case)] px-1 pt-2.5 pb-2 shadow-inner"
+		class="z-10 flex items-center justify-between border-t border-dashed border-line pt-1.5 font-mono text-xxs tracking-wider text-dim uppercase"
 	>
-		<Knob
-			bind:value={freq}
-			label="FREQ"
-			cap="var(--hw-knob-1)"
-			aria_label="Filter frequency"
-			onreset={() => reset('freq')}
-		/>
-		<Knob
-			bind:value={phase}
-			label="PHAS"
-			cap="var(--hw-knob-2)"
-			aria_label="Filter phase"
-			onreset={() => reset('phase')}
-		/>
-		<Knob
-			bind:value={rgb}
-			label="RGB"
-			cap="var(--hw-knob-3)"
-			aria_label="Filter colour balance"
-			onreset={() => reset('rgb')}
-		/>
-	</div>
-
-	<!-- Bottom hardware -->
-	<div
-		class="z-10 mt-1 flex items-center justify-between border-t border-dashed border-[var(--hw-case-line)] px-1 pt-2 font-mono text-femto tracking-widest text-dim uppercase"
-	>
-		<div class="flex items-center gap-1.5">
-			<div
-				class="relative flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[var(--hw-case-line)] bg-[var(--hw-well-2)] shadow-inner"
-			>
-				<div
-					class="h-2.5 w-2.5 rounded-full border border-[var(--hw-port)] bg-[var(--hw-well)]"
-				></div>
-			</div>
-			<span>OUT</span>
-		</div>
-
-		<span>PO-100 OP-IMG</span>
+		<span>OP-IMG</span>
 
 		<div class="flex items-center gap-1.5">
 			<span>PWR</span>
 			<span
-				class="indicator-dot h-1 w-1"
+				class="indicator-dot h-1.5 w-1.5"
 				class:green={$isCharging && $batteryLevel !== null && $batteryLevel >= 99}
 				class:blink-red={$isCharging && ($batteryLevel === null || $batteryLevel < 99)}
 				aria-hidden="true"
 			></span>
-			<span class="text-[var(--hw-key-ink)]" aria-hidden="true">&#8595;</span>
+			<span class="text-ink" aria-hidden="true">&#8595;</span>
 		</div>
 	</div>
 
-	<!-- USB-C receptacle, cut into the bottom edge of the case under the PWR label. It is a
+	<!-- USB-C receptacle, cut into the bottom edge of the module under the PWR label. It is a
 	     real control: the plug goes in and comes out from here, same as the BAT key. -->
 	<button
 		type="button"
@@ -344,12 +256,12 @@
 					<mask
 						id="po-plug-cable-mask"
 						maskUnits="userSpaceOnUse"
-						x="-10"
+						x="-30"
 						y="0"
-						width="80"
+						width="100"
 						height="90"
 					>
-						<rect x="-10" y="0" width="80" height="90" fill="url(#po-plug-fade)" />
+						<rect x="-30" y="0" width="100" height="90" fill="url(#po-plug-fade)" />
 					</mask>
 				</defs>
 
@@ -418,7 +330,7 @@
 			</svg>
 		</div>
 	{/if}
-</div>
+</Panel>
 
 <style>
 	/* LCD: high-contrast monochrome green with a hard scan structure. */
@@ -449,12 +361,6 @@
 		mix-blend-mode: color;
 	}
 
-	/* DOT MATRIX: discrete emitters. */
-	.dot-overlay {
-		background-image: radial-gradient(rgba(0, 0, 0, 0.6) 1px, transparent 1px);
-		background-size: 3px 3px;
-	}
-
 	/* Glare: a soft hotspot that follows the pointer across the glass. */
 	.glare {
 		background: radial-gradient(
@@ -473,8 +379,7 @@
 
 	/*
 		The camcorder REC lamp: on, off, on. The lamp is its dark face; the lit face is a
-		layer whose opacity steps, so the blink runs on the compositor. `.led.` keeps this
-		above app.css's `.led[data-on='true']` in any stylesheet order.
+		layer whose opacity steps, so the blink runs on the compositor.
 	*/
 	.led.rec-blink {
 		position: relative;
@@ -497,17 +402,17 @@
 
 	/* ── USB-C ─────────────────────────────────────────────────────────── */
 
-	/* Receptacle on the bottom edge, centred under the PWR label. */
+	/* Receptacle on the bottom-right edge, centred under the PWR label. */
 	.usb-port {
 		position: absolute;
-		right: 14px;
+		right: 12px;
 		bottom: -7px;
 		z-index: 20;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 16px;
-		height: 12px;
+		width: 20px;
+		height: 14px;
 		padding: 0;
 		background: transparent;
 		cursor: pointer;
@@ -526,7 +431,7 @@
 		border-radius: 2px;
 		background-color: var(--hw-well-2);
 		box-shadow:
-			0 0 0 1px var(--hw-case-line),
+			0 0 0 1px var(--line),
 			inset 0 1px 1px rgba(0, 0, 0, 0.6);
 		transition: box-shadow 120ms linear;
 	}
@@ -540,7 +445,7 @@
 	.usb-plug {
 		position: absolute;
 		top: 100%;
-		right: -4px;
+		right: -6px;
 		z-index: 30;
 		pointer-events: none;
 	}
@@ -586,11 +491,6 @@
 		box-shadow: 0 0 2px var(--ok);
 	}
 
-	/*
-		A live LED blinks in steps: on, half, off, half — `steps(2, end)` across the old
-		on→off keyframes showed the half-way colour for a beat. Each lit face is a layer
-		whose opacity steps on the compositor; the dot itself is the dark face.
-	*/
 	.indicator-dot.blink-red {
 		position: relative;
 	}

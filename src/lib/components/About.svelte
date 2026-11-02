@@ -31,14 +31,15 @@
 			value: `${yearsSince('2001-06-01', now)} y/o programmer (${yearsSince('2014-06-01', now)} yrs code)`
 		},
 		{ label: 'EXPERIENCE', value: `software engineer for ${yearsSince('2021-06-01', now)} years` },
-		{ label: 'VIBE_CHECK', value: `vibe coder for ${now.getUTCFullYear() - 2025} year` }
+		{ label: 'ROLE', value: 'CTO @ Alphacrest · MSc CS @ UWC' },
+		{ label: 'FOCUS', value: 'low-latency trading, cloud infra & quantum crypto' }
 	];
 </script>
 
-<div class="flex flex-col gap-6 md:flex-row">
-	<div class="flex flex-1 flex-col gap-6">
-		<Panel tag="BIO_DATA" class="p-3 pb-4" data-boot="2">
-			<dl class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 font-mono text-[12px] leading-relaxed">
+<div class="flex flex-col gap-6">
+	<div class="flex flex-col gap-6 md:flex-row md:items-stretch">
+		<Panel tag="BIO_DATA" class="flex flex-1 flex-col justify-center p-4 pb-5" data-boot="2">
+			<dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 font-mono text-xs leading-relaxed">
 				{#each FIELDS as field (field.label)}
 					<dt class="text-dim">{field.label}:</dt>
 					<dd class="text-ink">{field.value}</dd>
@@ -46,15 +47,15 @@
 			</dl>
 		</Panel>
 
-		<div class="flex-1">
-			<Cartography />
+		<!-- Portrait engine -->
+		<div
+			class="mx-auto flex w-full max-w-[220px] shrink-0 items-stretch justify-center md:w-52 md:max-w-none"
+		>
+			<ProfilePhoto />
 		</div>
 	</div>
 
-	<!-- Portrait engine -->
-	<div
-		class="mx-auto flex w-full max-w-[220px] shrink-0 items-center justify-center md:w-48 md:max-w-none md:self-center"
-	>
-		<ProfilePhoto />
+	<div class="w-full">
+		<Cartography />
 	</div>
 </div>

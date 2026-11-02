@@ -28,8 +28,8 @@
 	const DEMON_KEY = 'gd-demon13';
 	/** Roughly one jump in eight clips a spike. */
 	const CRASH_ODDS = 1 / 8;
-	/** Twelve demons on the record; twelve clean jumps earns the question mark. */
-	const DEMON_STREAK = 12;
+	/** Five clean jumps in a row earns the thirteenth demon and unlocks the GD plate. */
+	const DEMON_STREAK = 5;
 	const DEMON_HOLD = 3200;
 
 	/*
@@ -191,20 +191,6 @@
 		jump();
 	}
 
-	/*
-		Hovering the row is enough to play, but only when nothing else holds focus: Space
-		on a focused link or field belongs to that element, and anywhere off the row the
-		page keeps its scroll.
-	*/
-	function on_window_keydown(event: KeyboardEvent) {
-		if (event.defaultPrevented || !is_space(event)) return;
-		if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
-		if (event.target !== document.body && event.target !== document.documentElement) return;
-		if (!cube?.closest('tr')?.matches(':hover')) return;
-		event.preventDefault();
-		jump();
-	}
-
 	onMount(() => {
 		try {
 			const saved = Number(localStorage.getItem(ATTEMPTS_KEY));
@@ -222,8 +208,6 @@
 		};
 	});
 </script>
-
-<svelte:window onkeydown={on_window_keydown} />
 
 <!-- The scroller is inside the panel, not the panel itself: an overflow box would clip
      the module tag that sits across the top edge. -->

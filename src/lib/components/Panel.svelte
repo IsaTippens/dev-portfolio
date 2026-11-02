@@ -35,7 +35,7 @@
 <div class="panel {sunk ? 'bg-sunk' : ''} {klass}" {...rest}>
 	{#if tag}
 		<span
-			class="section-label {tag_side === 'left' ? 'left-4' : 'right-3'} text-tiny {tag_tone === 'accent'
+			class="section-label {tag_side === 'left' ? 'left-4' : 'right-3'} text-xxs {tag_tone === 'accent'
 				? 'text-accent'
 				: 'text-dim'}"
 		>

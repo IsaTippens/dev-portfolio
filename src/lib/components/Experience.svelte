@@ -15,6 +15,8 @@
 			tag: '02 / MSC_CS_CANDIDATE',
 			lead: 'Thesis',
 			body: '"A framework for secure financial transactions using relativistic quantum tokens", combining quantum computing and software engineering to develop next-generation secure transaction protocols. Currently in the final year of an MSc in Computer Science at the University of the Western Cape.',
+			href: '/projects/relativistic-quantum-tokens',
+			linkLabel: 'PROJECT_SPEC // RELATIVISTIC QUANTUM TOKENS',
 			// The thesis subject, as a working part: see QuantumToken.
 			token: true
 		},
@@ -34,6 +36,16 @@
 			</p>
 			{#if entry.token}
 				<QuantumToken />
+			{/if}
+			{#if entry.href}
+				<div class="mt-2.5 flex justify-end">
+					<a
+						href={entry.href}
+						class="font-mono text-xxs font-bold tracking-wider text-dim uppercase underline decoration-line underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+					>
+						[{entry.linkLabel} &rarr;]
+					</a>
+				</div>
 			{/if}
 		</Panel>
 	{/each}

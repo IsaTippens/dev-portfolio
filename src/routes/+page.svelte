@@ -19,14 +19,14 @@
 	<Intro />
 	<About />
 
-	<Experience />
-
-	<div class="my-6 grid grid-cols-2 gap-4 sm:grid-cols-4" data-boot="6">
+	<nav aria-label="Primary sections" class="my-2 grid grid-cols-2 gap-3 sm:grid-cols-4" data-boot="5">
 		<NavButton href="/blog" prefix="F1_BLOG" title="Blog" subtitle="READABLES // NOTES" />
 		<NavButton href="/projects" prefix="F2_PROJ" title="Projects" subtitle="SYSTEMS // CODE" />
 		<NavButton href="/resume" target="_blank" prefix="F3_RESM" title="Resume" subtitle="DOWNLOAD // PDF" />
 		<NavButton href="/gear" prefix="F4_GEAR" title="Gear" subtitle="HARDWARE // SETUP" />
-	</div>
+	</nav>
+
+	<Experience />
 
 	<div>
 		<SectionHeader title="Recent Posts" href="/blog" />

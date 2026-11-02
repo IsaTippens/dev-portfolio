@@ -14,9 +14,9 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-2">
 				<span class="inline-block h-2 w-2 bg-ink"></span>
-				<p class="text-xl font-bold tracking-tight text-ink uppercase group-hover:text-accent">
+				<h2 class="text-xl font-bold tracking-tight text-ink uppercase group-hover:text-accent">
 					{title}
-				</p>
+				</h2>
 			</div>
 			<div class="flex items-center gap-1 font-mono text-xxs text-dim uppercase">
 				<span>{linkText}</span>
@@ -28,7 +28,7 @@
 	<div class="my-4 block border-t border-b border-line py-3">
 		<div class="flex items-center gap-2">
 			<span class="inline-block h-2 w-2 bg-ink"></span>
-			<p class="text-xl font-bold tracking-tight text-ink uppercase">{title}</p>
+				<h2 class="text-xl font-bold tracking-tight text-ink uppercase">{title}</h2>
 		</div>
 	</div>
 {/if}

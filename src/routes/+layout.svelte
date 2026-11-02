@@ -356,9 +356,8 @@
 
 	/* ── Ports: controller and console ───────────────────────────────────── */
 
-	// The pad only navigates on the PlayStation plates (elsewhere it is read for the
-	// Konami code alone), so the badge only shows there too.
-	const pad_badge = $derived($padConnected && ($theme === 'ps1' || $theme === 'ps2'));
+	// The badge shows whenever a standard controller is connected.
+	const pad_badge = $derived($padConnected);
 	// A PlayStation pad whose lightbar isn't ours yet: the badge becomes the button that
 	// asks for it, because WebHID only prompts from a click. The lightbar follows every
 	// plate, so the button shows on every plate too. Re-read on (dis)connect.
@@ -547,7 +546,7 @@
 		<!-- Sticky: MODE, KEYS and BAT are the device's controls, and a control that scrolls
 		     out of reach is not a control. It leaves with the chassis at the end of the page. -->
 		<div
-			class="sticky top-0 z-30 grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-line bg-panel px-4 py-2 font-mono text-xxs uppercase tracking-widest text-dim"
+			class="sticky top-0 z-30 grid grid-cols-[1fr_auto_1fr] items-center gap-1.5 sm:gap-2 border-b border-line bg-panel px-3 sm:px-4 py-2 font-mono text-xxs uppercase tracking-widest text-dim"
 			data-boot="1"
 			data-status-bar
 		>
@@ -608,7 +607,7 @@
 				<ModeDial />
 				<button
 					type="button"
-					class="hbtn hidden whitespace-nowrap px-1.5 py-0.5 text-tiny sm:inline-flex"
+					class="hbtn hidden min-h-7 whitespace-nowrap px-2 py-1 text-xxs sm:inline-flex"
 					aria-expanded={keys_open}
 					aria-controls="key-map"
 					onclick={() => (keys_open = !keys_open)}
@@ -650,7 +649,7 @@
 				{/if}
 				<button
 					type="button"
-					class="flex items-center gap-1.5 whitespace-nowrap bg-transparent p-0 text-xxs uppercase tracking-widest hover:text-accent"
+					class="flex min-h-7 items-center gap-1.5 whitespace-nowrap bg-transparent px-1 py-0.5 text-xxs uppercase tracking-widest hover:text-accent"
 					aria-pressed={$isCharging}
 					aria-label={`Battery ${$batteryLevel ?? 'unknown'} percent${$isCharging ? ', charging' : ''}`}
 					onclick={toggleCharging}
@@ -702,7 +701,7 @@
 			<span>SVELTE v5</span>
 			<span>POS: <Readout value={scroll_pc} pad={3} />%</span>
 			<span>{fps} FPS</span>
-			<span>REV: 2026.06</span>
+			<span>REV: 2026.11</span>
 		</div>
 
 		{#if keys_open}
