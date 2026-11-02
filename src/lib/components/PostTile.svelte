@@ -9,13 +9,13 @@
 		showId = true,
 		bordered = false,
 		project = false
-	} = $props<{
+	}: {
 		data: any;
 		basePath?: string;
 		showId?: boolean;
 		bordered?: boolean;
 		project?: boolean;
-	}>();
+	} = $props();
 
 	const meta = $derived(data.meta ?? {});
 	const stack = $derived(

@@ -3,11 +3,11 @@
 		spotifyLink = '',
 		width = '100%',
 		height = '80px',
-	} = $props<{
+	}: {
 		spotifyLink?: string;
 		width?: string;
 		height?: string;
-	}>();
+	} = $props();
 
 	let iframe_styles = $derived(`
 		border-radius: var(--radius);

@@ -1,11 +1,11 @@
 <script lang="ts">
-	let { href, target, prefix, title, subtitle } = $props<{
+	let { href, target, prefix, title, subtitle }: {
 		href: string;
 		target?: string;
 		prefix: string;
 		title: string;
 		subtitle: string;
-	}>();
+	} = $props();
 </script>
 
 <a

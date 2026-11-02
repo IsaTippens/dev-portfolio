@@ -1,9 +1,9 @@
 <script lang="ts">
-	let { pathName, title, stats } = $props<{
+	let { pathName, title, stats }: {
 		pathName: string;
 		title: string;
 		stats: string;
-	}>();
+	} = $props();
 </script>
 
 <div class="mb-4 flex items-end justify-between border-b border-line pb-3">

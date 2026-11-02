@@ -30,7 +30,7 @@
 </script>
 
 <script lang="ts">
-	let { tweetLink = '' } = $props<{ tweetLink?: string }>();
+	let { tweetLink = '' }: { tweetLink?: string } = $props();
 	let isLoaded = $state(false);
 	let root: HTMLDivElement;
 

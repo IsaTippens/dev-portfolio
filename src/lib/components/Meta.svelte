@@ -11,13 +11,13 @@
 		path = '/',
 		type = 'website',
 		published = null
-	} = $props<{
+	}: {
 		title: string;
 		description: string;
 		path?: string;
 		type?: 'website' | 'article';
 		published?: string | Date | null;
-	}>();
+	} = $props();
 
 	const url = $derived(`${SITE}${path === '/' ? '' : encodeURI(path)}`);
 	const full_title = $derived(title === NAME ? title : `${title} — ${NAME}`);

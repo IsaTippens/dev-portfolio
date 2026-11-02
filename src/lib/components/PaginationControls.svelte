@@ -1,9 +1,9 @@
 <script lang="ts">
-	let { currentPage, totalPages, onPageChange } = $props<{
+	let { currentPage, totalPages, onPageChange }: {
 		currentPage: number;
 		totalPages: number;
 		onPageChange: (page: number) => void;
-	}>();
+	} = $props();
 </script>
 
 {#if totalPages > 1}

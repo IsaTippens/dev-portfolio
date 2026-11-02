@@ -1,9 +1,9 @@
 <script lang="ts">
-	let { title, year, children } = $props<{ 
+	let { title, year, children }: { 
 		title: string;
 		year: string;
 		children?: any;
-	}>();
+	} = $props();
 	
 	let expanded = $state(false);
 	let hasContent = $derived(!!children);

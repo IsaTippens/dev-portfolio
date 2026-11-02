@@ -1,9 +1,9 @@
 <script lang="ts">
-	let { title, href, linkText = 'View all' } = $props<{
+	let { title, href, linkText = 'View all' }: {
 		title: string;
 		href?: string;
 		linkText?: string;
-	}>();
+	} = $props();
 </script>
 
 {#if href}

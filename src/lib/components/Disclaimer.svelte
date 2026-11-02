@@ -5,11 +5,11 @@
 		title = 'DISCLAIMER',
 		text = '',
 		children
-	} = $props<{
+	}: {
 		title?: string;
 		text?: string;
 		children?: Snippet;
-	}>();
+	} = $props();
 </script>
 
 <!-- Amber means "warning" and nothing else. This is the only place it appears. -->
