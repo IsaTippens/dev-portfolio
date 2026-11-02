@@ -1,5 +1,3 @@
-import { json } from '@sveltejs/kit';
-
 export const GET = async () => {
 	const allPostFiles = import.meta.glob('/content/blog/**/index.md');
 	const iterablePostFiles = Object.entries(allPostFiles);
@@ -24,5 +22,5 @@ export const GET = async () => {
 
 	const recent = sortedPosts[0];
 
-	return json(recent);
+	return Response.json(recent);
 };

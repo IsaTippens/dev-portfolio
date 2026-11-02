@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { animate, steps } from 'animejs';
-	import { MAX_DURATION, PANEL, STEPS_BLINK, TICK, motionEnabled } from '$lib/motion';
+	import { MAX_DURATION, PANEL, STEPS_BLINK, TICK, motionEnabled } from '#lib/motion/index.js';
 
 	/**
 	 * QT-001 — one relativistic quantum token, the MSc thesis as a part you can poke.

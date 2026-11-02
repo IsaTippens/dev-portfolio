@@ -3,7 +3,7 @@
 	import { page, navigating } from '$app/state';
 	import { onMount, tick } from 'svelte';
 
-	import { THEMES, theme } from '$lib/stores/theme';
+	import { THEMES, theme } from '#lib/stores/theme.js';
 	import {
 		isCharging,
 		batteryLevel,
@@ -11,17 +11,17 @@
 		setCharging,
 		toggleCharging,
 		CHARGE_BANNER_MS
-	} from '$lib/stores/battery';
-	import { maybeBoot } from '$lib/motion/boot.js';
-	import { motionEnabled } from '$lib/motion';
-	import { lightbarLinked, lightbarSupported, padConnected, sonyPadPresent } from '$lib/ports';
-	import { startKonami } from '$lib/konami';
+	} from '#lib/stores/battery.ts';
+	import { maybeBoot } from '#lib/motion/boot.js';
+	import { motionEnabled } from '#lib/motion/index.js';
+	import { lightbarLinked, lightbarSupported, padConnected, sonyPadPresent } from '#lib/ports.ts';
+	import { startKonami } from '#lib/konami.ts';
 
-	import FocusSweep from '$lib/components/FocusSweep.svelte';
-	import ModeDial from '$lib/components/ModeDial.svelte';
-	import Panel from '$lib/components/Panel.svelte';
-	import Readout from '$lib/components/Readout.svelte';
-	import PrintManual from '$lib/components/PrintManual.svelte';
+	import FocusSweep from '#lib/components/FocusSweep.svelte';
+	import ModeDial from '#lib/components/ModeDial.svelte';
+	import Panel from '#lib/components/Panel.svelte';
+	import Readout from '#lib/components/Readout.svelte';
+	import PrintManual from '#lib/components/PrintManual.svelte';
 	import '../app.css';
 	import '../prism.css';
 	import '../print.css';
@@ -367,7 +367,7 @@
 	);
 
 	/** The lightbar driver, once loaded. Only a WebHID browser ever loads it. */
-	let lightbar: typeof import('$lib/lightbar') | null = null;
+	let lightbar: typeof import('#lib/lightbar.ts') | null = null;
 
 	function linkPad() {
 		void lightbar?.linkLightbar();
@@ -387,7 +387,7 @@
 		// snapshot picks the pad up.
 		const loadPad = () => {
 			window.removeEventListener('gamepadconnected', loadPad);
-			void import('$lib/gamepad').then((m) => keep(m.startGamepad()));
+			void import('#lib/gamepad.ts').then((m) => keep(m.startGamepad()));
 		};
 		let pad_present = false;
 		try {
@@ -401,7 +401,7 @@
 		// Loaded at mount, not on demand: a pad granted on an earlier visit is re-linked
 		// without a press. Non-WebHID browsers never download it.
 		if (lightbarSupported()) {
-			void import('$lib/lightbar').then((m) => {
+			void import('#lib/lightbar.ts').then((m) => {
 				lightbar = m;
 				keep(m.startLightbar());
 			});
@@ -409,7 +409,7 @@
 
 		// The console is for devtools; nobody types `isa.help()` in the first frames.
 		const loadConsole = () => {
-			void import('$lib/ctf/console').then((m) => keep(m.installConsole()));
+			void import('#lib/ctf/console.ts').then((m) => keep(m.installConsole()));
 		};
 		if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(loadConsole);
 		else setTimeout(loadConsole, 1);

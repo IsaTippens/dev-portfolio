@@ -7,7 +7,7 @@
 		EASE_WASH,
 		REFOCUS,
 		motionEnabled
-	} from '$lib/motion';
+	} from '#lib/motion/index.js';
 
 	/**
 	 * Focus pull for route changes: one wave, ringing out from the click that started

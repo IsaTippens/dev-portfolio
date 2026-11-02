@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import Panel from '$lib/components/Panel.svelte';
+	import { browser } from '$app/env';
+	import Panel from '#lib/components/Panel.svelte';
 
 	/**
 	 * PHOTO_VIEWER — every image in a content column opens here.

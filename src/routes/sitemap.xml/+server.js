@@ -1,5 +1,5 @@
-import { load_entries } from '$lib/server/content';
-import { SITE } from '$lib/site';
+import { load_entries } from '#lib/server/content.js';
+import { SITE } from '#lib/site.js';
 
 const STATIC_ROUTES = ['/', '/blog', '/projects', '/gear'];
 

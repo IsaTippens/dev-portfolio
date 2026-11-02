@@ -1,14 +1,14 @@
 <script lang="ts">
-	import PageHeader from '$lib/components/PageHeader.svelte';
-	import Panel from '$lib/components/Panel.svelte';
-	import Readout from '$lib/components/Readout.svelte';
-	import { motionEnabled } from '$lib/motion';
+	import PageHeader from '#lib/components/PageHeader.svelte';
+	import Panel from '#lib/components/Panel.svelte';
+	import Readout from '#lib/components/Readout.svelte';
+	import { motionEnabled } from '#lib/motion/index.js';
 
 	/**
 	 * ISA_FAUCET — the 2022 joke post ("there is currently 10.1 bitcoins in my wallet"),
 	 * rebuilt as hardware. Nothing links here; robots.txt tells crawlers to stay out,
 	 * which is precisely what sends a curious human in. It is flag 3 of the console CTF
-	 * (walkthrough: `$lib/ctf/SOLUTIONS.md`).
+	 * (walkthrough: `#lib/ctf/SOLUTIONS.md`).
 	 *
 	 * The payout is a Rickroll. The flag is the cold-storage seed: its MD5 rides on the
 	 * SEED row as a data attribute, and the recovery line names the tool that opens it.

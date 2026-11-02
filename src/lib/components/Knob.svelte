@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { animate, clamp, spring } from 'animejs';
-	import { reducedMotion } from '$lib/motion';
-	import KnobCap from '$lib/components/KnobCap.svelte';
+	import { reducedMotion } from '#lib/motion/index.js';
+	import KnobCap from '#lib/components/KnobCap.svelte';
 
 	/**
 	 * A physical knob.

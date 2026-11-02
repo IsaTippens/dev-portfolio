@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { animate } from 'animejs';
-	import Panel from '$lib/components/Panel.svelte';
-	import Readout from '$lib/components/Readout.svelte';
-	import { RELIEF } from '$lib/components/cartography-relief';
-	import { onScrollFrame } from '$lib/motion/scrub.js';
-	import { reducedMotion, motionEnabled, EASE_SNAP, PANEL } from '$lib/motion';
-	import { sunPosition, CIVIL_DUSK, type SunPosition } from '$lib/cartography/sun';
-	import { fetchWind, isCapeDoctor, compassPoint, type Wind } from '$lib/cartography/wind';
-	import { signalFrom, CAPE_TOWN, type Signal } from '$lib/cartography/signal';
+	import Panel from '#lib/components/Panel.svelte';
+	import Readout from '#lib/components/Readout.svelte';
+	import { RELIEF } from '#lib/components/cartography-relief.ts';
+	import { onScrollFrame } from '#lib/motion/scrub.js';
+	import { reducedMotion, motionEnabled, EASE_SNAP, PANEL } from '#lib/motion/index.js';
+	import { sunPosition, CIVIL_DUSK, type SunPosition } from '#lib/cartography/sun.ts';
+	import { fetchWind, isCapeDoctor, compassPoint, type Wind } from '#lib/cartography/wind.ts';
+	import { signalFrom, CAPE_TOWN, type Signal } from '#lib/cartography/signal.ts';
 
 	/**
 	 * CARTOGRAPHY_CPT — road survey radiating out of Cape Town.

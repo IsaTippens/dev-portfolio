@@ -11,7 +11,7 @@
 	 * drops back to the battery's level, holds 2.5s, and drains again. The run takes
 	 * priority over the notification flash, which is suspended while it plays.
 	 */
-	import { isCharging, batteryLevel } from '$lib/stores/battery';
+	import { isCharging, batteryLevel } from '#lib/stores/battery.ts';
 
 	/** Length of one charging-Glyph run: sweep in 0.1s, hold 2.5s, drain 0.1s. */
 	const CHARGE_GLYPH_MS = 2700;

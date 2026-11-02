@@ -6,7 +6,7 @@ published: true
 ---
 
 <script>
-    import Disclaimer from '$lib/components/Disclaimer.svelte';
+    import Disclaimer from '#lib/components/Disclaimer.svelte';
 </script>
 
 <Disclaimer title="AI Generated">

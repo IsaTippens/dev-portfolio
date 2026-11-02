@@ -2,8 +2,8 @@ import { readonly, writable, type Readable } from 'svelte/store';
 
 /**
  * The device's ports as the always-loaded layout sees them: is a pad plugged in, is a
- * lightbar linked, can this browser link one. The drivers behind them — `$lib/gamepad`
- * and `$lib/lightbar` — load on demand and report through the setters.
+ * lightbar linked, can this browser link one. The drivers behind them — `#lib/gamepad`
+ * and `#lib/lightbar` — load on demand and report through the setters.
  */
 
 const connected = writable(false);

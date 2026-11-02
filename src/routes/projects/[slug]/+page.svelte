@@ -1,6 +1,6 @@
 <script>
-	import Meta from '$lib/components/Meta.svelte';
-	import PhotoViewer from '$lib/components/PhotoViewer.svelte';
+	import Meta from '#lib/components/Meta.svelte';
+	import PhotoViewer from '#lib/components/PhotoViewer.svelte';
 	let { data } = $props();
 
 	let { date, title, description, slug } = $derived(data.meta);

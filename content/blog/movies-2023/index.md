@@ -6,8 +6,8 @@ published: false
 ---
 
 <script>
-    import MovieCard from '$lib/components/MovieCard.svelte';
-    import Spotify from '$lib/components/embeds/Spotify.svelte';
+    import MovieCard from '#lib/components/MovieCard.svelte';
+    import Spotify from '#lib/components/embeds/Spotify.svelte';
 </script>
 
 Movies and series I watched and really liked in 2023.

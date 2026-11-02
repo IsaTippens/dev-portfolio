@@ -6,8 +6,8 @@ published: false
 ---
 
 <script>
-    import Spotify from '$lib/components/embeds/Spotify.svelte';
-    import Disclaimer from '$lib/components/Disclaimer.svelte';
+    import Spotify from '#lib/components/embeds/Spotify.svelte';
+    import Disclaimer from '#lib/components/Disclaimer.svelte';
 </script>
 
 <Disclaimer />

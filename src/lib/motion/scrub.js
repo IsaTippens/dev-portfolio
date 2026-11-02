@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 /**
  * Scroll scrubbing. Position-mapped effects have no duration — they are a readout of

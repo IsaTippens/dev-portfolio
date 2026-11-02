@@ -1,5 +1,5 @@
-import { hid, setLightbarLinked, type HIDConnectionEvent, type HIDDevice } from '$lib/ports';
-import { theme } from '$lib/stores/theme';
+import { hid, setLightbarLinked, type HIDConnectionEvent, type HIDDevice } from '#lib/ports.ts';
+import { theme } from '#lib/stores/theme.js';
 
 /**
  * PlayStation lightbar — a DualShock 4 or DualSense wears the plate's colour.

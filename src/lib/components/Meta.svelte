@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SITE, NAME, TWITTER } from '$lib/site';
+	import { SITE, NAME, TWITTER } from '#lib/site.js';
 
 	/**
 	 * Per-page head metadata. `path` is resolved against the canonical origin for the

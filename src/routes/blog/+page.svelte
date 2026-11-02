@@ -1,10 +1,10 @@
 <script lang="ts">
-	import Divider from '$lib/components/Divider.svelte';
-	import Meta from '$lib/components/Meta.svelte';
-	import PostTile from '$lib/components/PostTile.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
-	import PaginationControls from '$lib/components/PaginationControls.svelte';
-	import { rowNav } from '$lib/rowNav.js';
+	import Divider from '#lib/components/Divider.svelte';
+	import Meta from '#lib/components/Meta.svelte';
+	import PostTile from '#lib/components/PostTile.svelte';
+	import PageHeader from '#lib/components/PageHeader.svelte';
+	import PaginationControls from '#lib/components/PaginationControls.svelte';
+	import { rowNav } from '#lib/rowNav.js';
 
 	let { data } = $props();
 	let posts = $derived(data.posts ?? []);

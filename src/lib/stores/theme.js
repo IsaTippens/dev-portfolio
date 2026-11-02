@@ -1,5 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 /** @typedef {{ id: string, label: string, color: string, note: string, sealed?: boolean }} Plate */
 
@@ -150,7 +150,7 @@ dark_scheme?.addEventListener('change', () => {
 
 /**
  * Where won plates are recorded, as a comma-separated list of ids. The console CTF
- * (`$lib/ctf/console.ts`) wins MR ROBOT, the GAMING_LOG cube wins GD; nothing else
+ * (`#lib/ctf/console.ts`) wins MR ROBOT, the GAMING_LOG cube wins GD; nothing else
  * writes here. A lone id (the format before GD existed) reads as a one-item list.
  */
 const UNLOCK_KEY = 'plate-unlocked';

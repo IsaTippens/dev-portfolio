@@ -130,7 +130,7 @@
 	lets a faceplate be a pure token swap.
 
 	To add a faceplate: add a `:root[data-theme='<id>']` block here and one entry in
-	`$lib/stores/theme.js`. If a component needs a per-theme override to look right,
+	`#lib/stores/theme.js`. If a component needs a per-theme override to look right,
 	the component is wrong — fix the component, not the palette.
 
 	Semantics, not decoration:
@@ -669,7 +669,7 @@
 
 /*
 	MR ROBOT — the sealed plate. It is not in the MODE dial until the console CTF is
-	solved (`$lib/ctf/`): the prize for breaking in is the terminal the show lives
+	solved (`#lib/ctf/`): the prize for breaking in is the terminal the show lives
 	in. Built like PHOSPHOR, one hue and nothing else, but that hue is the red of a
 	Virtual Boy LED on black. The semantic colours stay inside the red, graded by
 	brightness: ok is the hottest, rec the deepest.

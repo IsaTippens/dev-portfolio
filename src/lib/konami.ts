@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { theme } from '$lib/stores/theme';
+import { theme } from '#lib/stores/theme.js';
 
 /**
  * ↑ ↑ ↓ ↓ ← → ← → B A — the Konami code borrows the sealed MR ROBOT plate.

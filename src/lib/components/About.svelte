@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ProfilePhoto from '$lib/components/ProfilePhoto.svelte';
-	import Cartography from '$lib/components/Cartography.svelte';
-	import Panel from '$lib/components/Panel.svelte';
+	import ProfilePhoto from '#lib/components/ProfilePhoto.svelte';
+	import Cartography from '#lib/components/Cartography.svelte';
+	import Panel from '#lib/components/Panel.svelte';
 
 	/**
 	 * The hero row: identity, survey plate and the portrait engine — the device's

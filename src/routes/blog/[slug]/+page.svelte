@@ -1,7 +1,7 @@
 <script>
-	import Divider from '$lib/components/Divider.svelte';
-	import Meta from '$lib/components/Meta.svelte';
-	import PhotoViewer from '$lib/components/PhotoViewer.svelte';
+	import Divider from '#lib/components/Divider.svelte';
+	import Meta from '#lib/components/Meta.svelte';
+	import PhotoViewer from '#lib/components/PhotoViewer.svelte';
 
 	let { data } = $props();
 

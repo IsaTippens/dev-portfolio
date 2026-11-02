@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { cubicIn, cubicOut } from 'svelte/easing';
-	import Knob from '$lib/components/Knob.svelte';
-	import Readout from '$lib/components/Readout.svelte';
-	import { isCharging, batteryLevel, setCharging } from '$lib/stores/battery';
-	import { reducedMotion } from '$lib/motion';
+	import Knob from '#lib/components/Knob.svelte';
+	import Readout from '#lib/components/Readout.svelte';
+	import { isCharging, batteryLevel, setCharging } from '#lib/stores/battery.ts';
+	import { reducedMotion } from '#lib/motion/index.js';
 
 	type PoMode = 'LCD' | 'CRT' | 'GAMEBOY' | 'DOT_MATRIX' | 'NORMAL';
 

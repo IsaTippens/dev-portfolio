@@ -1,13 +1,13 @@
 <script>
-	import Meta from '$lib/components/Meta.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
-	import Panel from '$lib/components/Panel.svelte';
-	import GearItem from '$lib/components/GearItem.svelte';
-	import Laptop from '$lib/components/gear/Laptop.svelte';
-	import NothingPhone2 from '$lib/components/gear/NothingPhone2.svelte';
-	import Tablet from '$lib/components/gear/Tablet.svelte';
-	import RaspberryPi5 from '$lib/components/gear/RaspberryPi5.svelte';
-	import RaspberryPi4 from '$lib/components/gear/RaspberryPi4.svelte';
+	import Meta from '#lib/components/Meta.svelte';
+	import PageHeader from '#lib/components/PageHeader.svelte';
+	import Panel from '#lib/components/Panel.svelte';
+	import GearItem from '#lib/components/GearItem.svelte';
+	import Laptop from '#lib/components/gear/Laptop.svelte';
+	import NothingPhone2 from '#lib/components/gear/NothingPhone2.svelte';
+	import Tablet from '#lib/components/gear/Tablet.svelte';
+	import RaspberryPi5 from '#lib/components/gear/RaspberryPi5.svelte';
+	import RaspberryPi4 from '#lib/components/gear/RaspberryPi4.svelte';
 
 	/** The model families oh-my-pi drives, and the lab behind each. */
 	const MODELS = [

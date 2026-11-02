@@ -6,8 +6,8 @@ published: true
 ---
 
 <script>
-    import Disclaimer from '$lib/components/Disclaimer.svelte';
-    import Clip from '$lib/components/embeds/Clip.svelte';
+    import Disclaimer from '#lib/components/Disclaimer.svelte';
+    import Clip from '#lib/components/embeds/Clip.svelte';
 </script>
 
 <Disclaimer title="AI Generated">

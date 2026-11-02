@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import Panel from '$lib/components/Panel.svelte';
-	import { MAX_DURATION, PANEL, SNAP, STEPS_FLICKER, motionEnabled } from '$lib/motion';
-	import { theme, unlockPlate } from '$lib/stores/theme';
+	import Panel from '#lib/components/Panel.svelte';
+	import { MAX_DURATION, PANEL, SNAP, STEPS_FLICKER, motionEnabled } from '#lib/motion/index.js';
+	import { theme, unlockPlate } from '#lib/stores/theme.js';
 
 	/**
 	 * Active log. Read-only telemetry, so the rows are a table and not a control surface.

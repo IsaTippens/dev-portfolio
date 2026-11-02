@@ -6,8 +6,8 @@ published: true
 ---
 
 <script>
-    import Tweet  from '$lib/components/embeds/Tweet.svelte';
-    import HighlightedLink from '$lib/components/HighlightedLink.svelte';
+    import Tweet  from '#lib/components/embeds/Tweet.svelte';
+    import HighlightedLink from '#lib/components/HighlightedLink.svelte';
 </script>
 
 A lot of things happened this year.

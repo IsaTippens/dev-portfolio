@@ -7,9 +7,10 @@ import { visit } from 'unist-util-visit';
  * above the fold. Raw HTML <img> and Svelte components in posts are left alone.
  */
 function lazyImages() {
+	/** @param {import('unist').Node} tree */
 	return (tree) => {
 		let seen = 0;
-		visit(tree, 'element', (node) => {
+		visit(tree, 'element', (/** @type {any} */ node) => {
 			if (node.tagName !== 'img') return;
 			node.properties.decoding = 'async';
 			if (seen++ > 0) node.properties.loading = 'lazy';

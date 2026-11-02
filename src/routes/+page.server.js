@@ -1,4 +1,4 @@
-import { load_entries } from '$lib/server/content';
+import { load_entries } from '#lib/server/content.js';
 
 /** The five newest posts; nothing else on the home page comes from the server. */
 export function load() {

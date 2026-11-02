@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { THEMES, plates, theme } from '$lib/stores/theme';
-	import Panel from '$lib/components/Panel.svelte';
+	import { THEMES, plates, theme } from '#lib/stores/theme.js';
+	import Panel from '#lib/components/Panel.svelte';
 
 	/**
 	 * MODE — the faceplate dial.

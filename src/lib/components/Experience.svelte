@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Panel from '$lib/components/Panel.svelte';
-	import QuantumToken from '$lib/components/QuantumToken.svelte';
+	import Panel from '#lib/components/Panel.svelte';
+	import QuantumToken from '#lib/components/QuantumToken.svelte';
 
 	/**
 	 * Experience record. Three bolted-down modules, each seating as it comes up the page.

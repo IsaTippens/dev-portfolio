@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { plates, theme, unlockPlate } from '$lib/stores/theme';
+import { plates, theme, unlockPlate } from '#lib/stores/theme.js';
 
 /**
  * The devtools console is a service port. Open it and the device draws itself, says

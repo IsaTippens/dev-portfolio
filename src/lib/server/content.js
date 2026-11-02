@@ -1,4 +1,4 @@
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 
 /**
  * Frontmatter of every `content/<dir>/<slug>/index.{md,svx}`, resolved at build time.

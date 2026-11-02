@@ -1,4 +1,4 @@
-import { THEMES, THEME_IDS, OS_PLATES, PLATE_KEY } from '$lib/stores/theme';
+import { THEMES, THEME_IDS, OS_PLATES, PLATE_KEY } from '#lib/stores/theme.js';
 
 const colors = Object.fromEntries(THEMES.map((t) => [t.id, t.color]));
 

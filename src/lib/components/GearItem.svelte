@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import Panel from '$lib/components/Panel.svelte';
+	import Panel from '#lib/components/Panel.svelte';
 
 	/**
 	 * One hardware module on the gear page: the device drawing (`children`) sits in a sunk

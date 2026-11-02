@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
-	import KnobCap from '$lib/components/KnobCap.svelte';
-	import { reducedMotion } from '$lib/motion';
+	import KnobCap from '#lib/components/KnobCap.svelte';
+	import { reducedMotion } from '#lib/motion/index.js';
 
 	// Svelte 5 state runes
 	/** @type {number | null} */

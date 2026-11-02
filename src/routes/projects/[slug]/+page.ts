@@ -11,8 +11,6 @@ export const load = async ({ params }) => {
 			meta: { ...post.metadata, slug }
 		};
 	} catch (err) {
-		throw error(404, {
-			message: err instanceof Error ? err.message : 'Not Found'
-		});
+		throw error(404, err instanceof Error ? err.message : 'Not Found');
 	}
 };

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { prefersReducedMotion } from '$lib/motion';
+	import { prefersReducedMotion } from '#lib/motion/index.js';
 
 	/**
 	 * A silent screen-recording loop for posts. It plays only while it is on screen and

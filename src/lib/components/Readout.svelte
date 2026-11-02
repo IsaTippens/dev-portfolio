@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { animate, utils } from 'animejs';
-	import { EASE_SNAP, reducedMotion } from '$lib/motion';
+	import { EASE_SNAP, reducedMotion } from '#lib/motion/index.js';
 
 	/**
 	 * A numeric readout — FPS, POS, BAT, VAL. It ticks up to its value the first time it

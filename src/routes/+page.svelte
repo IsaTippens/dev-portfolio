@@ -1,13 +1,13 @@
 <script lang="ts">
-	import About from '$lib/components/About.svelte';
-	import Experience from '$lib/components/Experience.svelte';
-	import Meta from '$lib/components/Meta.svelte';
-	import SectionHeader from '$lib/components/SectionHeader.svelte';
-	import NavButton from '$lib/components/NavButton.svelte';
-	import GamingLog from '$lib/components/GamingLog.svelte';
-	import Intro from '$lib/components/Intro.svelte';
-	import PostTile from '$lib/components/PostTile.svelte';
-	import Socials from '$lib/components/Socials.svelte';
+	import About from '#lib/components/About.svelte';
+	import Experience from '#lib/components/Experience.svelte';
+	import Meta from '#lib/components/Meta.svelte';
+	import SectionHeader from '#lib/components/SectionHeader.svelte';
+	import NavButton from '#lib/components/NavButton.svelte';
+	import GamingLog from '#lib/components/GamingLog.svelte';
+	import Intro from '#lib/components/Intro.svelte';
+	import PostTile from '#lib/components/PostTile.svelte';
+	import Socials from '#lib/components/Socials.svelte';
 
 	let { data } = $props();
 </script>

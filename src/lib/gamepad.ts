@@ -1,7 +1,7 @@
-import { setPadConnected } from '$lib/ports';
-import { theme } from '$lib/stores/theme';
-import { reducedMotion } from '$lib/motion';
-import { konami, type KonamiToken } from '$lib/konami';
+import { setPadConnected } from '#lib/ports.ts';
+import { theme } from '#lib/stores/theme.js';
+import { reducedMotion } from '#lib/motion/index.js';
+import { konami, type KonamiToken } from '#lib/konami.ts';
 
 /**
  * PAD 1 — a controller port that only exists on the PlayStation plates.

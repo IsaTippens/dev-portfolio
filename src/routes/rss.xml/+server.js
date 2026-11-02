@@ -1,5 +1,5 @@
-import { load_entries } from '$lib/server/content';
-import { SITE, NAME, DESCRIPTION } from '$lib/site';
+import { load_entries } from '#lib/server/content.js';
+import { SITE, NAME, DESCRIPTION } from '#lib/site.js';
 
 const escape = (value = '') =>
 	String(value)

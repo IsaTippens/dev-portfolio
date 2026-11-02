@@ -1,6 +1,5 @@
-import { json } from '@sveltejs/kit';
-import { load_entries } from '$lib/server/content';
+import { load_entries } from '#lib/server/content.js';
 
 export function GET() {
-	return json(load_entries('projects'));
+	return Response.json(load_entries('projects'));
 }
