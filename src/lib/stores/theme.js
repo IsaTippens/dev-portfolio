@@ -62,13 +62,6 @@ export const THEMES = [
 		color: '#0a0101',
 		note: 'red terminal, operators only',
 		sealed: true
-	},
-	{
-		id: 'gd',
-		label: 'GD',
-		color: '#061f6e',
-		note: 'stereo madness blue + gold',
-		sealed: true
 	}
 ];
 
@@ -150,8 +143,7 @@ dark_scheme?.addEventListener('change', () => {
 
 /**
  * Where won plates are recorded, as a comma-separated list of ids. The console CTF
- * (`#lib/ctf/console.ts`) wins MR ROBOT, the GAMING_LOG cube wins GD; nothing else
- * writes here. A lone id (the format before GD existed) reads as a one-item list.
+ * (`#lib/ctf/console.ts`) wins MR ROBOT; nothing else writes here.
  */
 const UNLOCK_KEY = 'plate-unlocked';
 
