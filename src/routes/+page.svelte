@@ -4,7 +4,6 @@
 	import Meta from '#lib/components/Meta.svelte';
 	import SectionHeader from '#lib/components/SectionHeader.svelte';
 	import NavButton from '#lib/components/NavButton.svelte';
-	import GamingLog from '#lib/components/GamingLog.svelte';
 	import Intro from '#lib/components/Intro.svelte';
 	import PostTile from '#lib/components/PostTile.svelte';
 	import Socials from '#lib/components/Socials.svelte';
@@ -19,10 +18,20 @@
 	<Intro />
 	<About />
 
-	<nav aria-label="Primary sections" class="my-2 grid grid-cols-2 gap-3 sm:grid-cols-4" data-boot="5">
+	<nav
+		aria-label="Primary sections"
+		class="my-2 grid grid-cols-2 gap-3 sm:grid-cols-4"
+		data-boot="5"
+	>
 		<NavButton href="/blog" prefix="F1_BLOG" title="Blog" subtitle="READABLES // NOTES" />
 		<NavButton href="/projects" prefix="F2_PROJ" title="Projects" subtitle="SYSTEMS // CODE" />
-		<NavButton href="/resume" target="_blank" prefix="F3_RESM" title="Resume" subtitle="DOWNLOAD // PDF" />
+		<NavButton
+			href="/resume"
+			target="_blank"
+			prefix="F3_RESM"
+			title="Resume"
+			subtitle="DOWNLOAD // PDF"
+		/>
 		<NavButton href="/gear" prefix="F4_GEAR" title="Gear" subtitle="HARDWARE // SETUP" />
 	</nav>
 
@@ -36,10 +45,8 @@
 			{/each}
 		</div>
 	</div>
-
 	<div>
-		<SectionHeader title="Active Gaming Log" />
-		<GamingLog />
+		<SectionHeader title="Active Gaming Log" href="/gaming" />
 	</div>
 
 	<div>

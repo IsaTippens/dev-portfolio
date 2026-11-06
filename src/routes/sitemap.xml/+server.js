@@ -1,7 +1,7 @@
 import { load_entries } from '#lib/server/content.js';
 import { SITE } from '#lib/site.js';
 
-const STATIC_ROUTES = ['/', '/blog', '/projects', '/gear'];
+const STATIC_ROUTES = ['/', '/blog', '/projects', '/gear', '/gaming'];
 
 /** @param {string} path */
 const url = (path) => ({

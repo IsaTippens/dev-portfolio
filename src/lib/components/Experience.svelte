@@ -5,7 +5,15 @@
 	/**
 	 * Experience record. Three bolted-down modules, each seating as it comes up the page.
 	 */
-	const ENTRIES = [
+	const ENTRIES: {
+		tag: string;
+		lead: string;
+		title?: string;
+		body: string;
+		href?: string;
+		linkLabel?: string;
+		token?: boolean;
+	}[] = [
 		{
 			tag: '01 / CHIEF_TECH_OFFICER',
 			lead: 'Alphacrest',
@@ -14,7 +22,8 @@
 		{
 			tag: '02 / MSC_CS_CANDIDATE',
 			lead: 'Thesis',
-			body: '"A framework for secure financial transactions using relativistic quantum tokens", combining quantum computing and software engineering to develop next-generation secure transaction protocols. Currently in the final year of an MSc in Computer Science at the University of the Western Cape.',
+			title: 'A framework for secure financial transactions using relativistic quantum tokens',
+			body: 'Combines quantum computing and software engineering to develop next-generation secure transaction protocols. Currently in the final year of an MSc in Computer Science at the University of the Western Cape.',
 			href: '/projects/relativistic-quantum-tokens',
 			linkLabel: 'PROJECT_SPEC // RELATIVISTIC QUANTUM TOKENS',
 			// The thesis subject, as a working part: see QuantumToken.
@@ -31,9 +40,19 @@
 <div class="mt-2 grid gap-6">
 	{#each ENTRIES as entry (entry.tag)}
 		<Panel tag={entry.tag} tag_side="left" class="p-4 pb-5">
-			<p class="mt-1 text-[13px] leading-relaxed text-ink">
-				<span class="font-bold uppercase">{entry.lead}</span>: {entry.body}
-			</p>
+			{#if entry.title}
+				<p class="mt-1 text-[13px] leading-relaxed text-ink">
+					<span class="font-bold uppercase">{entry.lead}</span>:
+					<strong class="font-bold">“{entry.title}”</strong>
+				</p>
+				<p class="mt-2 text-[13px] leading-relaxed text-ink">
+					{entry.body}
+				</p>
+			{:else}
+				<p class="mt-1 text-[13px] leading-relaxed text-ink">
+					<span class="font-bold uppercase">{entry.lead}</span>: {entry.body}
+				</p>
+			{/if}
 			{#if entry.token}
 				<QuantumToken />
 			{/if}

@@ -4,70 +4,7 @@
 	import { isCharging, batteryLevel, setCharging } from '#lib/stores/battery.ts';
 	import { reducedMotion } from '#lib/motion/index.js';
 
-	type PoMode = 'NORMAL' | 'CRT' | 'LCD' | 'GAMEBOY';
-
-	/**
-	 * The display's own phosphor colours. These are the tube, not the interface, so they
-	 * are deliberately faceplate-independent — the case around them changes with the
-	 * theme, the phosphor inside does not, exactly like real hardware.
-	 */
-	const MODES: { id: PoMode; key: string; label: string; hud: string; filter: string }[] = [
-		{
-			id: 'NORMAL',
-			key: 'NOR',
-			label: 'Normal optical feed',
-			hud: '#ffffff',
-			filter: 'grayscale(35%) contrast(105%)'
-		},
-		{
-			id: 'CRT',
-			key: 'CRT',
-			label: 'CRT phosphor monitor',
-			hud: '#33ccff',
-			filter: 'contrast(135%) brightness(1.08) saturate(135%) sepia(18%)'
-		},
-		{
-			id: 'LCD',
-			key: 'LCD',
-			label: 'Monochrome green LCD',
-			hud: '#00ff66',
-			filter: 'grayscale(100%) contrast(145%) brightness(0.85) sepia(100%) hue-rotate(95deg) saturate(240%)'
-		},
-		{
-			id: 'GAMEBOY',
-			key: 'GB',
-			label: 'Four-tone DMG matrix',
-			hud: '#8bac0f',
-			filter: 'grayscale(100%) contrast(185%) brightness(0.92) sepia(100%) hue-rotate(55deg) saturate(280%)'
-		}
-	];
-
-	let mode = $state<PoMode>('NORMAL');
 	let screen: HTMLDivElement | null = $state(null);
-
-	const active = $derived(MODES.find((m) => m.id === mode) ?? MODES[0]);
-
-	function apply(id: PoMode) {
-		if (id === mode) return;
-		mode = id;
-	}
-
-	// A mode change is a switch, not a fade: the tube blinks for a frame and comes back
-	// on the new setting.
-	let first_run = true;
-	$effect(() => {
-		void mode;
-		if (first_run) {
-			first_run = false;
-			return;
-		}
-		if (reducedMotion() || !screen) return;
-		screen.animate([{ opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }], {
-			duration: 130,
-			easing: 'steps(3, end)'
-		});
-	});
-
 	// Power in: the tube surges for a beat when the charger seats, the way a backlight
 	// jumps when the supply switches over.
 	let was_charging: boolean | null = null;
@@ -120,7 +57,7 @@
 	>
 		<div
 			bind:this={screen}
-			class="scanlines relative h-full w-full overflow-hidden"
+			class="relative h-full w-full overflow-hidden"
 			data-boot="3"
 			data-boot-screen
 		>
@@ -128,21 +65,7 @@
 				src="/images/profile-instagram.jpg"
 				alt="Portrait of Isa Tippens"
 				class="absolute inset-0 h-full w-full object-cover"
-				style="filter: {active.filter};"
 			/>
-
-			{#if mode === 'LCD'}
-				<div class="lcd-overlay pointer-events-none absolute inset-0"></div>
-			{/if}
-			{#if mode === 'CRT'}
-				<div class="crt-overlay pointer-events-none absolute inset-0"></div>
-				<div
-					class="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"
-				></div>
-			{/if}
-			{#if mode === 'GAMEBOY'}
-				<div class="gb-overlay pointer-events-none absolute inset-0"></div>
-			{/if}
 
 			<!-- Glass: a fixed sheen, plus the glare of whatever the pointer is. -->
 			<div
@@ -156,8 +79,7 @@
 
 			<!-- HUD -->
 			<div
-				class="pointer-events-none absolute inset-0 z-30 flex flex-col justify-between p-2 font-mono text-xxs select-none"
-				style="color: {active.hud};"
+				class="pointer-events-none absolute inset-0 z-30 flex flex-col justify-between p-2 font-mono text-xxs text-white select-none"
 			>
 				<div class="flex items-start justify-between">
 					<span class="bg-[var(--hw-chip)] px-1.5 py-0.5 tracking-wider">
@@ -168,31 +90,8 @@
 						<span class="text-[var(--hw-chip-ink)]">REC</span>
 					</div>
 				</div>
-
-				<div class="flex items-end justify-between">
-					<span class="bg-[var(--hw-chip)] px-1.5 py-0.5 leading-tight tracking-wider">
-						MODE: {active.key}
-					</span>
-				</div>
 			</div>
 		</div>
-	</div>
-
-	<!-- Display mode selector (4 presets) -->
-	<div class="z-10 grid grid-cols-4 gap-1.5" role="group" aria-label="Portrait display mode">
-		{#each MODES as m (m.id)}
-			<button
-				type="button"
-				class="hbtn min-h-7 px-1.5 py-1 text-xxs {mode === m.id
-					? 'border-accent text-accent'
-					: 'text-dim'}"
-				aria-pressed={mode === m.id}
-				aria-label={m.label}
-				onclick={() => apply(m.id)}
-			>
-				{m.key}
-			</button>
-		{/each}
 	</div>
 
 	<!-- Bottom power bus & USB-C port -->
@@ -333,34 +232,6 @@
 </Panel>
 
 <style>
-	/* LCD: high-contrast monochrome green with a hard scan structure. */
-	.lcd-overlay {
-		background: repeating-linear-gradient(
-			to bottom,
-			rgba(0, 0, 0, 0) 0px,
-			rgba(0, 0, 0, 0) 2px,
-			rgba(0, 0, 0, 0.2) 2px,
-			rgba(0, 0, 0, 0.2) 4px
-		);
-		mix-blend-mode: overlay;
-	}
-
-	/* CRT: warmer, saturated, aperture-grille stripes. */
-	.crt-overlay {
-		background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
-			linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
-		background-size:
-			100% 3px,
-			3px 100%;
-		mix-blend-mode: multiply;
-	}
-
-	/* GAMEBOY: four-tone pea soup. */
-	.gb-overlay {
-		background: rgba(139, 172, 15, 0.25);
-		mix-blend-mode: color;
-	}
-
 	/* Glare: a soft hotspot that follows the pointer across the glass. */
 	.glare {
 		background: radial-gradient(
