@@ -1,114 +1,440 @@
-<script lang="ts">
+<script>
+	import { onMount } from 'svelte';
+	import KnobCap from '#lib/components/KnobCap.svelte';
+	import { reducedMotion } from '#lib/motion/index.js';
+
+	// Svelte 5 state runes
+	/** @type {number | null} */
+	let activeChannel = $state(null);
 	/**
-	 * Social interfaces: direct links to external profiles with their brand marks.
+	 * Touch only: the channel a tap has tuned to. The first tap on a channel tunes the deck
+	 * to it — the same preview a hover gives a mouse — and the second tap follows its link.
+	 * @type {number | null}
 	 */
-	const PORTS = [
-		{
-			abbr: 'GH',
-			name: 'GitHub',
-			href: 'https://www.github.com/IsaTippens',
-			external: true
-		},
-		{
-			abbr: 'IG',
-			name: 'Instagram',
-			href: 'https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/',
-			external: true
-		},
-		{
-			abbr: 'YT',
-			name: 'YouTube',
-			href: 'https://www.youtube.com/@issaaahhhh',
-			external: true
-		},
-		{
-			abbr: 'X',
-			name: 'X',
-			href: 'https://x.com/issssaaaaaaaaah',
-			external: true
-		},
-		{
-			abbr: 'ML',
-			name: 'Mail',
-			href: 'mailto:isatippens2@gmail.com',
-			external: false
+	let armedChannel = $state(null);
+	/** Whether the tap that armed a channel still owes its click: suppress that one, follow the next. */
+	let suppress_click = false;
+	/** @type {HTMLDivElement | null} */
+	let root = null;
+
+	/**
+	 * @param {PointerEvent} event
+	 * @param {number} i
+	 */
+	function arm_touch(event, i) {
+		if (event.pointerType === 'mouse') return;
+		suppress_click = armedChannel !== i;
+		armedChannel = i;
+		activeChannel = i;
+	}
+
+	/**
+	 * @param {MouseEvent} event
+	 * @param {number} i
+	 */
+	function follow_touch(event, i) {
+		// @ts-expect-error click carries pointerType for real pointers
+		if (event.pointerType !== 'touch') return; // a mouse or Enter follows at once
+		if (suppress_click) {
+			suppress_click = false;
+			event.preventDefault();
+			return;
 		}
-	] as const;
+		armedChannel = null;
+	}
+	let levels = $state([20, 35, 15, 30, 45]);
+	let tapeRotation = $state(0);
+
+	const channels = [
+		{
+			name: 'GITHUB',
+			abbr: 'GH',
+			label: 'SRC',
+			url: 'https://www.github.com/IsaTippens'
+		},
+		{
+			name: 'INSTAGRAM',
+			abbr: 'IG',
+			label: 'LNS',
+			url: 'https://www.instagram.com/issssaaaaaaaaaaaaaahhhhhhhhhhh/'
+		},
+		{
+			name: 'YOUTUBE',
+			abbr: 'YT',
+			label: 'PLAY',
+			url: 'https://www.youtube.com/@issaaahhhh'
+		},
+		{
+			name: 'X',
+			abbr: 'X',
+			label: 'TXT',
+			url: 'https://x.com/issssaaaaaaaaah'
+		},
+		{
+			name: 'MAIL',
+			abbr: 'ML',
+			label: 'MSG',
+			url: 'mailto:isatippens2@gmail.com'
+		}
+	];
+
+	const knobPresets = [
+		{ a: 45, b: -30, c: 90, d: 180 }, // GH
+		{ a: -90, b: 60, c: -45, d: 90 }, // IG
+		{ a: 180, b: 120, c: 30, d: -60 }, // YT
+		{ a: -30, b: -90, c: 120, d: 45 }, // X
+		{ a: 90, b: 45, c: -120, d: -180 } // ML
+	];
+
+	const knobs = [
+		{ key: 'a', label: 'A-VOL', cap: 'var(--hw-knob-1)' },
+		{ key: 'b', label: 'B-FREQ', cap: 'var(--hw-knob-2)' },
+		{ key: 'c', label: 'C-RES', cap: 'var(--hw-knob-3)' },
+		{ key: 'd', label: 'D-MIX', cap: 'var(--hw-knob-4)' }
+	];
+
+	/** Knob positions follow the hovered channel's preset, and park at 12 o'clock. */
+	const knobAngles = $derived(
+		activeChannel !== null ? knobPresets[activeChannel] : { a: 0, b: 0, c: 0, d: 0 }
+	);
+
+	onMount(() => {
+		// The reel and level meters are decoration, so leave them parked on a still frame.
+		if (reducedMotion()) return;
+
+		let frame = 0;
+		let lastTime = 0;
+
+		/** @param {number} time */
+		const update = (time) => {
+			const delta = time - lastTime;
+			lastTime = time;
+
+			// Spin the tape reel. Active channel makes it spin faster!
+			const speed = activeChannel !== null ? 0.35 : 0.08;
+			tapeRotation = (tapeRotation + speed * delta) % 360;
+
+			// Ambient bounce for levels
+			for (let i = 0; i < 5; i++) {
+				if (activeChannel === i) {
+					// High activity when hovered
+					levels[i] = Math.max(20, Math.min(100, levels[i] + (Math.random() - 0.5) * 35));
+				} else {
+					// Low ambient activity
+					levels[i] = Math.max(5, Math.min(45, levels[i] + (Math.random() - 0.5) * 12));
+				}
+			}
+
+			frame = requestAnimationFrame(update);
+		};
+
+		// The deck sits at the foot of the home page: it plays only while it is on screen
+		// and picks up from the frame it stopped on.
+		const seen = new IntersectionObserver(([entry]) => {
+			cancelAnimationFrame(frame);
+			if (!entry.isIntersecting) return;
+			lastTime = performance.now();
+			frame = requestAnimationFrame(update);
+		});
+		if (root) seen.observe(root);
+		return () => {
+			seen.disconnect();
+			cancelAnimationFrame(frame);
+		};
+	});
+
+	// Helper to display level percentage as hex string (Teenage Engineering style)
+	/** @param {number} val */
+	function toHex(val) {
+		return Math.round(val * 2.55)
+			.toString(16)
+			.toUpperCase()
+			.padStart(2, '0');
+	}
 </script>
 
-<div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
-	{#each PORTS as port (port.name)}
-		<a
-			href={port.href}
-			target={port.external ? '_blank' : undefined}
-			rel={port.external ? 'noopener noreferrer' : undefined}
-			class="hbtn group flex min-h-[52px] items-center justify-center gap-2.5 p-3 text-center hover:bg-accent-wash last:col-span-2 sm:last:col-span-1"
+<svelte:window
+	onpointerdown={(event) => {
+		if (event.pointerType === 'mouse' || armedChannel === null) return;
+		if (root?.contains(/** @type {Node} */ (event.target))) return;
+		armedChannel = null;
+		activeChannel = null;
+	}}
+	onkeydown={(event) => {
+		if (event.key !== 'Escape' || armedChannel === null) return;
+		armedChannel = null;
+		activeChannel = null;
+	}}
+/>
+
+<div
+	bind:this={root}
+	class="w-full max-w-3xl mx-auto bg-[var(--hw-case-2)] border-2 border-[var(--hw-case-line)] rounded-3xl p-4 sm:p-6 shadow-2xl relative font-mono text-dim select-none transition-colors duration-200"
+>
+	<!-- Corner Screws -->
+	<span class="hw-screw top-2.5 left-2.5" style="--angle: 40deg" aria-hidden="true"></span>
+	<span class="hw-screw top-2.5 right-2.5" style="--angle: -25deg" aria-hidden="true"></span>
+	<span class="hw-screw bottom-2.5 left-2.5" style="--angle: 70deg" aria-hidden="true"></span>
+	<span class="hw-screw bottom-2.5 right-2.5" style="--angle: 10deg" aria-hidden="true"></span>
+
+	<!-- Chassis Top Labels -->
+	<div
+		class="flex justify-between items-center text-micro sm:text-tiny text-dim tracking-wider mb-3 px-1 uppercase font-bold"
+	>
+		<span>TE-S10 // SOCIAL INTERFACE</span>
+		<div class="flex gap-1">
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+			<span class="w-1.5 h-1.5 rounded-full bg-[var(--hw-case-line)]"></span>
+		</div>
+		<span>UNIT.04</span>
+	</div>
+
+	<div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 items-stretch">
+		<!-- Left: The Retro Screen Module -->
+		<div
+			class="md:col-span-3 flex flex-col justify-between bg-[var(--hw-screen)] border-2 border-[var(--hw-screen-line)] rounded-xl p-3 sm:p-4 shadow-inner relative overflow-hidden text-[var(--hw-screen-ink)] lcd-grid transition-colors duration-200"
 		>
-			{#if port.abbr === 'GH'}
-				<svg
-					viewBox="0 0 32 32"
-					class="h-4 w-4 shrink-0 text-ink transition-colors group-hover:text-accent"
-					aria-hidden="true"
+			<!-- Scanline / Glare overlays -->
+			<div
+				class="absolute inset-0 pointer-events-none opacity-[0.1] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[size:100%_4px]"
+			></div>
+			<div
+				class="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(135deg,rgba(255,255,255,1)_0%,rgba(255,255,255,0)_60%)]"
+			></div>
+
+			<!-- Screen Header Status Bar -->
+			<div
+				class="flex justify-between items-center text-micro sm:text-tiny border-b border-[var(--hw-screen-line)] pb-2 mb-2 select-none glow-text font-bold text-[var(--hw-screen-ink-dim)] transition-colors duration-200"
+			>
+				<div class="flex items-center gap-1.5">
+					<span
+						class="inline-block w-2 h-2 rounded-full transition-colors {activeChannel !== null
+							? 'bg-rec animate-pulse'
+							: 'bg-[var(--hw-screen-seg-off)]'}"
+					></span>
+					<span class="transition-colors {activeChannel !== null ? 'text-rec' : ''}">
+						{activeChannel !== null ? '● REC' : '▶ PLAY'}
+					</span>
+				</div>
+
+				<!-- Cassette Tape Reel -->
+				<div
+					class="flex items-center gap-1 border border-[var(--hw-screen-line)] px-2 py-0.5 rounded bg-[var(--hw-screen-well)] scale-90 sm:scale-100"
 				>
-					<path
-						fill="currentColor"
-						fill-rule="evenodd"
-						d="M16 2a14 14 0 0 0-4.43 27.28c.7.13 1-.3 1-.67v-2.38c-3.89.84-4.71-1.88-4.71-1.88a3.7 3.7 0 0 0-1.62-2.05c-1.27-.86.1-.85.1-.85a2.94 2.94 0 0 1 2.14 1.45a3 3 0 0 0 4.08 1.16a2.93 2.93 0 0 1 .88-1.87c-3.1-.36-6.37-1.56-6.37-6.92a5.4 5.4 0 0 1 1.44-3.76a5 5 0 0 1 .14-3.7s1.17-.38 3.85 1.43a13.3 13.3 0 0 1 7 0c2.67-1.81 3.84-1.43 3.84-1.43a5 5 0 0 1 .14 3.7a5.4 5.4 0 0 1 1.44 3.76c0 5.38-3.27 6.56-6.39 6.91a3.33 3.33 0 0 1 .95 2.59v3.84c0 .46.25.81 1 .67A14 14 0 0 0 16 2"
-					/>
-				</svg>
-			{:else if port.abbr === 'IG'}
-				<svg
-					viewBox="0 0 32 32"
-					class="h-4 w-4 shrink-0 text-ink transition-colors group-hover:text-accent"
-					aria-hidden="true"
+					<!-- Left Reel -->
+					<svg
+						class="w-3.5 h-3.5 text-current transition-transform duration-75"
+						viewBox="0 0 24 24"
+						style="transform: rotate({tapeRotation}deg);"
+					>
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="currentColor"
+							stroke-width="1.5"
+							fill="none"
+							stroke-dasharray="6 3 2 3"
+						/>
+						<circle cx="12" cy="12" r="3" fill="currentColor" />
+					</svg>
+					<!-- Tape window -->
+					<div
+						class="w-4 h-2 border border-[var(--hw-screen-line)] relative flex items-center justify-between px-0.5"
+					>
+						<div class="w-0.5 h-0.5 bg-current rounded-full"></div>
+						<div class="w-0.5 h-0.5 bg-current rounded-full"></div>
+					</div>
+					<!-- Right Reel -->
+					<svg
+						class="w-3.5 h-3.5 text-current transition-transform duration-75"
+						viewBox="0 0 24 24"
+						style="transform: rotate({tapeRotation}deg);"
+					>
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="currentColor"
+							stroke-width="1.5"
+							fill="none"
+							stroke-dasharray="6 3 2 3"
+						/>
+						<circle cx="12" cy="12" r="3" fill="currentColor" />
+					</svg>
+				</div>
+
+				<div class="tracking-wider">
+					<span>BPM: {activeChannel !== null ? '140' : '110'}</span>
+				</div>
+			</div>
+
+			<!-- Grid of 5 Channels -->
+			<div class="grid grid-cols-5 gap-1.5 sm:gap-2">
+				{#each channels as ch, i}
+					{@const hovered = activeChannel === i}
+					<a
+						href={ch.url}
+						target="_blank"
+						rel="noopener"
+						class="flex flex-col items-center bg-[var(--hw-screen-cell)] border border-[var(--hw-screen-line)] rounded py-2 transition-colors duration-150 {hovered
+							? 'bg-[var(--hw-screen-cell-on)] border-[var(--hw-screen-ink)] text-[var(--hw-screen-ink)]'
+							: 'text-[var(--hw-screen-ink-dim)]'}"
+						onmouseenter={() => (activeChannel = i)}
+						onmouseleave={() => (activeChannel = null)}
+						onfocus={() => (activeChannel = i)}
+						onblur={() => (activeChannel = armedChannel)}
+						onpointerdown={(event) => arm_touch(event, i)}
+						onclick={(event) => follow_touch(event, i)}
+					>
+						<!-- Channel indicator -->
+						<div class="flex flex-col items-center gap-1 select-none">
+							<span class="text-micro opacity-50 font-bold">0{i + 1}</span>
+							<div
+								class="w-1.5 h-1.5 rounded-full transition-colors {hovered
+									? 'bg-[var(--hw-screen-ink)]'
+									: 'bg-[var(--hw-screen-seg-off)]'}"
+							></div>
+						</div>
+
+						<!-- Social Icon -->
+						<div class="my-2 transition-transform duration-200 {hovered ? 'scale-110' : ''}">
+							{#if ch.abbr === 'GH'}
+								<svg viewBox="0 0 32 32" width="1.2em" height="1.2em" class="w-5 h-5 sm:w-6 sm:h-6"><path fill="currentColor" fill-rule="evenodd" d="M16 2a14 14 0 0 0-4.43 27.28c.7.13 1-.3 1-.67v-2.38c-3.89.84-4.71-1.88-4.71-1.88a3.7 3.7 0 0 0-1.62-2.05c-1.27-.86.1-.85.1-.85a2.94 2.94 0 0 1 2.14 1.45a3 3 0 0 0 4.08 1.16a2.93 2.93 0 0 1 .88-1.87c-3.1-.36-6.37-1.56-6.37-6.92a5.4 5.4 0 0 1 1.44-3.76a5 5 0 0 1 .14-3.7s1.17-.38 3.85 1.43a13.3 13.3 0 0 1 7 0c2.67-1.81 3.84-1.43 3.84-1.43a5 5 0 0 1 .14 3.7a5.4 5.4 0 0 1 1.44 3.76c0 5.38-3.27 6.56-6.39 6.91a3.33 3.33 0 0 1 .95 2.59v3.84c0 .46.25.81 1 .67A14 14 0 0 0 16 2"/></svg>
+							{:else if ch.abbr === 'IG'}
+								<svg viewBox="0 0 32 32" width="1.2em" height="1.2em" class="w-5 h-5 sm:w-6 sm:h-6"><circle cx="22.406" cy="9.594" r="1.44" fill="currentColor"/><path fill="currentColor" d="M16 9.838A6.162 6.162 0 1 0 22.162 16A6.16 6.16 0 0 0 16 9.838M16 20a4 4 0 1 1 4-4a4 4 0 0 1-4 4"/><path fill="currentColor" d="M16 6.162c3.204 0 3.584.012 4.849.07a6.6 6.6 0 0 1 2.228.413a3.98 3.98 0 0 1 2.278 2.278a6.6 6.6 0 0 1 .413 2.228c.058 1.265.07 1.645.07 4.85s-.012 3.583-.07 4.848a6.6 6.6 0 0 1-.413 2.228a3.98 3.98 0 0 1-2.278 2.278a6.6 6.6 0 0 1-2.228.413c-1.265.058-1.645.07-4.849.07s-3.584-.012-4.849-.07a6.6 6.6 0 0 1-2.228-.413a3.98 3.98 0 0 1-2.278-2.278a6.6 6.6 0 0 1-.413-2.228c-.058-1.265-.07-1.645-.07-4.849s.012-3.584.07-4.849a6.6 6.6 0 0 1 .413-2.228a3.98 3.98 0 0 1 2.278-2.278a6.6 6.6 0 0 1 2.228-.413c1.265-.058 1.645-.07 4.849-.07M16 4c-3.259 0-3.668.014-4.948.072a8.8 8.8 0 0 0-2.912.558a6.14 6.14 0 0 0-3.51 3.51a8.8 8.8 0 0 0-.558 2.913C4.014 12.333 4 12.74 4 16s.014 3.668.072 4.948a8.8 8.8 0 0 0 .558 2.912a6.14 6.14 0 0 0 3.51 3.51a8.8 8.8 0 0 0 2.913.558c1.28.058 1.688.072 4.947.072s3.668-.014 4.948-.072a8.8 8.8 0 0 0 2.913-.558a6.14 6.14 0 0 0 3.51-3.51a8.8 8.8 0 0 0 .557-2.913C27.986 19.667 28 19.26 28 16s-.014-3.668-.072-4.948a8.8 8.8 0 0 0-.558-2.912a6.14 6.14 0 0 0-3.51-3.51a8.8 8.8 0 0 0-2.913-.557C19.667 4.013 19.26 4 16 4"/></svg>
+							{:else if ch.abbr === 'YT'}
+								<svg viewBox="0 0 32 32" width="1.2em" height="1.2em" class="w-5 h-5 sm:w-6 sm:h-6"><path fill="currentColor" d="M29.41 9.26a3.5 3.5 0 0 0-2.47-2.47C24.76 6.2 16 6.2 16 6.2s-8.76 0-10.94.59a3.5 3.5 0 0 0-2.47 2.47A36 36 0 0 0 2 16a36 36 0 0 0 .59 6.74a3.5 3.5 0 0 0 2.47 2.47c2.18.59 10.94.59 10.94.59s8.76 0 10.94-.59a3.5 3.5 0 0 0 2.47-2.47A36 36 0 0 0 30 16a36 36 0 0 0-.59-6.74M13.2 20.2v-8.4l7.27 4.2Z"/></svg>
+							{:else if ch.abbr === 'X'}
+								<svg viewBox="0 0 32 32" width="1.2em" height="1.2em" class="w-5 h-5 sm:w-6 sm:h-6"><path fill="currentColor" d="M18.234 14.162L26.977 4h-2.072l-7.591 8.824L11.25 4H4.258l9.169 13.343L4.258 28H6.33l8.016-9.318L20.75 28h6.993zm-2.837 3.299l-.93-1.329L7.078 5.56h3.182l5.964 8.532l.93 1.329l7.753 11.09h-3.182z"/></svg>
+							{:else if ch.abbr === 'ML'}
+								<svg viewBox="0 0 32 32" width="1.2em" height="1.2em" class="w-5 h-5 sm:w-6 sm:h-6"><path fill="currentColor" d="M28 6H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h24a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2m-2.2 2L16 14.78L6.2 8ZM4 24V8.91l11.43 7.91a1 1 0 0 0 1.14 0L28 8.91V24Z"/></svg>
+							{/if}
+						</div>
+
+						<!-- Equalizer Segment Display -->
+						<div class="flex flex-col gap-0.5 items-center my-1 select-none">
+							{#each [75, 60, 45, 30, 15, 5] as threshold}
+								{@const active = levels[i] >= threshold}
+								<div
+									class="w-4 sm:w-5 h-1 rounded-sm transition-colors duration-75 {active
+										? 'bg-[var(--hw-screen-ink)]'
+										: 'bg-[var(--hw-screen-seg-off)]'}"
+								></div>
+							{/each}
+						</div>
+
+						<!-- Param Readout -->
+						<div
+							class="text-micro font-bold flex flex-col items-center mt-1 select-none tracking-tight"
+						>
+							<span class="opacity-60">{ch.label}</span>
+							<span class={hovered ? 'text-[var(--hw-screen-ink)]' : 'opacity-85'}
+								>{toHex(levels[i])}</span
+							>
+						</div>
+					</a>
+				{/each}
+			</div>
+
+			<!-- Dynamic Readout / Technical details -->
+			<div
+				class="bg-[var(--hw-screen-well)] border border-[var(--hw-screen-line)] rounded px-2 py-1.5 mt-3 flex items-center justify-between text-micro sm:text-xxs font-bold tracking-wide select-none"
+			>
+				<div class="truncate w-full flex items-center gap-1.5 glow-text">
+					{#if activeChannel !== null}
+						<span class="text-[var(--hw-screen-ink)] animate-pulse">▶</span>
+						<span class="text-[var(--hw-screen-ink)] uppercase">
+							{channels[activeChannel].name} // TRANSMIT TO: {channels[activeChannel].url
+								.replace('https://www.', '')
+								.replace('https://', '')}
+						</span>
+					{:else}
+						<span class="opacity-55">■</span>
+						<span class="opacity-55 uppercase">SYSTEM READY // SELECT SOURCE CHANNEL 01-05</span>
+					{/if}
+				</div>
+			</div>
+		</div>
+
+		<!-- Right: Physical Control Knobs & Elements -->
+		<div
+			class="flex flex-col justify-between bg-[var(--hw-case)] p-4 rounded-xl border border-[var(--hw-case-line)] shadow-inner"
+		>
+			<!-- Dial Grid -->
+			<div
+				class="grid grid-cols-4 md:grid-cols-2 gap-4 md:gap-y-6 items-center justify-items-center w-full py-2"
+			>
+				{#each knobs as knob (knob.key)}
+					<div class="flex flex-col items-center">
+						<div class="knob-seat">
+							<KnobCap
+								cap={knob.cap}
+								rotation={knobAngles[/** @type {'a' | 'b' | 'c' | 'd'} */ (knob.key)]}
+								size={30}
+							/>
+						</div>
+						<span class="text-micro mt-1.5 text-dim font-bold tracking-wider font-mono"
+							>{knob.label}</span
+						>
+					</div>
+				{/each}
+			</div>
+
+			<!-- Mechanical Spec label on chassis -->
+			<div
+				class="hidden md:flex flex-col border-t border-[var(--hw-case-line)] pt-3 mt-4 text-nano text-dim font-bold uppercase tracking-widest gap-0.5 leading-none"
+			>
+				<span>HIGH FIDELITY</span>
+				<span>POCKET CONTROLLER</span>
+				<span>OP-S10 // SWEDEN</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bottom: Physical Buttons of the Pocket Operator -->
+	<div class="grid grid-cols-5 gap-2 mt-5 px-1">
+		{#each channels as ch, i}
+			{@const hovered = activeChannel === i}
+			<div class="flex flex-col items-center">
+				<a
+					href={ch.url}
+					target="_blank"
+					rel="noopener"
+					class="hw-key h-10 w-10 sm:h-12 sm:w-12 {hovered
+						? 'border-[var(--hw-screen-ink)] text-[var(--hw-screen-ink)]'
+						: ''}"
+					onmouseenter={() => (activeChannel = i)}
+					onmouseleave={() => (activeChannel = null)}
+					onfocus={() => (activeChannel = i)}
+					onblur={() => (activeChannel = armedChannel)}
+					onpointerdown={(event) => arm_touch(event, i)}
+					onclick={(event) => follow_touch(event, i)}
 				>
-					<circle cx="22.406" cy="9.594" r="1.44" fill="currentColor" />
-					<path
-						fill="currentColor"
-						d="M16 9.838A6.162 6.162 0 1 0 22.162 16A6.16 6.16 0 0 0 16 9.838M16 20a4 4 0 1 1 4-4a4 4 0 0 1-4 4"
-					/>
-					<path
-						fill="currentColor"
-						d="M16 6.162c3.204 0 3.584.012 4.849.07a6.6 6.6 0 0 1 2.228.413a3.98 3.98 0 0 1 2.278 2.278a6.6 6.6 0 0 1 .413 2.228c.058 1.265.07 1.645.07 4.85s-.012 3.583-.07 4.848a6.6 6.6 0 0 1-.413 2.228a3.98 3.98 0 0 1-2.278 2.278a6.6 6.6 0 0 1-2.228.413c-1.265.058-1.645.07-4.849.07s-3.584-.012-4.849-.07a6.6 6.6 0 0 1-2.228-.413a3.98 3.98 0 0 1-2.278-2.278a6.6 6.6 0 0 1-.413-2.228c-.058-1.265-.07-1.645-.07-4.849s.012-3.584.07-4.849a6.6 6.6 0 0 1 .413-2.228a3.98 3.98 0 0 1 2.278-2.278a6.6 6.6 0 0 1 2.228-.413c1.265-.058 1.645-.07 4.849-.07M16 4c-3.259 0-3.668.014-4.948.072a8.8 8.8 0 0 0-2.912.558a6.14 6.14 0 0 0-3.51 3.51a8.8 8.8 0 0 0-.558 2.913C4.014 12.333 4 12.74 4 16s.014 3.668.072 4.948a8.8 8.8 0 0 0 .558 2.912a6.14 6.14 0 0 0 3.51 3.51a8.8 8.8 0 0 0 2.913.558c1.28.058 1.688.072 4.947.072s3.668-.014 4.948-.072a8.8 8.8 0 0 0 2.913-.558a6.14 6.14 0 0 0 3.51-3.51a8.8 8.8 0 0 0 .557-2.913C27.986 19.667 28 19.26 28 16s-.014-3.668-.072-4.948a8.8 8.8 0 0 0-.558-2.912a6.14 6.14 0 0 0-3.51-3.51a8.8 8.8 0 0 0-2.913-.557C19.667 4.013 19.26 4 16 4"
-					/>
-				</svg>
-			{:else if port.abbr === 'YT'}
-				<svg
-					viewBox="0 0 32 32"
-					class="h-4 w-4 shrink-0 text-ink transition-colors group-hover:text-accent"
-					aria-hidden="true"
-				>
-					<path
-						fill="currentColor"
-						d="M29.41 9.26a3.5 3.5 0 0 0-2.47-2.47C24.76 6.2 16 6.2 16 6.2s-8.76 0-10.94.59a3.5 3.5 0 0 0-2.47 2.47A36 36 0 0 0 2 16a36 36 0 0 0 .59 6.74a3.5 3.5 0 0 0 2.47 2.47c2.18.59 10.94.59 10.94.59s8.76 0 10.94-.59a3.5 3.5 0 0 0 2.47-2.47A36 36 0 0 0 30 16a36 36 0 0 0-.59-6.74M13.2 20.2v-8.4l7.27 4.2Z"
-					/>
-				</svg>
-			{:else if port.abbr === 'X'}
-				<svg
-					viewBox="0 0 32 32"
-					class="h-4 w-4 shrink-0 text-ink transition-colors group-hover:text-accent"
-					aria-hidden="true"
-				>
-					<path
-						fill="currentColor"
-						d="M18.234 14.162L26.977 4h-2.072l-7.591 8.824L11.25 4H4.258l9.169 13.343L4.258 28H6.33l8.016-9.318L20.75 28h6.993zm-2.837 3.299l-.93-1.329L7.078 5.56h3.182l5.964 8.532l.93 1.329l7.753 11.09h-3.182z"
-					/>
-				</svg>
-			{:else if port.abbr === 'ML'}
-				<svg
-					viewBox="0 0 32 32"
-					class="h-4 w-4 shrink-0 text-ink transition-colors group-hover:text-accent"
-					aria-hidden="true"
-				>
-					<path
-						fill="currentColor"
-						d="M28 6H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h24a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2m-2.2 2L16 14.78L6.2 8ZM4 24V8.91l11.43 7.91a1 1 0 0 0 1.14 0L28 8.91V24Z"
-					/>
-				</svg>
-			{/if}
-			<span class="text-sm font-bold tracking-tight text-ink uppercase group-hover:text-accent">
-				{port.name}
-			</span>
-		</a>
-	{/each}
+					{i + 1}
+				</a>
+				<span class="text-micro mt-1.5 text-dim font-bold font-mono">{ch.abbr}</span>
+			</div>
+		{/each}
+	</div>
 </div>
+
+<style>
+	.lcd-grid {
+		background-image: linear-gradient(var(--hw-screen-grid) 1px, transparent 1px),
+			linear-gradient(90deg, var(--hw-screen-grid) 1px, transparent 1px);
+		background-size: 3px 3px;
+	}
+
+	.glow-text {
+		text-shadow: var(--hw-screen-glow);
+	}
+
+	/* The cap turns to a preset the way a motorised fader seeks: quick, and settled. */
+	.knob-seat :global(.knob > span:first-child) {
+		transition: transform 260ms cubic-bezier(0.2, 0.9, 0.25, 1);
+	}
+</style>
